@@ -19,7 +19,7 @@ Enter following commands
 
 > make all test
 
-and see how some tests fails. But do not worry, the issues are only minor.
+and see how some tests fail. But do not worry, the issues are only minor.
     
 ## Usage 
 
