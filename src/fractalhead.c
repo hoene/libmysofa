@@ -127,6 +127,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
 			if (readValue(reader, 4) != 0x00000013) {
 				log("FHDB type 3 unsupported values");
+				free(name);
 				return MYSOFA_UNSUPPORTED_FORMAT;
 			}
 
@@ -137,12 +138,14 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 				value = NULL;
 			else if (unknown == 0x000000020000) {
 				if (!(value = malloc(length + 1))) {
+    				free(name);
 					return MYSOFA_NO_MEMORY;
 			    }
 				fread(value, 1, length, reader->fhd);
 				value[length] = 0;
 			} else {
 				log("FHDB type 3 unsupported values");
+				free(name);
 				return MYSOFA_UNSUPPORTED_FORMAT;
 			}
 			log(" %s = %s\n", name, value);
@@ -179,8 +182,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			dataobject->directory = dir;
 
 			store = ftello(reader->fhd);
-			if(fseeko(reader->fhd, heap_header_address, SEEK_SET)) 
+			if(fseeko(reader->fhd, heap_header_address, SEEK_SET)) {
+				free(name);
 			    return errno;
+			}
 			
 			err=dataobjectRead(reader, &dir->dataobject,name);
 			if(err)

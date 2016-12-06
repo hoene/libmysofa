@@ -176,7 +176,7 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 		struct DATATYPE *dt) {
 
 	int i, j, c,err;
-	char *buffer;
+	char *buffer, *p;
 	struct DATATYPE dt2;
 
 	dt->class_and_version = fgetc(reader->fhd);
@@ -235,8 +235,14 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 			buffer = malloc(64);
 			j = 0;
 			do {
-				if (j > 64)
-					buffer = realloc(buffer, j);
+				if (j > 64) {
+					p = realloc(buffer, j);
+					if(!p) {
+					    free(buffer);
+					    return err;
+					}
+					buffer = p;
+			    }
 				c = fgetc(reader->fhd);
 				buffer[j] = c;
 				j++;
@@ -659,30 +665,34 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader, struct DATAOBJE
 
 	if (flags & 3) {
 		log("object OHDR attribute message must have any flags set\n");
+		free(name);
 		return MYSOFA_INVALID_FORMAT;
 	}
 	err = readOHDRHeaderMessageDatatype(reader, &d.dt);
 	if (err) {
 		log("object OHDR attribute message read datatype error\n");
+		free(name);
 		return MYSOFA_INVALID_FORMAT;
 	}
 	err = readOHDRHeaderMessageDataspace(reader, &d.ds);
 	if (err) {
 		log("object OHDR attribute message read dataspace error\n");
+		free(name);
 		return MYSOFA_INVALID_FORMAT;
 	}
 	err = readData(reader, &d, &d.dt, &d.ds);
 	if (err) {
 		log("object OHDR attribute message read data error\n");
+		free(name);
 		return MYSOFA_INVALID_FORMAT;
 	}
 
-			attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
-			attr->name = name;
-			attr->value = d.string;
-			d.string = NULL;
-			attr->next = dataobject->attributes;
-			dataobject->attributes = attr;
+	attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
+	attr->name = name;
+	attr->value = d.string;
+	d.string = NULL;
+	attr->next = dataobject->attributes;
+	dataobject->attributes = attr;
     	
     dataobjectFree(reader, &d);
 	return MYSOFA_OK;
