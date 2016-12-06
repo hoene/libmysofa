@@ -1,0 +1,40 @@
+cmake_minimum_required (VERSION 2.6)
+project (libmysofa)
+
+INCLUDE(CheckCCompilerFlag)
+
+CHECK_C_COMPILER_FLAG(-Wall C_HAS_WALL)
+IF(C_HAS_WALL)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+ENDIF(C_HAS_WALL)
+
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+
+add_subdirectory(src)
+
+enable_testing()
+add_test(InstallDeepDiff npm install deep-diff)
+add_test(sofa2json ../tests/sofa2json ../tests/sofa_api_mo_test/Pulse.sofa)
+
+add_test(ARI_NH2_hrtf_M_dtf256 ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH2_hrtf_M_dtf\ 256.sofa)
+add_test(ARI_NH4_4_freqs ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH4_4_freqs.sofa)
+add_test(ARI_NH4_hrtf_M_dtf256 ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH4_hrtf_M_dtf\ 256.sofa)
+add_test(BTdei-hp_H010-subj_S115-Set02-COMPENSATED.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/BTdei-hp_H010-subj_S115-Set02-COMPENSATED.sofa)
+add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh ../tests/sofa_api_mo_test/CIPIC_subject_003_hrir_final.sofa)
+add_test(FHK_HRIR_L2354.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/FHK_HRIR_L2354.sofa)
+add_test(hpir_nh5.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/hpir_nh5.sofa)
+add_test(LISTEN_1002_IRC_1002_C_HRIR.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/LISTEN_1002_IRC_1002_C_HRIR.sofa)
+add_test(MIT_KEMAR_large_pinna.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/MIT_KEMAR_large_pinna.sofa)
+add_test(MIT_KEMAR_normal_pinna.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa)
+add_test(Oldenburg_OfficeII.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/Oldenburg_OfficeII.sofa)
+add_test(Pulse ../tests/compare.sh ../tests/sofa_api_mo_test/Pulse.sofa)
+add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa)
+add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa)
+add_test(TU-Berlin_QU_KEMAR_anechoic_radius_1m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_1m.sofa)
+add_test(TU-Berlin_QU_KEMAR_anechoic_radius_2m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_2m.sofa)
+add_test(TU-Berlin_QU_KEMAR_anechoic_radius_3m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_3m.sofa)
+
+#add_test( ../tests/compare.sh ../sofa_api_mo_test/)
+#add_test( ../tests/compare.sh ../sofa_api_mo_test/)
+
+

@@ -1,0 +1,39 @@
+/*
+ * gunzip.c
+ *
+ *  Created on: 20.11.2016
+ *      Author: hoene
+ */
+
+#include <stdlib.h>
+#include <string.h>
+#include <zlib.h>
+
+#include "mysofa.h"
+#include "reader.h"
+
+int gunzip(int inlen, char *in, int *outlen, char *out)
+{
+	int err;
+	z_stream stream;
+
+	memset(&stream, 0, sizeof(stream));
+	stream.avail_in = inlen;
+	stream.next_in = (unsigned char*)in;
+	stream.avail_out = *outlen;
+	stream.next_out = (unsigned char*)out;
+
+	err=inflateInit(&stream);
+	if(err)
+		return err;
+
+	err=inflate(&stream, Z_SYNC_FLUSH);
+	*outlen = stream.total_out;
+    inflateEnd(&stream);
+	if(err && err != Z_STREAM_END) {
+		log(" gunzip error %d %s\n",err,stream.msg);
+		return err;
+	}
+
+	return MYSOFA_OK;
+}
