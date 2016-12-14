@@ -41,5 +41,7 @@ mysofa_free(hrtf);
 ## Disclaimer
 
 The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>.
-The source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under BSD license.
+The source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under Apache 2.0 license.
+This work has been funded by Germman Federal Ministry of Education and Research, funding code 01IS14027A.
+
 
