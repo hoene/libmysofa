@@ -26,7 +26,6 @@ add_test(hpir_nh5.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/hpir_nh5.so
 add_test(LISTEN_1002_IRC_1002_C_HRIR.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/LISTEN_1002_IRC_1002_C_HRIR.sofa)
 add_test(MIT_KEMAR_large_pinna.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/MIT_KEMAR_large_pinna.sofa)
 add_test(MIT_KEMAR_normal_pinna.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa)
-add_test(Oldenburg_OfficeII.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/Oldenburg_OfficeII.sofa)
 add_test(Pulse ../tests/compare.sh ../tests/sofa_api_mo_test/Pulse.sofa)
 add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa)
 add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa)

@@ -119,6 +119,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
 			length = readValue(reader, 2);
 
+            // TODO: Get definition of this field
 			unknown = readValue(reader, 6);
 			if (unknown == 0x000000020200)
 				value = NULL;
@@ -129,10 +130,18 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			    }
 				fread(value, 1, length, reader->fhd);
 				value[length] = 0;
-			} else {
-				log("FHDB type 3 unsupported values");
+			} else if (unknown == 0x20000020000) {
+				if (!(value = malloc(5))) {
+    				free(name);
+					return MYSOFA_NO_MEMORY;
+			    }
+				strcpy(value,"");
+			}
+			else {
+				log("FHDB type 3 unsupported values: %12lX\n",unknown);
 				free(name);
-				return MYSOFA_UNSUPPORTED_FORMAT;
+//				return MYSOFA_UNSUPPORTED_FORMAT;
+            	return MYSOFA_OK;
 			}
 			log(" %s = %s\n", name, value);
 
@@ -148,7 +157,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			 */
 			unknown = readValue(reader, 6);
 			if (unknown) {
-				log("FHDB type 1 unsupported values");
+				log("FHDB type 1 unsupported values\n");
 				return MYSOFA_UNSUPPORTED_FORMAT;
 			}
 
