@@ -21,13 +21,17 @@
     <section class="main-content">
       <h3>
 <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
-Welcome to the libmysofa Page</h3>
+Welcome to the Libmysofa Page</h3>
 
 <p>
-This is a simple set of C functions to read SOFA files, if they contain head related transfer functions (HRTF)
+This is a set of C functions to read SOFA files, if they contain head related transfer functions (HRTF)
 stored according to the <a href="http://www.aes.org/publications/standards/search.cfm?docID=99">AES69-2015 standard</a>.
 It is a light weight library having a minimal memory foodprint. 
 </p>
+<p>
+Instead of the libhdf and libnetcdf, we are implementing a simple HDF5 reader following the <a href="https://support.hdfgroup.org/HDF5/doc/H5.format.html">HDF5 specification</a>.
+For example, a SOFA to JSON converter written with NETCDF C++ has a size of 798387 bytes on Linux 64bit; written with libmysofa, it has a size of 90625.
+
 
 <h3>
 <a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3>
@@ -42,16 +46,7 @@ A SOFA file can then be read with one line statement:
 <h3>
 <a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Limitations</h3>
 
-<p>
-In order to keep libmysofa small, only a fraction of the HDF5 formats are supported. Actually, we implemented only those features, which were seen in real SOFA files.
-These are:
-</p>
-<ol>
-<li>NetCDF-4/HDF5 format</li>
-<li>HDF5 superblock version 2</li>
-<li>...</li>
-</ol>
-<p>If you have a SOFA file that cannot be read by libmysofa, please raise an issue and provide a patch.</p>
+<p>We have tested libmysofa with all SOFA files we have. It work well. If, anyhow, you have a SOFA file that cannot be read by libmysofa, please raise an issue and provide a patch.</p>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>

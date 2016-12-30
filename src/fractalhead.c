@@ -72,6 +72,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	else
 		length_size = ceilf(log2f(fractalheap->maximum_size) / 8);
 
+		log(" %d %ld %d\n",size,block_offset,offset_size);
+
 	/*
 	 * 00003e00  00 46 48 44 42 00 40 02  00 00 00 00 00 00 00 00  |.FHDB.@.........|
 	 00003e10  00 00 00 83 8d ac f6 >03  00 0c 00 08 00 04 00 00  |................|
@@ -92,7 +94,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 		offset = readValue(reader, offset_size);
 		length = readValue(reader, length_size);
 
-//		log(" %d %4X %d %8LX\n",typeandversion,offset,length,ftello(reader->fhd));
+		log(" %d %4lX %ld %8lX\n",typeandversion,offset,length,ftello(reader->fhd));
 
 		/* TODO: for the following part, the specification is incomplete */
 		if (typeandversion == 3) {
@@ -178,8 +180,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			fseeko(reader->fhd, store, SEEK_SET);
 
 		} else if (typeandversion != 0) {
+			/* TODO is must be avoided somehow */
 			log("fractal head unknown type %d\n", typeandversion);
-			return MYSOFA_UNSUPPORTED_FORMAT;
+//			return MYSOFA_UNSUPPORTED_FORMAT;
+        	return MYSOFA_OK;
 		}
 
 	} while (typeandversion != 0);
@@ -251,7 +255,7 @@ static int indirectblockRead(struct READER *reader, struct DATAOBJECT *dataobjec
 					reader->superblock.size_of_lengths);
 			filter_mask = readValue(reader, 4);
 		}
-
+        log(">> %d %lX %d\n",k,child_direct_block,size);
 		if (validAddress(reader, child_direct_block)) {
 			store = ftello(reader->fhd);
 			fseeko(reader->fhd, child_direct_block, SEEK_SET);

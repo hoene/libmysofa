@@ -5,10 +5,6 @@
 This is a simple set of C functions to read AES SOFA files, if they contain HRTFs
 stored according to the AES69-2015 standard [http://www.aes.org/publications/standards/search.cfm?docID=99].
 
-Instead of the libhdf and libnetcdf, we are implementing a simple HDF5 reader following the specification [https://support.hdfgroup.org/HDF5/doc/H5.format.html].
-
-For example, a SOFA to JSON converter written with NETCDF C++ has a size of 798387 bytes on Linux 64bit; written with libmysofa, it has a size of 90625.
-
 ## Compile
 
 Enter following commands
@@ -19,11 +15,9 @@ Enter following commands
 
 > make all test
 
-and see how some tests fail. But do not worry, the issues are only minor.
-    
 ## Usage 
 
-A SOFA file can then be read with simple statements.
+Libmysofa has two two function calls.
 
 To read a SOFA file call 
 
