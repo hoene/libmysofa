@@ -482,7 +482,7 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
 int readDataVar(struct READER *reader, struct DATAOBJECT *data, struct DATATYPE *dt,
 		struct DATASPACE *ds) {
 
-	char *buffer;
+	char *buffer, number[16];
 	uint64_t reference, gcol, dataobject;
 	int err;
 	struct DATAOBJECT *referenceData;
@@ -522,7 +522,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data, struct DATATYPE 
 		 000036f0  00 00 00
 		 */
 	case 6:
-		log("COMPONENT todo %lX\n", ftello(reader->fhd));
+	    // TODO unclear spec
+		log("COMPONENT todo %lX %d\n", ftello(reader->fhd),dt->size);
 		if(fseek(reader->fhd, dt->size, SEEK_CUR))
 		    return errno;
 		break;
@@ -532,20 +533,27 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data, struct DATATYPE 
 		reference = readValue(reader, dt->size-4); 
 	    log(" REFERENCE size %d %lX\n",dt->size, reference);
         if(!!(err = gcolRead(reader, gcol, reference, &dataobject))) {
-            return MYSOFA_OK;       // ignore errorr
+            return MYSOFA_OK;       // ignore error
 //            return err;
         }
         referenceData = findDataobject(reader,dataobject);
-		log("    REFERENCE %lu %lX %s\n", reference, dataobject, referenceData?referenceData->name:"UNKNOWN");
-		if(!referenceData)
-		    return MYSOFA_UNSUPPORTED_FORMAT;
+        if(referenceData)
+            buffer=referenceData->name;
+        else {
+            snprintf(number,sizeof(number),"REF%08lX",reference);
+            buffer=number;
+        }
+		log("    REFERENCE %lu %lX %s\n", reference, dataobject, buffer);
+//		if(!referenceData) {
+//		    return MYSOFA_UNSUPPORTED_FORMAT;
+//		}
 		if(data->string) {
-		    data->string = realloc(data->string, strlen(data->string) + strlen(referenceData->name) + 2);
+		    data->string = realloc(data->string, strlen(data->string) + strlen(buffer) + 2);
 		    strcat(data->string,",");
-		    strcat(data->string,referenceData->name);
+		    strcat(data->string,buffer);
 		}
 		else {
-		    data->string=strdup(referenceData->name);
+		    data->string=strdup(buffer);
 		}
 		break;
 		
