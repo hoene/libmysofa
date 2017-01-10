@@ -17,14 +17,14 @@ Enter following commands
 
 ## Usage 
 
-Libmysofa has two two function calls.
+Libmysofa has two function calls.
 
 To read a SOFA file call 
 
 ```
 #include <mysofa.h>
 
-struct HRTF *hrtf = mysofa_load("file.sofa", &err);
+struct MYSOFA_HRTF *hrtf = mysofa_load("file.sofa", &err);
 ```
 
 To free the HRTF structure, call:

@@ -40,7 +40,7 @@ For example, a SOFA to JSON converter written with NETCDF C++ has a size of 7983
 Libmysofa is for C programs. Add a <code>#include &lt;mysofa.h&gt;</code>
 A SOFA file can then be accessed with one line statement:
 </p>
-<p>Read a SOFA file:</br><code>struct HRTF *hrtf = mysofa_load("file.sofa", &err);</code></p>
+<p>Read a SOFA file:</br><code>struct MYSOFA_HRTF *hrtf = mysofa_load("file.sofa", &err);</code></p>
 <p>To free the HRTF structure, call:</br><code>mysofa_free(hrtf);</code></p>
 
 <h3>

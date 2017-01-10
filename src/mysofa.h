@@ -33,7 +33,7 @@ struct MYSOFA_ATTRIBUTE {
 };
 
 struct MYSOFA_ARRAY {
-    double *values;
+    float *values;
     int elements;
     struct MYSOFA_ATTRIBUTE *attributes;
 };
@@ -42,14 +42,6 @@ struct MYSOFA_ARRAY {
  * The HRTF structure data types
  */
 struct MYSOFA_HRTF {
-
-	/** number of HRTF filters stores here */
-	/** size of each filter */
-	/** number of different elevation degrees */
-	/* array of elevation degrees. 0 is front. PI is up, -PI is down. Size of array is <elevations>. Values are sorted incrementally. */
-	/** array of increasing number of azimuth numbers per elevation. Starts with zero, second value is the number of azimuth for the first elevation, third value is the number of azimuths for the first and second elevation   */
-	/** array of azimuth degrees. -PI/2 is left, 0 is front, PI/2 is right. Size is <filters>. For each elevation, the azimuth values are sorted incrementally. */
-	/** attributes */
 
 /* Dimensions defined in AES69 
   M Number of measurements; must be integer greater than zero.
