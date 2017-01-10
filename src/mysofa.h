@@ -33,7 +33,7 @@ struct MYSOFA_ATTRIBUTE {
 };
 
 struct MYSOFA_ARRAY {
-    float *values;
+    double *values;
     int elements;
     struct MYSOFA_ATTRIBUTE *attributes;
 };
