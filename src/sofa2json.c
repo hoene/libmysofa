@@ -205,6 +205,11 @@ int main(int argc, char **argv) {
 		return err;
 	}
 
+    err=mysofa_check(hrtf);
+    printf("result %d\n",err);
+
+#if 0
+
 	/*
 	 * The HRTF structure data types
 	 */
@@ -243,7 +248,7 @@ int main(int argc, char **argv) {
         printf(",\n");
     printArray(hrtf, &hrtf->DataDelay, "Data.Delay");
     printf(" }\n}\n");
-    
+#endif
 	mysofa_free(hrtf);
 
 	return 0;

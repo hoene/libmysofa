@@ -89,7 +89,7 @@ enum {
 };
 
 struct MYSOFA_HRTF* mysofa_load(char *filename, int *err);
-void mysofa_normalize(struct MYSOFA_HRTF *hrtf, int rate);
+int mysofa_check(struct MYSOFA_HRTF *hrtf);
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
 
 #ifdef __cplusplus
