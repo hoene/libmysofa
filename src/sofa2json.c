@@ -206,9 +206,12 @@ int main(int argc, char **argv) {
 	}
 
     err=mysofa_check(hrtf);
-    printf("result %d\n",err);
-
-#if 0
+    if(err!=MYSOFA_OK) {
+		fprintf(stderr, "Error verifying file %s. Error code: %d\n", argv[1],
+				err);
+		return err;
+    }
+    mysofa_tospherical(hrtf);
 
 	/*
 	 * The HRTF structure data types
@@ -248,8 +251,9 @@ int main(int argc, char **argv) {
         printf(",\n");
     printArray(hrtf, &hrtf->DataDelay, "Data.Delay");
     printf(" }\n}\n");
-#endif
-	mysofa_free(hrtf);
+
+
+    mysofa_free(hrtf);
 
 	return 0;
 }

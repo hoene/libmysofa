@@ -1,4 +1,5 @@
 #include <string.h>
+#include <math.h>
 #include "mysofa.h"
 
 /*

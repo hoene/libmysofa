@@ -89,7 +89,10 @@ enum {
 };
 
 struct MYSOFA_HRTF* mysofa_load(char *filename, int *err);
+
 int mysofa_check(struct MYSOFA_HRTF *hrtf);
+void mysofa_tospherical(struct MYSOFA_HRTF *hrtf);
+
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
 
 #ifdef __cplusplus
