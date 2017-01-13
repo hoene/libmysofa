@@ -1,28 +1,7 @@
 #include <string.h>
 #include <math.h>
 #include "mysofa.h"
-
-/*
-static int fequalsf(float a, float b)
-{
-	return fabsf(a-b)<0.000001;
-}
-*/
-
-static int fequals(double a, double b)
-{
-	return fabs(a-b)<0.000001;
-}
-
-static int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value)
-{
-    while(attr) {
-        if(!strcmp(name,attr->name) && !strcmp(value,attr->value))
-            return 1;
-        attr = attr->next;
-    }
-    return 0;
-}
+#include "tools.h"
 
 static int compareValues(struct MYSOFA_ARRAY *array, double *compare, int elements)
 {

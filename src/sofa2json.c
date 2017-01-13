@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
 				err);
 		return err;
     }
-    mysofa_tospherical(hrtf);
+//    mysofa_tospherical(hrtf);
 
 	/*
 	 * The HRTF structure data types
@@ -252,6 +252,8 @@ int main(int argc, char **argv) {
     printArray(hrtf, &hrtf->DataDelay, "Data.Delay");
     printf(" }\n}\n");
 
+
+    mysofa_sort(hrtf);
 
     mysofa_free(hrtf);
 

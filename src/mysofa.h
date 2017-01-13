@@ -38,6 +38,21 @@ struct MYSOFA_ARRAY {
     struct MYSOFA_ATTRIBUTE *attributes;
 };
 
+struct MYSOFA_LOOKUP_ENTRY {
+	int index;
+	int value;
+};
+
+struct MYSOFA_LOOKUP {
+	int elements;
+	double radius_min, radius_max;
+	double c0_min, c0_max, c0_gain;
+	double c1_min, c1_max, c1_gain;
+	double c2_min, c2_max, c2_gain;
+	struct MYSOFA_LOOKUP_ENTRY *sorted;
+};
+
+
 /*
  * The HRTF structure data types
  */
@@ -92,8 +107,11 @@ struct MYSOFA_HRTF* mysofa_load(char *filename, int *err);
 
 int mysofa_check(struct MYSOFA_HRTF *hrtf);
 void mysofa_tospherical(struct MYSOFA_HRTF *hrtf);
-
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
+
+struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf);
+int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
+void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
 
 #ifdef __cplusplus
 }
