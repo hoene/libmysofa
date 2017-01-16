@@ -5,10 +5,11 @@
  *      Author: hoene
  */
 
+#define _GNU_SOURCE
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
 #include "tools.h"
 
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value)
@@ -37,7 +38,7 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value, char
 void convertCartesianToSpherical(double *values, int elements)
 {
 	int i;
-	double x,y,z,r,theta, phi;
+	double x,y,z,r,theta,phi;
 
 	for(i = 0; i < elements-2; i += 3) {
 		x = values[i];
@@ -48,9 +49,27 @@ void convertCartesianToSpherical(double *values, int elements)
 		theta = atan2(z,sqrt(x*x + y*y));
 		phi = atan2(y,x);
 
-		values[i] = fmod(phi * 180 / M_PI + 360, 360);
-		values[i+1] = theta * 180 / M_PI;
+		values[i] = fmod(phi * (180 / M_PI) + 360, 360);
+		values[i+1] = theta * (180 / M_PI);
 		values[i+2] = r;
+	}
+}
+
+void convertSphericalToCartesian(double *values, int elements)
+{
+	int i;
+	double x,y,z,r,theta,phi;
+
+	for(i = 0; i < elements-2; i += 3) {
+		phi = values[i] * (M_PI/180);
+		theta = values[i+1] * (M_PI/180);
+		r = values[i+2];
+		sincos(theta, &z, &x);
+		values[i+2] = z * r;
+		x *= r;
+		sincos(phi, &y, &z);
+		values[i] = z*x;
+		values[i+1] = y*x;
 	}
 }
 
@@ -92,6 +111,6 @@ void *nsearch(const void *key, const void *base, size_t num, size_t size,
         	 return (void*)base + (num-1) * size;
          if(start==end)
         	 return (void*)base + start * size;
-         printf("start %d end %d\n",start,end);
+         printf("start %ld end %ld\n",start,end);
     return NULL;
 }

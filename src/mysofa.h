@@ -41,6 +41,11 @@ struct MYSOFA_ARRAY {
 struct MYSOFA_LOOKUP_ENTRY {
 	int index;
 	int value;
+
+	/* index of neighbors */
+	int up, down;
+	int left, right;
+	int forward, backwards;
 };
 
 struct MYSOFA_LOOKUP {
@@ -50,6 +55,7 @@ struct MYSOFA_LOOKUP {
 	double c1_min, c1_max, c1_gain;
 	double c2_min, c2_max, c2_gain;
 	struct MYSOFA_LOOKUP_ENTRY *sorted;
+	int up, down, left, right, front, back;
 };
 
 

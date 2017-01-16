@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
+#include <string.h>
 #include "mysofa.h"
 #include "tools.h"
 
@@ -29,18 +30,15 @@ static int entry_compare(const void *p1, const void *p2)
 static int get3dmorton(double value, double offset, double gain)
 {
 	int x = (value-offset)*gain;
-//	printf("%f %f %f->%04X->",value,offset, gain, x);
 	x = (x | x << 16) & 0x30000ff;
 	x = (x | x << 8) & 0x300f00f;
 	x = (x | x << 4) & 0x30c30c3;
 	x = (x | x << 2) & 0x9249249;
-//	printf("%08X ",x);
 	return x;
 }
 
 static int coordinate2map(struct MYSOFA_LOOKUP *lookup,double *coordinate)
 {
-//	printf("\n");
 	return (get3dmorton(coordinate[0],lookup->c0_min,lookup->c0_gain)<<2) |
 			(get3dmorton(coordinate[1],lookup->c1_min,lookup->c1_gain)<<1) |
 			get3dmorton(coordinate[2],lookup->c2_min,lookup->c2_gain);
@@ -49,6 +47,10 @@ static int coordinate2map(struct MYSOFA_LOOKUP *lookup,double *coordinate)
 struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 {
 	int i;
+
+	if(!verifyAttribute(hrtf->SourcePosition.attributes,"Type","cartesian"))
+		return NULL;
+
 	struct MYSOFA_LOOKUP *lookup = malloc(sizeof(struct MYSOFA_LOOKUP));
 	if(!lookup)
 		return NULL;
@@ -67,6 +69,10 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 	lookup->c2_min = DBL_MAX;
 	lookup->c2_max = DBL_MIN;
 	lookup->elements = hrtf->SourcePosition.elements/3;
+	lookup->up = lookup->down = -1;
+	lookup->left = lookup->right = -1;
+	lookup->front = lookup->back = -1;
+
 	/*
 	 * find smallest and largest coordinates
 	 */
@@ -103,7 +109,6 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 	/*
 	 * find smallest and largest radius
 	 */
-	if(verifyAttribute(hrtf->SourcePosition.attributes,"Type","cartesian")) {
 		for(i=0;i<hrtf->SourcePosition.elements;i+=3) {
 			double r = sqrt(pow(hrtf->SourcePosition.values[0],2.)+pow(hrtf->SourcePosition.values[1],2.)+pow(hrtf->SourcePosition.values[2],2.));
 			if(r<lookup->radius_min)
@@ -111,13 +116,8 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 			if(r>lookup->radius_max)
 				lookup->radius_max=r;
 		}
-	}
-	else {
-		lookup->radius_min=lookup->c2_min;
-		lookup->radius_max=lookup->c2_max;
-	}
 
-	/**
+		/**
 	 * make table with 1d coordinate mapping and indices
 	 */
 	for(i=0;i<lookup->elements;i++) {
@@ -137,6 +137,7 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 								hrtf->SourcePosition.values[lookup->sorted[i].index*3+2]
 		);
 */
+
 	return MYSOFA_OK;
 }
 
