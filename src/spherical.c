@@ -23,3 +23,24 @@ void mysofa_tospherical(struct MYSOFA_HRTF *hrtf)
 	convertArray(&hrtf->ReceiverPosition);
 	convertArray(&hrtf->SourcePosition);
 }
+
+static void convertArray2(struct MYSOFA_ARRAY *array)
+{
+	if(!changeAttribute(array->attributes,"Type","spherical","cartesian"))
+		return;
+
+	changeAttribute(array->attributes,"Units",NULL,"meter");
+
+	convertSphericalToCartesian(array->values, array->elements);
+}
+
+void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf)
+{
+	convertArray2(&hrtf->ListenerView);
+	convertArray2(&hrtf->ListenerUp);
+	convertArray2(&hrtf->ListenerPosition);
+	convertArray2(&hrtf->EmitterPosition);
+	convertArray2(&hrtf->ReceiverPosition);
+	convertArray2(&hrtf->SourcePosition);
+}
+

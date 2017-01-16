@@ -85,6 +85,7 @@ int mysofa_check(struct MYSOFA_HRTF *hrtf)
 			return MYSOFA_INVALID_FORMAT;
 	}
 
+#if 0
 	if(hrtf->ListenerUp.values) {
 		if(!verifyAttribute(hrtf->ListenerUp.attributes,"DIMENSION_LIST","I,C"))
 			return MYSOFA_INVALID_FORMAT;
@@ -103,6 +104,7 @@ int mysofa_check(struct MYSOFA_HRTF *hrtf)
 			return MYSOFA_INVALID_FORMAT;
 		if(!compareValues(&hrtf->ListenerPosition,array000,3))
 			return MYSOFA_INVALID_FORMAT;
+#endif
 
 		// TODO: support ECM too
 		if(!verifyAttribute(hrtf->EmitterPosition.attributes,"DIMENSION_LIST","E,C,I"))

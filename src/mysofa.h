@@ -113,10 +113,11 @@ struct MYSOFA_HRTF* mysofa_load(char *filename, int *err);
 
 int mysofa_check(struct MYSOFA_HRTF *hrtf);
 void mysofa_tospherical(struct MYSOFA_HRTF *hrtf);
+void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf);
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
 
 struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf);
-int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
+int mysofa_lookup(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup, double *coordinate);
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
 
 #ifdef __cplusplus

@@ -10,3 +10,7 @@ target_link_libraries (mysofa2json m z)
 add_executable(test_tools test_tools.c tools.c)
 target_link_libraries (test_tools m)
 add_test(tools test_tools)
+
+add_executable(test_sort test_sort.c)
+target_link_libraries (test_sort m mysofa)
+add_test(sort test_sort)

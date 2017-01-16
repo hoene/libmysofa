@@ -44,7 +44,7 @@ void convertCartesianToSpherical(double *values, int elements)
 		x = values[i];
 		y = values[i+1];
 		z = values[i+2];
-		r = sqrt(x*x + y*y + z*z);
+		r = radius(values);
 
 		theta = atan2(z,sqrt(x*x + y*y));
 		phi = atan2(y,x);
@@ -73,6 +73,16 @@ void convertSphericalToCartesian(double *values, int elements)
 	}
 }
 
+double radius(double *cartesian)
+{
+	return sqrt(pow(cartesian[0],2.)+pow(cartesian[1],2.)+pow(cartesian[2],2.));
+}
+
+double distance(double *cartesian1, double *cartesian2)
+{
+	return sqrt(pow(cartesian1[0]-cartesian2[0],2.)+pow(cartesian1[1]-cartesian2[1],2.)+pow(cartesian1[2]-cartesian2[2],2.));
+}
+
 /*
 static int fequalsf(float a, float b)
 {
@@ -89,8 +99,8 @@ int fequals(double a, double b)
  * search of the nearest
  */
 
-void *nsearch(const void *key, const void *base, size_t num, size_t size,
-               int (*cmp)(const void *key, const void *elt))
+void nsearch(const void *key, const void *base, size_t num, size_t size,
+               int (*cmp)(const void *key, const void *elt), int *lower, int *higher)
  {
          size_t start = 0, end = num;
          int result;
@@ -103,14 +113,23 @@ void *nsearch(const void *key, const void *base, size_t num, size_t size,
                          end = mid;
                  else if (result > 0)
                          start = mid + 1;
-                 else
-                         return (void *)base + mid * size;
+                 else {
+                	 *lower=mid;
+                	 *higher=mid;
+                	 return;
+                 }
          }
 
-         if(start==num)
-        	 return (void*)base + (num-1) * size;
-         if(start==end)
-        	 return (void*)base + start * size;
-         printf("start %ld end %ld\n",start,end);
-    return NULL;
+         if(start==num) {
+        	 *lower=start-1;
+        	 *higher=-1;
+         }
+         else if(start==0) {
+        	 *lower=-1;
+        	 *higher=0;
+         }
+         else {
+        	 *lower=start-1;
+        	 *higher=start;
+         }
 }

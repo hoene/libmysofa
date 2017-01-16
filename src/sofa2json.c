@@ -205,6 +205,7 @@ int main(int argc, char **argv) {
 		return err;
 	}
 
+#if 0
     err=mysofa_check(hrtf);
     if(err!=MYSOFA_OK) {
 		fprintf(stderr, "Error verifying file %s. Error code: %d\n", argv[1],
@@ -212,6 +213,7 @@ int main(int argc, char **argv) {
 		return err;
     }
 //    mysofa_tospherical(hrtf);
+#endif
 
 	/*
 	 * The HRTF structure data types

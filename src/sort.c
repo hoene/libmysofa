@@ -110,7 +110,7 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 	 * find smallest and largest radius
 	 */
 		for(i=0;i<hrtf->SourcePosition.elements;i+=3) {
-			double r = sqrt(pow(hrtf->SourcePosition.values[0],2.)+pow(hrtf->SourcePosition.values[1],2.)+pow(hrtf->SourcePosition.values[2],2.));
+			double r = radius(hrtf->SourcePosition.values+i);
 			if(r<lookup->radius_min)
 				lookup->radius_min=r;
 			if(r>lookup->radius_max)
@@ -127,7 +127,7 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 
 	qsort(lookup->sorted, lookup->elements, sizeof(struct MYSOFA_LOOKUP_ENTRY), entry_compare);
 
-	/*
+#if 0
 	for(i=0;i<hrtf->SourcePosition.elements/3;i++)
 		printf("%f %f %f %f\n", hrtf->SourcePosition.values[lookup->sorted[i].index*3],
 				hrtf->SourcePosition.values[lookup->sorted[i].index*3+1],
@@ -136,41 +136,48 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 								hrtf->SourcePosition.values[lookup->sorted[i].index*3+1]+
 								hrtf->SourcePosition.values[lookup->sorted[i].index*3+2]
 		);
-*/
+#endif
 
-	return MYSOFA_OK;
+	return lookup;
 }
 
 /*
  * looks for a filter that is similar to the given coordinate
+ * BE AwARE: The coordinate vector will be normalized
  */
-int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate)
+int mysofa_lookup(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup, double *coordinate)
 {
-	struct MYSOFA_LOOKUP_ENTRY e, *res;
-	double c[3];
+	struct MYSOFA_LOOKUP_ENTRY e;
 
-	double r = sqrt(pow(coordinate[0],2.)+pow(coordinate[1],2.)+pow(coordinate[2],2.));
-	if(r <= lookup->radius_max && r >= lookup->radius_min) {
-		e.value = coordinate2map(lookup, coordinate);
+	double r = radius(coordinate);
+	if(r==0)
+		return -1;
+	if(r > lookup->radius_max) {
+		r = lookup->radius_min / r;
+		coordinate[0] *= r;
+		coordinate[1] *= r;
+		coordinate[2] *= r;
 	}
-	else {
-	/* normalize radius to given radii */
-		if(r==0)
-			return -1;
-		if(r > lookup->radius_max)
-			r = lookup->radius_max / r;
-		else
-			r = lookup->radius_min / r;
-		c[0] = coordinate[0] * r;
-		c[1] = coordinate[1] * r;
-		c[2] = coordinate[2] * r;
-		e.value = coordinate2map(lookup, c);
+	else if(r < lookup->radius_min) {
+		r = lookup->radius_max / r;
+		coordinate[0] *= r;
+		coordinate[1] *= r;
+		coordinate[2] *= r;
 	}
 
+	e.value = coordinate2map(lookup, coordinate);
+	int l,h;
+	nsearch(&e, lookup->sorted, lookup->elements, sizeof(e), entry_compare, &l, &h);
 
-	res=(struct MYSOFA_LOOKUP_ENTRY*)
-			nsearch(&e, lookup->sorted, lookup->elements, sizeof(e), entry_compare);
-	return res->index;
+	double r1=DBL_MAX,r2=DBL_MAX;
+	if(l>=0)
+		r1 = distance(coordinate, hrtf->SourcePosition.values+ lookup->sorted[l].index*3);
+	if(l!=h && h>=0)
+		r2 = distance(coordinate, hrtf->SourcePosition.values + lookup->sorted[h].index*3);
+	if(r1 < r2)
+		return lookup->sorted[l].index*3;
+	else
+		return lookup->sorted[h].index*3;
 }
 
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup)

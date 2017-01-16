@@ -74,7 +74,7 @@ static int cmp(const void *key, const void *elt)
 void test_nsearch()
 {
 	int array[] = { 10, 20, 30, 40, 50 };
-	int *res;
+	int l,h;
 	int key;
 
 	assert(cmp(array,array+1)<0);
@@ -83,36 +83,36 @@ void test_nsearch()
 
 
 	key=10;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==0 && h==0);
 
 	key=20;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array+1);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==1 && h==1);
 
 	key=50;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array+4);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==4 && h==4);
 
 	key=0;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l<0 && h==0);
 
 	key=60;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array+4);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==4 && h<0);
 
 	key=11;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array+1);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==0 && h==1);
 
 	key=41;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array+4);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==3 && h==4);
 
 	key=19;
-	res=nsearch(&key, array, 5, sizeof(int), cmp);
-	assert(res==array+1);
+	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
+	assert(l==0 && h==1);
 }
 
 int main()
