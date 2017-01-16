@@ -147,7 +147,27 @@ struct MYSOFA_LOOKUP* mysofa_sort(struct MYSOFA_HRTF *hrtf)
 int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate)
 {
 	struct MYSOFA_LOOKUP_ENTRY e, *res;
-	e.value = coordinate2map(lookup, coordinate);
+	double c[3];
+
+	double r = sqrt(pow(coordinate[0],2.)+pow(coordinate[1],2.)+pow(coordinate[2],2.));
+	if(r <= lookup->radius_max && r >= lookup->radius_min) {
+		e.value = coordinate2map(lookup, coordinate);
+	}
+	else {
+	/* normalize radius to given radii */
+		if(r==0)
+			return -1;
+		if(r > lookup->radius_max)
+			r = lookup->radius_max / r;
+		else
+			r = lookup->radius_min / r;
+		c[0] = coordinate[0] * r;
+		c[1] = coordinate[1] * r;
+		c[2] = coordinate[2] * r;
+		e.value = coordinate2map(lookup, c);
+	}
+
+
 	res=(struct MYSOFA_LOOKUP_ENTRY*)
 			nsearch(&e, lookup->sorted, lookup->elements, sizeof(e), entry_compare);
 	return res->index;

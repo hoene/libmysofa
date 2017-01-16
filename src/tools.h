@@ -15,6 +15,7 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value, char
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value);
 
 void convertCartesianToSpherical(double *values, int elements);
+void convertSphericalToCartesian(double *values, int elements);
 int fequalsf(float a, float b);
 int fequals(double a, double b);
 
