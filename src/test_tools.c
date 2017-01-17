@@ -58,6 +58,8 @@ void test_coordinates()
 	assert(same(array9001,result));
 	convertSphericalToCartesian(result,3);
 	assert(same(array010,result));
+
+
 }
 
 static int cmp(const void *key, const void *elt)

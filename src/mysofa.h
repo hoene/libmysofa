@@ -82,8 +82,13 @@ struct MYSOFA_HRTF {
 /* structure for lookup HRTF filters */
 struct MYSOFA_LOOKUP {
 	void *kdtree;
-	struct MYSOFA_HRTF *hrtf;
 	double radius_min, radius_max;
+};
+
+struct MYSOFA_NEIGHBORHOOD {
+	int elements;
+	int neighbors;
+	int *index;
 };
 
 enum {
@@ -105,6 +110,11 @@ void mysofa_free(struct MYSOFA_HRTF *hrtf);
 struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf);
 double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
+
+struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup, int neighbors);
+int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos);
+void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
+
 
 #ifdef __cplusplus
 }
