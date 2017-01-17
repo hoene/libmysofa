@@ -16,7 +16,7 @@ int main()
 	struct timeval r1, r2;
 	double duration1, duration2;
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
+	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", &err);
 
 	if (!hrtf) {
 		fprintf(stderr, "Error reading file. Error code: %d\n",

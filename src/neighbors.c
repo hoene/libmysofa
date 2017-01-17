@@ -37,7 +37,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 		memcpy(origin,hrtf->SourcePosition.values+i,sizeof(double)*3);
 		convertCartesianToSpherical(origin,3);
 
-		printf("\norigin %f %f %f\n",origin[0],origin[1],origin[2]);
+		printf("\norigin %f %f %f %d\n",origin[0],origin[1],origin[2],i);
 		double phi = 0.5;
 		do {
 			test[0] = origin[0] + phi;
@@ -47,11 +47,11 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+0] = res - hrtf->SourcePosition.values;
-				printf("up %d %d %f\n",i,i-neighbor->index[i*2+0],phi);
+				printf("right %d %d %f\n",neighbor->index[i*2+0],i-neighbor->index[i*2+0],phi);
 				break;
 			}
-			phi *= 2;
-		}while(phi <= 64);
+			phi += 0.5;
+		}while(phi <= 45);
 
 		phi = 0.5;
 		do {
@@ -62,11 +62,11 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+1] = res - hrtf->SourcePosition.values;
-				printf("down %d %d %f\n",i,i-neighbor->index[i*2+1],-phi);
+				printf("left %d %d %f\n",neighbor->index[i*2+1],i-neighbor->index[i*2+1],-phi);
 				break;
 			}
-			phi *= 2;
-		}while(phi <= 64);
+			phi += 0.5;
+		}while(phi <= 45);
 
 		double theta = 0.5;
 		do {
@@ -77,11 +77,11 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+2] = res - hrtf->SourcePosition.values;
-				printf("right %d %d %f\n",i,i-neighbor->index[i*2+2],theta);
+				printf("up %d %d %f\n",neighbor->index[i*2+2],i-neighbor->index[i*2+2],theta);
 				break;
 			}
-			theta *= 2;
-		}while(theta <= 64);
+			theta += 0.5;
+		}while(theta <= 45);
 
 		theta = 0.5;
 		do {
@@ -92,11 +92,11 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+3] = res - hrtf->SourcePosition.values;
-				printf("left %d %d %f\n",i,i-neighbor->index[i*2+3],-theta);
+				printf("down %d %d %f\n",neighbor->index[i*2+3],i-neighbor->index[i*2+3],-theta);
 				break;
 			}
-			theta *= 2;
-		}while(theta <= 64);
+			theta += 0.5;
+		}while(theta <= 45);
 
 		double radius = 0.1, radius2;
 		do {
