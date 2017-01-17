@@ -169,15 +169,27 @@ int mysofa_lookup(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup, double
 	int l,h;
 	nsearch(&e, lookup->sorted, lookup->elements, sizeof(e), entry_compare, &l, &h);
 
-	double r1=DBL_MAX,r2=DBL_MAX;
-	if(l>=0)
-		r1 = distance(coordinate, hrtf->SourcePosition.values+ lookup->sorted[l].index*3);
-	if(l!=h && h>=0)
-		r2 = distance(coordinate, hrtf->SourcePosition.values + lookup->sorted[h].index*3);
-	if(r1 < r2)
-		return lookup->sorted[l].index*3;
-	else
-		return lookup->sorted[h].index*3;
+	int index=0,i;
+	double minr=DBL_MAX;
+	if(l>=0) {
+		for(i=l;i>=0 && i>l-8;i--) {
+			r = distance(coordinate, hrtf->SourcePosition.values + lookup->sorted[i].index*3);
+			if(r<minr) {
+				index=i;
+				minr=r;
+			}
+		}
+	}
+	if(h>=0) {
+		for(i=h;i<lookup->elements && i<h+1;i++) {
+			r = distance(coordinate, hrtf->SourcePosition.values + lookup->sorted[i].index*3);
+			if(r<minr) {
+				index=i;
+				minr=r;
+			}
+		}
+	}
+	return lookup->sorted[index].index*3;
 }
 
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup)

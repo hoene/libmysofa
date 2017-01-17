@@ -48,10 +48,12 @@ int main()
 
     double find[3];
     int j;
-    for(j=0;j<10;j++) {
+    for(j=0;j<100;j++) {
     	find[0] = rand() * (4. / RAND_MAX) - 2;
     	find[1] = rand() * (4. / RAND_MAX) - 2;
     	find[2] = rand() * (4. / RAND_MAX) - 2;
+
+		int lk=mysofa_lookup(hrtf, lookup,find);
 
     	int index = -1;
     	double dmin = DBL_MAX;
@@ -63,10 +65,10 @@ int main()
 				index = i;
 			}
 		}
-		printf("O(n): %f %f %f -> %d %f\n",find[0],find[1],find[2],index,dmin);
-
-		index=mysofa_lookup(hrtf, lookup,find);
-		printf("O(log n) %f %f %f -> %d\n",find[0],find[1],find[2],index);
+		if(lk!=index) {
+			printf("O(log n) %f %f %f -> %d %f\t\t",find[0],find[1],find[2],lk,distance(find,hrtf->SourcePosition.values+lk));
+			printf("O(n): %f %f %f -> %d %f\n",find[0],find[1],find[2],index,dmin);
+		}
     }
 
     mysofa_lookup_free(lookup);
