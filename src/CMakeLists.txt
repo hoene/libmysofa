@@ -1,5 +1,5 @@
-add_library(mysofa mysofa.c superblock.c dataobject.c btree.c fractalhead.c gunzip.c gcol.c check.c spherical.c lookup.c tools.c kdtree.c neighbors.c interpolate.c)
-target_link_libraries (mysofa m z)
+add_library(mysofa mysofa.c superblock.c dataobject.c btree.c fractalhead.c gunzip.c gcol.c check.c spherical.c lookup.c tools.c kdtree.c neighbors.c interpolate.c resample.c)
+target_link_libraries (mysofa m z resample)
 
 #add_executable(../mysofa2json sofa2json.c)
 #target_link_libraries (../mysofa2json ../mysofa)
@@ -22,3 +22,8 @@ add_test(sort test_neighbors)
 add_executable(test_interpolate test_interpolate.c)
 target_link_libraries (test_interpolate m mysofa)
 add_test(sort test_interpolate)
+
+add_executable(test_resample test_resample.c)
+target_link_libraries (test_resample mysofa)
+add_test(sort test_resample)
+

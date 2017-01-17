@@ -116,6 +116,8 @@ void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
 
 double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate, int nearest, int *neighborhood, double *fir, double *delays);
 
+int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate);
+
 #ifdef __cplusplus
 }
 #endif
