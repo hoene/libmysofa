@@ -3,6 +3,8 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "tools.h"
 
 
@@ -10,6 +12,8 @@ int main()
 {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
+	struct timeval r1, r2;
+	double duration1, duration2;
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 
@@ -35,26 +39,28 @@ int main()
 		return err;
     }
 
-    struct MYSOFA_LOOKUP *lookup = mysofa_sort(hrtf);
+    struct MYSOFA_LOOKUP *lookup = mysofa_lookup_init(hrtf);
     if(lookup==NULL) {
 		fprintf(stderr, "Error sorting HRTF.");
 		return MYSOFA_INTERNAL_ERROR;
     }
 
-    printf("c0 %f %f\n",lookup->c0_min,lookup->c0_max);
-    printf("c1 %f %f\n",lookup->c1_min,lookup->c1_max);
-    printf("c2 %f %f\n",lookup->c2_min,lookup->c2_max);
     printf("r  %f %f\n",lookup->radius_min,lookup->radius_max);
 
     double find[3];
     int j;
-    for(j=0;j<100;j++) {
+    for(j=0;j<10000;j++) {
     	find[0] = rand() * (4. / RAND_MAX) - 2;
     	find[1] = rand() * (4. / RAND_MAX) - 2;
     	find[2] = rand() * (4. / RAND_MAX) - 2;
 
-		int lk=mysofa_lookup(hrtf, lookup,find);
+    	gettimeofday(&r1,NULL);
+		int lk=mysofa_lookup(lookup,find)-hrtf->SourcePosition.values;
+		gettimeofday(&r2,NULL);
+		duration1=(r2.tv_sec-r1.tv_sec)*1000000.+(r2.tv_usec-r1.tv_usec);
 
+
+    	gettimeofday(&r1,NULL);
     	int index = -1;
     	double dmin = DBL_MAX;
     	int i;
@@ -65,10 +71,12 @@ int main()
 				index = i;
 			}
 		}
-		if(lk!=index) {
-			printf("O(log n) %f %f %f -> %d %f\t\t",find[0],find[1],find[2],lk,distance(find,hrtf->SourcePosition.values+lk));
-			printf("O(n): %f %f %f -> %d %f\n",find[0],find[1],find[2],index,dmin);
-		}
+		gettimeofday(&r2,NULL);
+		duration2=(r2.tv_sec-r1.tv_sec)*1000000.+(r2.tv_usec-r1.tv_usec);
+
+		printf("O(log n) %f %f %f -> %d %f \t\t",find[0],find[1],find[2],lk,distance(find,hrtf->SourcePosition.values+lk));
+		printf("O(n): %f %f %f -> %d %f\t%f%%\n",find[0],find[1],find[2],index,dmin,duration1/duration2*100);
+		assert(lk==index);
     }
 
     mysofa_lookup_free(lookup);

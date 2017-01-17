@@ -255,7 +255,7 @@ int main(int argc, char **argv) {
     printf(" }\n}\n");
 
 
-    mysofa_sort(hrtf);
+//    mysofa_sort(hrtf);
 
     mysofa_free(hrtf);
 
