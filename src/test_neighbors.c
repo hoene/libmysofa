@@ -13,8 +13,6 @@ int main()
 {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
-	struct timeval r1, r2;
-	double duration1, duration2;
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", &err);
 
@@ -39,7 +37,36 @@ int main()
 		return MYSOFA_INTERNAL_ERROR;
     }
 
-    struct MYSOFA_NEIGHBORHOOD *neighborhood = mysofa_neighborhood_init(hrtf,lookup,6);
+    struct MYSOFA_NEIGHBORHOOD *neighborhood = mysofa_neighborhood_init(hrtf,lookup);
+    int i, j, *res;
+    double c[3];
+    const char *dir="RLUDFB";
+
+	for(i=0;i<hrtf->SourcePosition.elements;i+=3) {
+		memcpy(c,hrtf->SourcePosition.values+i,sizeof(double)*3);
+				convertCartesianToSpherical(c,3);
+		printf("%4.0f %4.0f %5.2f\t",c[0],c[1],c[2]);
+
+		res=mysofa_neighborhood(neighborhood,i);
+		for(j=0;j<6;j++) {
+			if(res[j]>=0) {
+				memcpy(c,hrtf->SourcePosition.values+res[j],sizeof(double)*3);
+					convertCartesianToSpherical(c,3);
+					printf("\t%c %4.0f %4.0f %5.2f",dir[j],c[0],c[1],c[2]);
+			}
+		}
+		printf("\n");
+#if 0
+
+
+	memcpy(test,res,sizeof(double)*3);
+	convertCartesianToSpherical(test,3);
+	printf("right %3d\t%f %f %f %f\n",res - hrtf->SourcePosition.values,test[0],test[1],test[2],phi);
+#endif
+	}
+
+
+
     mysofa_neighborhood_free(neighborhood);
 
     mysofa_lookup_free(lookup);

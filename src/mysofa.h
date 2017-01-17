@@ -87,7 +87,6 @@ struct MYSOFA_LOOKUP {
 
 struct MYSOFA_NEIGHBORHOOD {
 	int elements;
-	int neighbors;
 	int *index;
 };
 
@@ -111,10 +110,11 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf);
 double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
 
-struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup, int neighbors);
+struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup);
 int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos);
 void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
 
+double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate, int nearest, int *neighborhood, double *fir, double *delays);
 
 #ifdef __cplusplus
 }
