@@ -11,30 +11,6 @@
 #include "mysofa.h"
 #include "tools.h"
 
-static void copyArrayWeighted(double *dst, double *src, int size, double w)
-{
-	while(size>0) {
-		*dst++ = *src++ * w;
-		size--;
-	}
-}
-
-static void addArrayWeighted(double *dst, double *src, int size, double w)
-{
-	while(size>0) {
-		*dst++ += *src++ * w;
-		size--;
-	}
-}
-
-static void scaleArray(double *dst, int size, double w)
-{
-	while(size>0) {
-		*dst++ *= w;
-		size--;
-	}
-}
-
 double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate, int nearest, int *neighborhood, double *fir, double *delays)
 {
 	int i,use[6];

@@ -133,3 +133,44 @@ void nsearch(const void *key, const void *base, size_t num, size_t size,
         	 *higher=start;
          }
 }
+
+
+void copyToFloat(float *out, double *in, int size)
+{
+	while(size>0) {
+		*out++ = *in++;
+		size--;
+	}
+}
+
+void copyFromFloat(double *out, float *in, int size)
+{
+	while(size>0) {
+		*out++ = *in++;
+		size--;
+	}
+}
+
+void copyArrayWeighted(double *dst, double *src, int size, double w)
+{
+	while(size>0) {
+		*dst++ = *src++ * w;
+		size--;
+	}
+}
+
+void addArrayWeighted(double *dst, double *src, int size, double w)
+{
+	while(size>0) {
+		*dst++ += *src++ * w;
+		size--;
+	}
+}
+
+void scaleArray(double *dst, int size, double w)
+{
+	while(size>0) {
+		*dst++ *= w;
+		size--;
+	}
+}

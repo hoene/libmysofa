@@ -14,22 +14,6 @@
 #include "mysofa.h"
 #include "tools.h"
 
-static void copyToFloat(float *out, double *in, int size)
-{
-	while(size>0) {
-		*out++ = *in++;
-		size--;
-	}
-}
-
-static void copyFromFloat(double *out, float *in, int size)
-{
-	while(size>0) {
-		*out++ = *in++;
-		size--;
-	}
-}
-
 int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate)
 {
 	int i, res;

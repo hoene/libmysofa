@@ -118,6 +118,8 @@ double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate, int near
 
 int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate);
 
+double mysofa_loudness(struct MYSOFA_HRTF *hrtf);
+
 #ifdef __cplusplus
 }
 #endif
