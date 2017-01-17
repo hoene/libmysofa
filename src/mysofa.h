@@ -79,6 +79,17 @@ struct MYSOFA_HRTF {
 	struct MYSOFA_ATTRIBUTE *attributes;
 };
 
+/* structure for lookup HRTF filters */
+struct MYSOFA_LOOKUP {
+	void *kdtree;
+	double radius_min, radius_max;
+};
+
+struct MYSOFA_NEIGHBORHOOD {
+	int elements;
+	int *index;
+};
+
 enum {
 	MYSOFA_OK = 0,
 	MYSOFA_INVALID_FORMAT = 10000,
@@ -89,11 +100,27 @@ enum {
 };
 
 struct MYSOFA_HRTF* mysofa_load(char *filename, int *err);
+
+int mysofa_check(struct MYSOFA_HRTF *hrtf);
+void mysofa_tospherical(struct MYSOFA_HRTF *hrtf);
+void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf);
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
+
+struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf);
+double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
+void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
+
+struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup);
+int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos);
+void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
+
+double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate, int nearest, int *neighborhood, double *fir, double *delays);
+
+int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate);
+double mysofa_loudness(struct MYSOFA_HRTF *hrtf);
+int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold);
 
 #ifdef __cplusplus
 }
 #endif
 #endif
-
-
