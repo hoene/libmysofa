@@ -42,43 +42,6 @@ int main()
     struct MYSOFA_NEIGHBORHOOD *neighborhood = mysofa_neighborhood_init(hrtf,lookup,6);
     mysofa_neighborhood_free(neighborhood);
 
-#if 0
-    printf("r  %f %f\n",lookup->radius_min,lookup->radius_max);
-
-
-    double find[3];
-    int j;
-    for(j=0;j<10000;j++) {
-    	find[0] = rand() * (4. / RAND_MAX) - 2;
-    	find[1] = rand() * (4. / RAND_MAX) - 2;
-    	find[2] = rand() * (4. / RAND_MAX) - 2;
-
-    	gettimeofday(&r1,NULL);
-		int lk=mysofa_lookup(lookup,find)-hrtf->SourcePosition.values;
-		gettimeofday(&r2,NULL);
-		duration1=(r2.tv_sec-r1.tv_sec)*1000000.+(r2.tv_usec-r1.tv_usec);
-
-
-    	gettimeofday(&r1,NULL);
-    	int index = -1;
-    	double dmin = DBL_MAX;
-    	int i;
-		for(i=0;i<hrtf->SourcePosition.elements;i+=3) {
-			double r = distance(find,hrtf->SourcePosition.values+i);
-			if(r<dmin) {
-				dmin=r;
-				index = i;
-			}
-		}
-		gettimeofday(&r2,NULL);
-		duration2=(r2.tv_sec-r1.tv_sec)*1000000.+(r2.tv_usec-r1.tv_usec);
-
-		printf("O(log n) %f %f %f -> %d %f \t\t",find[0],find[1],find[2],lk,distance(find,hrtf->SourcePosition.values+lk));
-		printf("O(n): %f %f %f -> %d %f\t%f%%\n",find[0],find[1],find[2],index,dmin,duration1/duration2*100);
-		assert(lk==index);
-    }
-#endif
-
     mysofa_lookup_free(lookup);
     mysofa_free(hrtf);
 	return 0;

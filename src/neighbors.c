@@ -47,7 +47,9 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+0] = res - hrtf->SourcePosition.values;
-				printf("right %d %d %f\n",neighbor->index[i*2+0],i-neighbor->index[i*2+0],phi);
+				memcpy(test,res,sizeof(double)*3);
+				convertCartesianToSpherical(test,3);
+				printf("right %3d\t%f %f %f %f\n",res - hrtf->SourcePosition.values,test[0],test[1],test[2],phi);
 				break;
 			}
 			phi += 0.5;
@@ -62,7 +64,9 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+1] = res - hrtf->SourcePosition.values;
-				printf("left %d %d %f\n",neighbor->index[i*2+1],i-neighbor->index[i*2+1],-phi);
+				memcpy(test,res,sizeof(double)*3);
+				convertCartesianToSpherical(test,3);
+				printf("left %3d\t%f %f %f %f\n",res - hrtf->SourcePosition.values,test[0],test[1],test[2],phi);
 				break;
 			}
 			phi += 0.5;
@@ -77,7 +81,9 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+2] = res - hrtf->SourcePosition.values;
-				printf("up %d %d %f\n",neighbor->index[i*2+2],i-neighbor->index[i*2+2],theta);
+				memcpy(test,res,sizeof(double)*3);
+				convertCartesianToSpherical(test,3);
+				printf("up   %3d\t%f %f %f %f\n",res - hrtf->SourcePosition.values,test[0],test[1],test[2],phi);
 				break;
 			}
 			theta += 0.5;
@@ -92,7 +98,9 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf, s
 			res = mysofa_lookup(lookup,test);
 			if(res - hrtf->SourcePosition.values != i) {
 				neighbor->index[i*2+3] = res - hrtf->SourcePosition.values;
-				printf("down %d %d %f\n",neighbor->index[i*2+3],i-neighbor->index[i*2+3],-theta);
+				memcpy(test,res,sizeof(double)*3);
+				convertCartesianToSpherical(test,3);
+				printf("down %3d\t%f %f %f %f\n",res - hrtf->SourcePosition.values,test[0],test[1],test[2],phi);
 				break;
 			}
 			theta += 0.5;
