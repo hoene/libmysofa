@@ -174,3 +174,14 @@ void scaleArray(double *dst, int size, double w)
 		size--;
 	}
 }
+double loudness(double *in, int size)
+{
+	double res=0;
+	while(size>0) {
+		res += *in * *in;
+		in++;
+		size--;
+	}
+	return res;
+}
+
