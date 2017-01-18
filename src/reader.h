@@ -1,21 +1,20 @@
 /*
 
-   Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
-*/
-
+ */
 
 #ifndef READER_H_
 #define READER_H_
@@ -59,10 +58,10 @@ struct GCOL {
 	uint16_t heap_object_index;
 	uint64_t object_size;
 
-    uint64_t address;
-    
-    uint64_t value;
-    
+	uint64_t address;
+
+	uint64_t value;
+
 	struct GCOL *next;
 };
 
@@ -80,7 +79,8 @@ struct FRACTALHEAP {
 	uint8_t *filter_information;
 };
 
-int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject, struct FRACTALHEAP *fractalheap);
+int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
+		struct FRACTALHEAP *fractalheap);
 void fractalheapFree(struct FRACTALHEAP *fractalheap);
 
 struct LINKINFO {
@@ -112,11 +112,12 @@ struct DATATYPE {
 
 	union {
 		struct {
-				uint16_t bit_offset, bit_precision;
+			uint16_t bit_offset, bit_precision;
 		} i;
 		struct {
 			uint16_t bit_offset, bit_precision;
-			uint8_t exponent_location, exponent_size, mantissa_location, mantissa_size;
+			uint8_t exponent_location, exponent_size, mantissa_location,
+					mantissa_size;
 			uint32_t exponent_bias;
 		} f;
 	};
@@ -127,7 +128,7 @@ struct DATATYPE {
 struct DATAOBJECT {
 	char *name;
 
-    uint64_t address;
+	uint64_t address;
 	uint8_t flags;
 
 	struct DATATYPE dt;
@@ -143,20 +144,21 @@ struct DATAOBJECT {
 
 	int datalayout_chunk[4];
 
-    struct MYSOFA_ATTRIBUTE *attributes;
-    struct DIR *directory;
-    
-    void *data;
-    int data_len;
+	struct MYSOFA_ATTRIBUTE *attributes;
+	struct DIR *directory;
 
-    char *string;
-    
-    /* list of all current data objects */    
-    struct DATAOBJECT *all;
-	
+	void *data;
+	int data_len;
+
+	char *string;
+
+	/* list of all current data objects */
+	struct DATAOBJECT *all;
+
 };
 
-int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject, char *name);
+int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
+		char *name);
 void dataobjectFree(struct READER *reader, struct DATAOBJECT *dataobject);
 
 struct DIR {
@@ -164,8 +166,6 @@ struct DIR {
 
 	struct DATAOBJECT dataobject;
 };
-
-
 
 struct SUPERBLOCK {
 	uint8_t size_of_offsets;
@@ -180,27 +180,25 @@ struct SUPERBLOCK {
 int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock);
 void superblockFree(struct READER *reader, struct SUPERBLOCK *superblock);
 
-int gcolRead(struct READER *reader, uint64_t gcol, int reference, uint64_t *dataobject);
+int gcolRead(struct READER *reader, uint64_t gcol, int reference,
+		uint64_t *dataobject);
 void gcolFree(struct GCOL *gcol);
 
 int treeRead(struct READER *reader, struct DATAOBJECT *data);
 
-
-
 struct READER {
 	FILE *fhd;
 
-    struct DATAOBJECT *all;
+	struct DATAOBJECT *all;
 
 	struct SUPERBLOCK superblock;
-	
-	struct GCOL *gcol;	
+
+	struct GCOL *gcol;
 };
 
 int validAddress(struct READER *reader, uint64_t address);
 uint64_t readValue(struct READER *reader, int size);
 
 int gunzip(int inlen, char *in, int *outlen, char *out);
-
 
 #endif /* READER_H_ */

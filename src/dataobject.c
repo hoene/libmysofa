@@ -1,20 +1,20 @@
 /*
 
-   Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
-*/
+ */
 
 /* IV.A.1.b. Version 2 Data Object Header Prefix
 
@@ -36,15 +36,14 @@
 static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
 		uint64_t end);
 
-static struct DATAOBJECT *findDataobject(struct READER *reader, uint64_t address)
-{
-    struct DATAOBJECT *p = reader->all;
-    while(p && p->address != address)
-        p=p->all;
-        
-    return p;
-}
+static struct DATAOBJECT *findDataobject(struct READER *reader,
+		uint64_t address) {
+	struct DATAOBJECT *p = reader->all;
+	while (p && p->address != address)
+		p = p->all;
 
+	return p;
+}
 
 /*
  * IV.A.2.a. The NIL Message
@@ -58,9 +57,9 @@ static struct DATAOBJECT *findDataobject(struct READER *reader, uint64_t address
 
 static int readOHDRHeaderMessageNIL(struct READER *reader, int length) {
 
-	if(fseek(reader->fhd, length, SEEK_CUR))
-	    return errno;
-    
+	if (fseek(reader->fhd, length, SEEK_CUR))
+		return errno;
+
 	return MYSOFA_OK;
 }
 
@@ -144,7 +143,6 @@ static int readOHDRHeaderMessageLinkInfo(struct READER *reader,
 	return MYSOFA_OK;
 }
 
-
 /*
  * IV.A.2.d. The Datatype Message
 
@@ -158,7 +156,7 @@ static int readOHDRHeaderMessageLinkInfo(struct READER *reader,
 static int readOHDRHeaderMessageDatatype(struct READER *reader,
 		struct DATATYPE *dt) {
 
-	int i, j, c,err;
+	int i, j, c, err;
 	char *buffer, *p;
 	struct DATATYPE dt2;
 
@@ -193,14 +191,23 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 				dt->f.bit_offset, dt->f.bit_precision, dt->f.exponent_location,
 				dt->f.exponent_size, dt->f.mantissa_location,
 				dt->f.mantissa_size, dt->f.exponent_bias);
-				
-/* FLOAT bit 0 32 exponent 23 8 MANTISSA 0 23 OFFSET 127    				
-   FLOAT bit 0 64 exponent 52 11 MANTISSA 0 52 OFFSET 1023 */
-   
-        if(dt->f.bit_offset!= 0 || dt->f.mantissa_location!=0 || (dt->f.bit_precision != 32 && dt->f.bit_precision != 64) ||
-            (dt->f.bit_precision==32 && (dt->f.exponent_location != 23 || dt->f.exponent_size != 8 || dt->f.mantissa_size!=23 || dt->f.exponent_bias!=127)) ||
-            (dt->f.bit_precision==64 && (dt->f.exponent_location != 52 || dt->f.exponent_size != 11 || dt->f.mantissa_size!=52 || dt->f.exponent_bias!=1023)))
-            return MYSOFA_UNSUPPORTED_FORMAT;
+
+		/* FLOAT bit 0 32 exponent 23 8 MANTISSA 0 23 OFFSET 127    				
+		 FLOAT bit 0 64 exponent 52 11 MANTISSA 0 52 OFFSET 1023 */
+
+		if (dt->f.bit_offset != 0 || dt->f.mantissa_location != 0
+				|| (dt->f.bit_precision != 32 && dt->f.bit_precision != 64)
+				|| (dt->f.bit_precision == 32
+						&& (dt->f.exponent_location != 23
+								|| dt->f.exponent_size != 8
+								|| dt->f.mantissa_size != 23
+								|| dt->f.exponent_bias != 127))
+				|| (dt->f.bit_precision == 64
+						&& (dt->f.exponent_location != 52
+								|| dt->f.exponent_size != 11
+								|| dt->f.mantissa_size != 52
+								|| dt->f.exponent_bias != 1023)))
+			return MYSOFA_UNSUPPORTED_FORMAT;
 		break;
 
 	case 3: /* string */
@@ -220,12 +227,12 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 			do {
 				if (j > 64) {
 					p = realloc(buffer, j);
-					if(!p) {
-					    free(buffer);
-					    return err;
+					if (!p) {
+						free(buffer);
+						return err;
 					}
 					buffer = p;
-			    }
+				}
 				c = fgetc(reader->fhd);
 				buffer[j] = c;
 				j++;
@@ -233,12 +240,11 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 
 			for (j = 0, c = 0; (dt->size >> (8 * j)) > 0; j++) {
 				c |= fgetc(reader->fhd) << (8 * j);
-			}
-			log("   COMPONENT %s offset %d\n", buffer, c);
+			} log("   COMPONENT %s offset %d\n", buffer, c);
 			free(buffer);
-			err=readOHDRHeaderMessageDatatype(reader, &dt2);
-			if(err)
-			    return err;
+			err = readOHDRHeaderMessageDatatype(reader, &dt2);
+			if (err)
+				return err;
 		}
 		break;
 
@@ -249,9 +255,9 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 	case 9: /* list */
 		dt->list = dt->size;
 		log("  LIST %d\n", dt->size);
-		err=readOHDRHeaderMessageDatatype(reader, dt);
-		if(err)
-		    return err;
+		err = readOHDRHeaderMessageDatatype(reader, dt);
+		if (err)
+			return err;
 		break;
 
 	default:
@@ -288,8 +294,8 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 
 	if (flags & (1 << 5)) {
 		size = readValue(reader, 4);
-		if(fseek(reader->fhd, size, SEEK_CUR))
-		    return errno;
+		if (fseek(reader->fhd, size, SEEK_CUR))
+			return errno;
 	}
 
 	return MYSOFA_OK;
@@ -314,7 +320,8 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 
  */
 
-static int readOHDRHeaderMessageDataLayout(struct READER *reader, struct DATAOBJECT *data) {
+static int readOHDRHeaderMessageDataLayout(struct READER *reader,
+		struct DATAOBJECT *data) {
 
 	int i, err;
 	unsigned size;
@@ -323,9 +330,9 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader, struct DATAOBJ
 	uint32_t dataset_element_size;
 	uint64_t data_address, store, data_size;
 
-    UNUSED(dataset_element_size);
-    UNUSED(data_size);
-    
+	UNUSED(dataset_element_size);
+	UNUSED(data_size);
+
 	if (fgetc(reader->fhd) != 3) {
 		log("object OHDR message data layout message must have version 3\n");
 		return MYSOFA_INVALID_FORMAT;
@@ -336,10 +343,10 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader, struct DATAOBJ
 	switch (layout_class) {
 #if 0
 	case 0:
-		data_size = readValue(reader, 2);
-		fseeko(reader->fhd, data_size, SEEK_CUR);
-		log("TODO 0 SIZE %u\n", data_size);
-		break;
+	data_size = readValue(reader, 2);
+	fseeko(reader->fhd, data_size, SEEK_CUR);
+	log("TODO 0 SIZE %u\n", data_size);
+	break;
 #endif
 	case 1:
 		data_address = readValue(reader, reader->superblock.size_of_offsets);
@@ -356,27 +363,27 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader, struct DATAOBJ
 			log(" %d\n", data->datalayout_chunk[i]);
 		}
 		/* TODO last entry? error in spec: ?*/
-		
-		size = data->datalayout_chunk[dimensionality-1];
-		for(i = 0; i < data->ds.dimensionality;i++)
-		    size *= data->ds.dimension_size[i];
+
+		size = data->datalayout_chunk[dimensionality - 1];
+		for (i = 0; i < data->ds.dimensionality; i++)
+			size *= data->ds.dimension_size[i];
 
 		if (validAddress(reader, data_address)) {
 			store = ftello(reader->fhd);
-			if(fseeko(reader->fhd, data_address, SEEK_SET))
-			    return errno;
-			if(!data->data) {
-        		data->data_len = size;
-        		data->data = malloc(size);
+			if (fseeko(reader->fhd, data_address, SEEK_SET))
+				return errno;
+			if (!data->data) {
+				data->data_len = size;
+				data->data = malloc(size);
 //        		memset(data->data,-1,size);
-        		if(!data->data)
-        		    return MYSOFA_NO_MEMORY;
-            }
-			err=treeRead(reader, data);
-			if(err)
-			    return err;
-			if(fseeko(reader->fhd, store, SEEK_SET))
-			    return errno;
+				if (!data->data)
+					return MYSOFA_NO_MEMORY;
+			}
+			err = treeRead(reader, data);
+			if (err)
+				return err;
+			if (fseeko(reader->fhd, store, SEEK_SET))
+				return errno;
 		}
 		break;
 
@@ -435,13 +442,13 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
 	uint64_t maximum_compact_value, minimum_dense_value, number_of_entries,
 			length_of_entries;
 
-    UNUSED(flags);
-    UNUSED(client_data);
-    UNUSED(maximum_compact_value);
-    UNUSED(minimum_dense_value);
-    UNUSED(number_of_entries);
-    UNUSED(length_of_entries);
-    
+	UNUSED(flags);
+	UNUSED(client_data);
+	UNUSED(maximum_compact_value);
+	UNUSED(minimum_dense_value);
+	UNUSED(number_of_entries);
+	UNUSED(length_of_entries);
+
 	if (fgetc(reader->fhd) != 2) {
 		log("object OHDR filter pipeline message must have version 1\n");
 		return MYSOFA_INVALID_FORMAT;
@@ -465,8 +472,7 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
 					"object OHDR filter pipeline message contains unsupported filter: %d\n",
 					filter_identification_value);
 			return MYSOFA_INVALID_FORMAT;
-		}
-		log("  filter %d\n", filter_identification_value);
+		} log("  filter %d\n", filter_identification_value);
 		flags = readValue(reader, 2);
 		number_client_data_values = readValue(reader, 2);
 		/* no name here */
@@ -479,25 +485,23 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
 	return MYSOFA_OK;
 }
 
-int readDataVar(struct READER *reader, struct DATAOBJECT *data, struct DATATYPE *dt,
-		struct DATASPACE *ds) {
+int readDataVar(struct READER *reader, struct DATAOBJECT *data,
+		struct DATATYPE *dt, struct DATASPACE *ds) {
 
 	char *buffer, number[16];
 	uint64_t reference, gcol, dataobject;
 	int err;
 	struct DATAOBJECT *referenceData;
-	
+
 	if (dt->list) {
-	    if(dt->list - dt->size == 8) {
-	        readValue(reader, 4);       // TODO unknown?
-    	    gcol = readValue(reader, 4);
-    	}
-    	else {
-    	    gcol = readValue(reader, dt->list - dt->size);
-    	}
-	    log("    GCOL %d %8lX %8lX\n",dt->list - dt->size,gcol,ftello(reader->fhd));
+		if (dt->list - dt->size == 8) {
+			readValue(reader, 4);       // TODO unknown?
+			gcol = readValue(reader, 4);
+		} else {
+			gcol = readValue(reader, dt->list - dt->size);
+		} log("    GCOL %d %8lX %8lX\n",dt->list - dt->size,gcol,ftello(reader->fhd));
 //		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); // TODO: missing part in specification
-    }
+	}
 
 	switch (dt->class_and_version & 0xf) {
 	case 3:
@@ -522,41 +526,41 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data, struct DATATYPE 
 		 000036f0  00 00 00
 		 */
 	case 6:
-	    // TODO unclear spec
+		// TODO unclear spec
 		log("COMPONENT todo %lX %d\n", ftello(reader->fhd),dt->size);
-		if(fseek(reader->fhd, dt->size, SEEK_CUR))
-		    return errno;
+		if (fseek(reader->fhd, dt->size, SEEK_CUR))
+			return errno;
 		break;
 
 	case 7:
-	    readValue(reader, 4);       // TODO unclear reference
-		reference = readValue(reader, dt->size-4); 
-	    log(" REFERENCE size %d %lX\n",dt->size, reference);
-        if(!!(err = gcolRead(reader, gcol, reference, &dataobject))) {
-            return MYSOFA_OK;       // ignore error
+		readValue(reader, 4);       // TODO unclear reference
+		reference = readValue(reader, dt->size - 4);
+		log(" REFERENCE size %d %lX\n",dt->size, reference);
+		if (!!(err = gcolRead(reader, gcol, reference, &dataobject))) {
+			return MYSOFA_OK;       // ignore error
 //            return err;
-        }
-        referenceData = findDataobject(reader,dataobject);
-        if(referenceData)
-            buffer=referenceData->name;
-        else {
-            snprintf(number,sizeof(number),"REF%08lX",reference);
-            buffer=number;
-        }
+		}
+		referenceData = findDataobject(reader, dataobject);
+		if (referenceData)
+			buffer = referenceData->name;
+		else {
+			snprintf(number, sizeof(number), "REF%08lX", reference);
+			buffer = number;
+		}
 		log("    REFERENCE %lu %lX %s\n", reference, dataobject, buffer);
 //		if(!referenceData) {
 //		    return MYSOFA_UNSUPPORTED_FORMAT;
 //		}
-		if(data->string) {
-		    data->string = realloc(data->string, strlen(data->string) + strlen(buffer) + 2);
-		    strcat(data->string,",");
-		    strcat(data->string,buffer);
-		}
-		else {
-		    data->string=strdup(buffer);
+		if (data->string) {
+			data->string = realloc(data->string,
+					strlen(data->string) + strlen(buffer) + 2);
+			strcat(data->string, ",");
+			strcat(data->string, buffer);
+		} else {
+			data->string = strdup(buffer);
 		}
 		break;
-		
+
 	default:
 		log("data reader unknown type %d\n", dt->class_and_version & 0xf);
 		return MYSOFA_INTERNAL_ERROR;
@@ -564,8 +568,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data, struct DATATYPE 
 	return MYSOFA_OK;
 }
 
-int readDataDim(struct READER *reader, struct DATAOBJECT *da, struct DATATYPE *dt,
-		struct DATASPACE *ds, int dim) {
+int readDataDim(struct READER *reader, struct DATAOBJECT *da,
+		struct DATATYPE *dt, struct DATASPACE *ds, int dim) {
 	int i, err;
 
 	for (i = 0; i < ds->dimension_size[dim]; i++) {
@@ -582,7 +586,8 @@ int readDataDim(struct READER *reader, struct DATAOBJECT *da, struct DATATYPE *d
 	return MYSOFA_OK;
 }
 
-int readData(struct READER *reader, struct DATAOBJECT *da, struct DATATYPE *dt, struct DATASPACE *ds) {
+int readData(struct READER *reader, struct DATAOBJECT *da, struct DATATYPE *dt,
+		struct DATASPACE *ds) {
 	if (ds->dimensionality == 0) {
 		ds->dimension_size[0] = 1;
 	}
@@ -623,7 +628,8 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
 
  */
 
-static int readOHDRHeaderMessageAttribute(struct READER *reader, struct DATAOBJECT *dataobject) {
+static int readOHDRHeaderMessageAttribute(struct READER *reader,
+		struct DATAOBJECT *dataobject) {
 	int err;
 
 	uint8_t flags, encoding;
@@ -632,11 +638,11 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader, struct DATAOBJE
 	struct DATAOBJECT d;
 	struct MYSOFA_ATTRIBUTE *attr;
 
-    UNUSED(encoding);
-    UNUSED(datatype_size);
-    UNUSED(dataspace_size);
+	UNUSED(encoding);
+	UNUSED(datatype_size);
+	UNUSED(dataspace_size);
 
-	bzero(&d,  sizeof(d));
+	bzero(&d, sizeof(d));
 
 	if (fgetc(reader->fhd) != 3) {
 		log("object OHDR attribute message must have version 3\n");
@@ -684,8 +690,8 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader, struct DATAOBJE
 	d.string = NULL;
 	attr->next = dataobject->attributes;
 	dataobject->attributes = attr;
-    	
-    dataobjectFree(reader, &d);
+
+	dataobjectFree(reader, &d);
 	return MYSOFA_OK;
 }
 
@@ -722,7 +728,6 @@ static int readOHDRHeaderMessageAttributeInfo(struct READER *reader,
 
 	return MYSOFA_OK;
 }
-
 
 /**
  * read all OHDR messages
@@ -825,8 +830,7 @@ static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OCHK", 4)) {
 		log("cannot read signature of OCHK\n");
 		return MYSOFA_INVALID_FORMAT;
-	}
-	log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
 
 	err = readOHDRmessages(reader, dataobject, end - 4); // substract checksum
 	if (err) {
@@ -836,21 +840,21 @@ static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
 	return MYSOFA_OK;
 }
 
-int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject, char *name) {
+int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
+		char *name) {
 	uint64_t size_of_chunk, end_of_messages;
 	int err;
 	char buf[4];
 
 	memset(dataobject, 0, sizeof(*dataobject));
-    dataobject->address = ftello(reader->fhd);
-    dataobject->name = name;
+	dataobject->address = ftello(reader->fhd);
+	dataobject->name = name;
 
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OHDR", 4)) {
 		log("cannot read signature of data object\n");
 		return MYSOFA_INVALID_FORMAT;
-	}
-	log("%08lX %.4s\n", dataobject->address, buf);
+	} log("%08lX %.4s\n", dataobject->address, buf);
 
 	if (fgetc(reader->fhd) != 2) {
 		log("object OHDR must have version 2\n");
@@ -878,35 +882,35 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject, char *n
 	}
 
 	/* not needed
-	if (validAddress(reader, dataobject->ai.attribute_name_btree)) {
-		fseeko(reader->fhd, dataobject->ai.attribute_name_btree, SEEK_SET);
-		btreeRead(reader, &dataobject->attributes);
-	}
-	*/
+	 if (validAddress(reader, dataobject->ai.attribute_name_btree)) {
+	 fseeko(reader->fhd, dataobject->ai.attribute_name_btree, SEEK_SET);
+	 btreeRead(reader, &dataobject->attributes);
+	 }
+	 */
 
-    /* parse message attribute info */
+	/* parse message attribute info */
 	if (validAddress(reader, dataobject->ai.fractal_heap_address)) {
 		fseeko(reader->fhd, dataobject->ai.fractal_heap_address, SEEK_SET);
 		fractalheapRead(reader, dataobject, &dataobject->attributes_heap);
 	}
 
-    /* parse message link info */
+	/* parse message link info */
 	if (validAddress(reader, dataobject->li.fractal_heap_address)) {
 		fseeko(reader->fhd, dataobject->li.fractal_heap_address, SEEK_SET);
 		err = fractalheapRead(reader, dataobject, &dataobject->objects_heap);
-		if(err)
-		    return err;
+		if (err)
+			return err;
 	}
 
-/* no needed 
-	if (validAddress(reader, dataobject->li.address_btree_index)) {
-		fseeko(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
-		btreeRead(reader, &dataobject->objects);
-	}
-*/
+	/* no needed 
+	 if (validAddress(reader, dataobject->li.address_btree_index)) {
+	 fseeko(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
+	 btreeRead(reader, &dataobject->objects);
+	 }
+	 */
 
-    dataobject->all = reader->all;
-    reader->all = dataobject;
+	dataobject->all = reader->all;
+	reader->all = dataobject;
 
 	return MYSOFA_OK;
 }
@@ -916,34 +920,33 @@ void dataobjectFree(struct READER *reader, struct DATAOBJECT *dataobject) {
 	fractalheapFree(&dataobject->attributes_heap);
 	btreeFree(&dataobject->objects_btree);
 	fractalheapFree(&dataobject->objects_heap);
-	
-	while(dataobject->attributes) {
-	    struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
-	    dataobject->attributes = attr->next;
-	    free(attr->name);
-	    free(attr->value);
-	    free(attr);
-	}  
 
-	while(dataobject->directory) {
-	    struct DIR *dir = dataobject->directory;
-	    dataobject->directory = dir->next;
-	    dataobjectFree(reader, &dir->dataobject);
+	while (dataobject->attributes) {
+		struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
+		dataobject->attributes = attr->next;
+		free(attr->name);
+		free(attr->value);
+		free(attr);
+	}
+
+	while (dataobject->directory) {
+		struct DIR *dir = dataobject->directory;
+		dataobject->directory = dir->next;
+		dataobjectFree(reader, &dir->dataobject);
 		free(dir);
 	}
 
+	free(dataobject->data);
+	free(dataobject->string);
+	free(dataobject->name);
 
-    free(dataobject->data);
-    free(dataobject->string);
-    free(dataobject->name);
-    
-    struct DATAOBJECT **p = &reader->all;
-    while(*p) {
-        if((*p) == dataobject) {
-            *p = dataobject->all;
-            break;
-        }
-        p = &((*p)->all);
-    }    
+	struct DATAOBJECT **p = &reader->all;
+	while (*p) {
+		if ((*p) == dataobject) {
+			*p = dataobject->all;
+			break;
+		}
+		p = &((*p)->all);
+	}
 }
 

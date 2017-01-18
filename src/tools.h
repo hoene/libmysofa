@@ -11,7 +11,8 @@
 #include <stdlib.h>
 #include "mysofa.h"
 
-int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value, char *newvalue);
+int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
+		char *newvalue);
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value);
 
 void convertCartesianToSpherical(double *values, int elements);
@@ -30,6 +31,6 @@ void scaleArray(double *dst, int size, double w);
 double loudness(double *in, int size);
 
 void nsearch(const void *key, const void *base, size_t num, size_t size,
-               int (*cmp)(const void *key, const void *elt), int *lower, int *higher);
+		int (*cmp)(const void *key, const void *elt), int *lower, int *higher);
 
 #endif /* SRC_TOOLS_H_ */
