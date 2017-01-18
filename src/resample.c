@@ -14,14 +14,13 @@
 #include "mysofa.h"
 #include "tools.h"
 
-int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate)
-{
+int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate) {
 	int i, res;
 
-	if(hrtf->DataSamplingRate.elements != 1 || samplerate <= 8000.)
+	if (hrtf->DataSamplingRate.elements != 1 || samplerate <= 8000.)
 		return MYSOFA_INVALID_FORMAT;
 
-	if(samplerate == hrtf->DataSamplingRate.values[0])
+	if (samplerate == hrtf->DataSamplingRate.values[0])
 		return MYSOFA_OK;
 
 	float factor = samplerate / hrtf->DataSamplingRate.values[0];
@@ -31,30 +30,24 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate)
 	 * resample FIR filter
 	 */
 	double *values = malloc(newN * hrtf->R * hrtf->M * sizeof(double));
-	if(values == NULL)
+	if (values == NULL)
 		return MYSOFA_NO_MEMORY;
 
 	void* handle = resample_open(1, factor, factor);
 
-	for(i=0;i<hrtf->R * hrtf->M;i++) {
+	for (i = 0; i < hrtf->R * hrtf->M; i++) {
 		int used;
 		float in[hrtf->N];
 		float out[newN];
 
-		copyToFloat(in,hrtf->DataIR.values + i * hrtf->N, hrtf->N);
-		res = resample_process(handle,
-							factor,
-		                     in,
-		                     hrtf->N,
-							 1,
-		                     &used,
-							 out,
-							 newN);
-		assert(res > newN-8 && res <=newN);
+		copyToFloat(in, hrtf->DataIR.values + i * hrtf->N, hrtf->N);
+		res = resample_process(handle, factor, in, hrtf->N, 1, &used, out,
+				newN);
+		assert(res > newN - 8 && res <= newN);
 		assert(used == hrtf->N);
 		copyFromFloat(values + i * newN, out, res);
-		while(res < newN) {
-			values[i*newN+res]=0.;
+		while (res < newN) {
+			values[i * newN + res] = 0.;
 			res++;
 		}
 	}
@@ -67,7 +60,7 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate)
 	/*
 	 * update delay values
 	 */
-	for(i=0;i<hrtf->DataIR.elements;i++)
+	for (i = 0; i < hrtf->DataIR.elements; i++)
 		hrtf->DataIR.values[i] /= factor;
 
 	/*
@@ -78,5 +71,4 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate)
 
 	return MYSOFA_OK;
 }
-
 

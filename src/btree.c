@@ -1,20 +1,20 @@
 /*
 
-   Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
-*/
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -84,18 +84,17 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 	uint64_t heap_id;
 
 	char buf[4];
-	
+
 	UNUSED(heap_id);
 	UNUSED(hash_of_name);
-    UNUSED(creation_order);
-    UNUSED(message_flags);
+	UNUSED(creation_order);
+	UNUSED(message_flags);
 
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTLF", 4)) {
 		log("cannot read signature of BTLF\n");
 		return MYSOFA_INVALID_FORMAT;
-	}
-	log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object BTLF must have version 0\n");
@@ -161,8 +160,7 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTHD", 4)) {
 		log("cannot read signature of BTHD\n");
 		return MYSOFA_INVALID_FORMAT;
-	}
-	log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object BTHD must have version 0\n");
@@ -203,7 +201,8 @@ void btreeFree(struct BTREE *btree) {
 
 int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
-	int i, j, err, olen, elements, size, x, y, z, b, e, dy, dz, sx, sy, sz, dzy, szy;
+	int i, j, err, olen, elements, size, x, y, z, b, e, dy, dz, sx, sy, sz, dzy,
+			szy;
 	char *input, *output;
 
 	uint8_t node_type, node_level;
@@ -212,15 +211,14 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	uint32_t filter_mask;
 	uint64_t address_of_left_sibling, address_of_right_sibling, start[4],
 			child_pointer, key, store;
-			
 
 	char buf[4];
 
-    UNUSED(node_level);
-    UNUSED(address_of_right_sibling);
-    UNUSED(address_of_left_sibling);
-    UNUSED(key);
-    
+	UNUSED(node_level);
+	UNUSED(address_of_right_sibling);
+	UNUSED(address_of_left_sibling);
+	UNUSED(key);
+
 	if (data->ds.dimensionality > 3) {
 		log("TREE dimensions > 3");
 		return MYSOFA_INVALID_FORMAT;
@@ -230,8 +228,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "TREE", 4)) {
 		log("cannot read signature of TREE\n");
 		return MYSOFA_INVALID_FORMAT;
-	}
-	log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
 
 	node_type = fgetc(reader->fhd);
 	node_level = fgetc(reader->fhd);
@@ -241,23 +238,23 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	address_of_right_sibling = readValue(reader,
 			reader->superblock.size_of_offsets);
 
-    elements = 1;
-    for (j = 0; j < data->ds.dimensionality; j++)
-        elements *= data->datalayout_chunk[j];
-    dy = data->datalayout_chunk[1];
-    dz = data->datalayout_chunk[2];
-    sx = data->ds.dimension_size[0];
-    sy = data->ds.dimension_size[1];
-    sz = data->ds.dimension_size[2];
-    dzy = dz*dy;
-    szy = sz*sy;
-    size = data->datalayout_chunk[data->ds.dimensionality];
-    
-    log("elements %d size %d\n",elements,size);
+	elements = 1;
+	for (j = 0; j < data->ds.dimensionality; j++)
+		elements *= data->datalayout_chunk[j];
+	dy = data->datalayout_chunk[1];
+	dz = data->datalayout_chunk[2];
+	sx = data->ds.dimension_size[0];
+	sy = data->ds.dimension_size[1];
+	sz = data->ds.dimension_size[2];
+	dzy = dz * dy;
+	szy = sz * sy;
+	size = data->datalayout_chunk[data->ds.dimensionality];
 
-    if(!(output = malloc(elements*size))) {
-                return MYSOFA_NO_MEMORY;
-    }
+	log("elements %d size %d\n",elements,size);
+
+	if (!(output = malloc(elements * size))) {
+		return MYSOFA_NO_MEMORY;
+	}
 
 	for (e = 0; e < entries_used * 2; e++) {
 		if (node_type == 0) {
@@ -271,91 +268,90 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 				return MYSOFA_INVALID_FORMAT;
 			}
 
-            
-   			for (j = 0; j < data->ds.dimensionality; j++) {
-    			start[j] = readValue(reader, 8);
-    			log("start %d %lu\n",j,start[j]);
-            }
-            
-            if(readValue(reader, 8)) {
-                break;
-            }
-     
-            child_pointer = readValue(reader,
+			for (j = 0; j < data->ds.dimensionality; j++) {
+				start[j] = readValue(reader, 8);
+				log("start %d %lu\n",j,start[j]);
+			}
+
+			if (readValue(reader, 8)) {
+				break;
+			}
+
+			child_pointer = readValue(reader,
 					reader->superblock.size_of_offsets);
-			log(" data at %lX len %u\n", child_pointer, size_of_chunk);       
-			
+			log(" data at %lX len %u\n", child_pointer, size_of_chunk);
+
 			/* read data */
 			store = ftello(reader->fhd);
-			if(fseeko(reader->fhd, child_pointer, SEEK_SET)) {
+			if (fseeko(reader->fhd, child_pointer, SEEK_SET)) {
 				free(output);
-			    return errno;
+				return errno;
 			}
-    
-            if(!(input = malloc(size_of_chunk)))
-                return MYSOFA_NO_MEMORY;
-			if(fread(input, 1, size_of_chunk, reader->fhd)!=size_of_chunk) {
-				free(output);
-			    free(input);
-			    return MYSOFA_INVALID_FORMAT;
-			}
-             
-            olen=elements*size;
-            err = gunzip(size_of_chunk, input, &olen, output);
-   		    free(input);
 
-            log("   gunzip %d %d %d\n",err, olen, elements*size);
-            if(err || olen != elements*size) {
-                free(output);
-                return MYSOFA_INVALID_FORMAT;
-            }
-            
-		    switch(data->ds.dimensionality) {
-		    case 1:
-			    for(i=0;i<olen;i++) {
-			        b=i/elements;
-			        x=i%elements+start[0];
-			        if(x < sx) {
-    			        j=x*size+b;
-    			        *(char*)(data->data + j) = output[i];
-    			    }
-			    }
-			    break;
-		    case 2:
-			    for(i=0;i<olen;i++) {
-			        b=i/elements;
-			        x=i%elements;
-			        y=x%dy + start[1];
-			        x=x/dy + start[0];
-			        if(y < sy && x < sx) {
-    			        j=((x*sy+y)*size)+b;
-    			        *(char*)(data->data + j) = output[i];
-    			    }
-			    }
-			    break;
-		    case 3:
-			    for(i=0;i<olen;i++) {
-			        b=i/elements;
-			        x=i%elements;
-			        z=x%dz + start[2];
-			        y=(x/dz)%dy + start[1];
-			        x=(x/dzy) + start[0];
-			        if(z < sz && y < sy && x < sx) {
-    			        j=(x*szy+y*sz+z)*size+b;
-	    		        *(char*)(data->data + j) = output[i];
-	    		    }
-			    }
-			    break;
+			if (!(input = malloc(size_of_chunk)))
+				return MYSOFA_NO_MEMORY;
+			if (fread(input, 1, size_of_chunk, reader->fhd) != size_of_chunk) {
+				free(output);
+				free(input);
+				return MYSOFA_INVALID_FORMAT;
+			}
+
+			olen = elements * size;
+			err = gunzip(size_of_chunk, input, &olen, output);
+			free(input);
+
+			log("   gunzip %d %d %d\n",err, olen, elements*size);
+			if (err || olen != elements * size) {
+				free(output);
+				return MYSOFA_INVALID_FORMAT;
+			}
+
+			switch (data->ds.dimensionality) {
+			case 1:
+				for (i = 0; i < olen; i++) {
+					b = i / elements;
+					x = i % elements + start[0];
+					if (x < sx) {
+						j = x * size + b;
+						*(char*) (data->data + j) = output[i];
+					}
+				}
+				break;
+			case 2:
+				for (i = 0; i < olen; i++) {
+					b = i / elements;
+					x = i % elements;
+					y = x % dy + start[1];
+					x = x / dy + start[0];
+					if (y < sy && x < sx) {
+						j = ((x * sy + y) * size) + b;
+						*(char*) (data->data + j) = output[i];
+					}
+				}
+				break;
+			case 3:
+				for (i = 0; i < olen; i++) {
+					b = i / elements;
+					x = i % elements;
+					z = x % dz + start[2];
+					y = (x / dz) % dy + start[1];
+					x = (x / dzy) + start[0];
+					if (z < sz && y < sy && x < sx) {
+						j = (x * szy + y * sz + z) * size + b;
+						*(char*) (data->data + j) = output[i];
+					}
+				}
+				break;
 			default:
-			    log("invalid dim\n");
-			    return MYSOFA_INTERNAL_ERROR;
+				log("invalid dim\n");
+				return MYSOFA_INTERNAL_ERROR;
 			}
 
-       		fseeko(reader->fhd, store, SEEK_SET);
+			fseeko(reader->fhd, store, SEEK_SET);
 		}
- 	}
+	}
 
-    free(output);
+	free(output);
 	fseek(reader->fhd, 4, SEEK_CUR); /* skip checksum */
 
 	return MYSOFA_OK;
