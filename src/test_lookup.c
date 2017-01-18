@@ -13,7 +13,9 @@ int main() {
 	struct timeval r1, r2;
 	double duration1, duration2;
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
+	hrtf = mysofa_load("../../tests/sofa_api_mo_test/Pulse.sofa", &err);
+	if (!hrtf)
+		hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 
 	if (!hrtf) {
 		fprintf(stderr, "Error reading file. Error code: %d\n", err);
@@ -76,10 +78,10 @@ int main() {
 				distance(find, hrtf->SourcePosition.values + lk));
 		printf("O(n): %f %f %f -> %d %f\t%f%%\n", find[0], find[1], find[2],
 				index, dmin, duration1 / duration2 * 100);
-	assert(lk==index);
-}
+		assert(lk==index);
+	}
 
-mysofa_lookup_free(lookup);
-mysofa_free(hrtf);
-return 0;
+	mysofa_lookup_free(lookup);
+	mysofa_free(hrtf);
+	return 0;
 }

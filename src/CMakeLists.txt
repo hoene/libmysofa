@@ -13,24 +13,24 @@ add_test(tools test_tools)
 
 add_executable(test_lookup test_lookup.c)
 target_link_libraries (test_lookup mysofa)
-add_test(sort test_lookup)
+add_test(lookup test_lookup)
 
 add_executable(test_neighbors test_neighbors.c)
 target_link_libraries (test_neighbors mysofa)
-add_test(sort test_neighbors)
+add_test(neighbors test_neighbors)
 
 add_executable(test_interpolate test_interpolate.c)
 target_link_libraries (test_interpolate mysofa)
-add_test(sort test_interpolate)
+add_test(interpolate test_interpolate)
 
 add_executable(test_resample test_resample.c)
 target_link_libraries (test_resample mysofa)
-add_test(sort test_resample)
+add_test(resample test_resample)
 
 add_executable(test_loudness test_loudness.c)
 target_link_libraries (test_loudness mysofa)
-add_test(sort test_loudness)
+add_test(loudness test_loudness)
 
 add_executable(test_minphase test_minphase.c)
 target_link_libraries (test_minphase mysofa)
-add_test(sort test_minphase)
+add_test(minphase test_minphase)

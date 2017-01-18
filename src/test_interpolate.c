@@ -13,8 +13,11 @@ int main() {
 	int err = 0;
 	int i;
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
-			&err);
+	hrtf = mysofa_load("../../tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+				&err);
+	if (!hrtf)
+		hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+				&err);
 
 	if (!hrtf) {
 		fprintf(stderr, "Error reading file. Error code: %d\n", err);
@@ -58,9 +61,9 @@ int main() {
 	for (i = 0; i < hrtf->N * hrtf->R; i++) {
 		printf("%f %f %f\n", res[i], hrtf->DataIR.values[i],
 				hrtf->DataIR.values[i + hrtf->N * hrtf->R]);
-	assert(fequals(res[i],(hrtf->DataIR.values[i]+hrtf->DataIR.values[i+hrtf->N*hrtf->R])/2));
-}
+		assert(fequals(res[i],(hrtf->DataIR.values[i]+hrtf->DataIR.values[i+hrtf->N*hrtf->R])/2));
+	}
 
-mysofa_free(hrtf);
-return 0;
+	mysofa_free(hrtf);
+	return 0;
 }
