@@ -61,9 +61,24 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 
 /*
  * looks for a filter that is similar to the given coordinate
- * BE AwARE: The coordinate vector will be normalized
+ * BE AWARE: The coordinate vector will be normalized if needed
  */
 double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate) {
+
+    double r = radius(coordinate);
+    if(r>lookup->radius_max) {
+            r = lookup->radius_max / r;
+            coordinate[0] *= r;
+            coordinate[1] *= r;
+            coordinate[2] *= r;
+    }
+    else if(r<lookup->radius_min) {
+            r = lookup->radius_min / r;
+            coordinate[0] *= r;
+            coordinate[1] *= r;
+            coordinate[2] *= r;
+    }
+
 	struct kdres *res = kd_nearest((struct kdtree *) lookup->kdtree,
 			coordinate);
 	if (kd_res_size(res) != 1) {
