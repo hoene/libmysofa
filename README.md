@@ -17,20 +17,38 @@ Enter following commands
 
 ## Usage 
 
-Libmysofa has two main function calls.
+Libmysofa has three main function calls.
 
 To read a SOFA file call 
 
 ```
 #include <mysofa.h>
 
-struct MYSOFA_HRTF *hrtf = mysofa_load("file.sofa", &err);
+int filter_length;
+int err;
+struct MYSOFA_EASY *hrtf;
+
+hrtf = mysofa_open("file.sofa", 48000, &filter_length, &err);
+if(hrtf==NULL) 
+	return err;
 ```
 
 To free the HRTF structure, call:
 ```
-mysofa_free(hrtf);
+mysofa_close(hrtf);
 ```
+
+If you need HRTF filter for a given coordinate, just call
+```
+short leftIR[filter_length];
+short rightIR[filter_length];
+int leftDelay;
+int rightDelay;
+
+mysofa_getfilter(hrtf, x, y, z, leftIR, rightIR, leftDelay, rightDelay);
+```
+and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR.
+
 
 ## Disclaimer
 

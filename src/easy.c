@@ -5,6 +5,8 @@
  *      Author: hoene
  */
 
+#include <stdlib.h>
+#include "mysofa.h"
 /**
  *
  */
@@ -39,7 +41,7 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 
 	mysofa_loudness(easy->hrtf);
 
-	mysofa_tocartesian(eas->hrtf);
+	mysofa_tocartesian(easy->hrtf);
 
 	easy->lookup = mysofa_lookup_init(easy->hrtf);
 	if (easy->lookup == NULL) {
@@ -58,12 +60,27 @@ void mysofa_getfilter(struct MYSOFA_EASY* easy, double x, double y, double z,
 		short *IRleft, short *IRright,
 		int *delayLeft, int *delayRight)
 {
-	int lk = mysofa_lookup(easy->lookup, easy->find) - hrtf->SourcePosition.values;
+	double c[3] = { x,y,z };
+	double fir[easy->hrtf->N * easy->hrtf->R];
+	double delays[2];
 
-	res = mysofa_interpolate(hrtf, hrtf->SourcePosition.values, 0, neighborhood,
+	int nearest = mysofa_lookup(easy->lookup, c) - easy->hrtf->SourcePosition.values;
+	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+
+	mysofa_interpolate(easy->hrtf, c,
+			nearest, neighbors,
 			fir, delays);
 
-	xxx
+	*delayLeft  = delays[0] * easy->hrtf->DataSamplingRate.values[0];
+	*delayRight = delays[1] * easy->hrtf->DataSamplingRate.values[0];
+
+	double *fl = fir;
+	double *fr = fir + easy->hrtf->N;
+	int i;
+	for(i=easy->hrtf->N;i>0;i--) {
+		*IRleft++  = *fl++ * 32767.;
+		*IRright++ = *fr++ * 32767.;
+	}
 }
 
 void mysofa_close(struct MYSOFA_EASY* easy)

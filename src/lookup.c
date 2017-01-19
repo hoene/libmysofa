@@ -91,6 +91,8 @@ double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate) {
 }
 
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup) {
-	kd_free((struct kdtree *) lookup->kdtree);
-	free(lookup);
+	if(lookup) {
+		kd_free((struct kdtree *) lookup->kdtree);
+		free(lookup);
+	}
 }

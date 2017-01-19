@@ -128,7 +128,9 @@ int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos) {
 }
 
 void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood) {
-	free(neighborhood->index);
-	free(neighborhood);
+	if(neighborhood) {
+		free(neighborhood->index);
+		free(neighborhood);
+	}
 }
 

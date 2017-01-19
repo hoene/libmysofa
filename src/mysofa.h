@@ -121,6 +121,19 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate);
 double mysofa_loudness(struct MYSOFA_HRTF *hrtf);
 int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold);
 
+struct MYSOFA_EASY {
+	struct MYSOFA_HRTF *hrtf;
+	struct MYSOFA_LOOKUP *lookup;
+	struct MYSOFA_NEIGHBORHOOD *neighborhood;
+};
+
+struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
+void mysofa_getfilter(struct MYSOFA_EASY* easy, double x, double y, double z,
+		short *IRleft, short *IRright,
+		int *delayLeft, int *delayRight);
+void mysofa_close(struct MYSOFA_EASY* easy);
+
+
 #ifdef __cplusplus
 }
 #endif

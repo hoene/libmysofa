@@ -20,6 +20,16 @@ int main() {
 		return err;
 	}
 
+	short leftIR[filterlength];
+	short rightIR[filterlength];
+	int leftDelay, rightDelay;
+
+	mysofa_getfilter(easy,
+			1, 0, 0,
+			leftIR, rightIR,
+			&leftDelay, &rightDelay);
+
+
 	mysofa_close(easy);
 
 	return 0;

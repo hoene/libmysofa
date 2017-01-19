@@ -16,7 +16,7 @@ static int compareValues(struct MYSOFA_ARRAY *array, double *compare,
 
 static double array000[] = { 0, 0, 0 };
 static double array001[] = { 0, 0, 1 };
-static double array0901[] = { 0, 90, 1 };
+// static double array0901[] = { 0, 90, 1 };
 static double array100[] = { 1, 0, 0 };
 
 int mysofa_check(struct MYSOFA_HRTF *hrtf) {
