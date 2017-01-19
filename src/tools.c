@@ -5,7 +5,7 @@
  *      Author: hoene
  */
 
-#include <math.h>
+    #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -55,20 +55,16 @@ void convertCartesianToSpherical(double *values, int elements) {
 
 void convertSphericalToCartesian(double *values, int elements) {
 	int i;
-	double x, y, z, r, theta, phi;
+	double x, r, theta, phi;
 
 	for (i = 0; i < elements - 2; i += 3) {
 		phi = values[i] * (M_PI / 180);
 		theta = values[i + 1] * (M_PI / 180);
 		r = values[i + 2];
-		z = sin(theta);
-		x = cos(theta);
-		values[i + 2] = z * r;
-		x *= r;
-		y = sin(phi);
-		z = cos(phi);
-		values[i] = z * x;
-		values[i + 1] = y * x;
+		x = cos(theta) * r;
+		values[i + 2] = sin(theta) * r;
+		values[i] = cos(phi) * x;
+		values[i + 1] = sin(phi) * x;
 	}
 }
 
