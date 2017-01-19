@@ -84,7 +84,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
 
 	/* seek to first object */
 	if (fseeko(reader->fhd, superblock->root_group_object_header_address,
-			SEEK_SET)) {
+	SEEK_SET)) {
 		log("cannot seek to first object at %ld\n",
 				superblock->root_group_object_header_address);
 		return errno;

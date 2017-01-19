@@ -28,6 +28,7 @@ void copyFromFloat(double *out, float *in, int size);
 void copyArrayWeighted(double *dst, double *src, int size, double w);
 void addArrayWeighted(double *dst, double *src, int size, double w);
 void scaleArray(double *dst, int size, double w);
+double loudness(double *in, int size);
 
 void nsearch(const void *key, const void *base, size_t num, size_t size,
 		int (*cmp)(const void *key, const void *elt), int *lower, int *higher);

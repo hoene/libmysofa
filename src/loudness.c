@@ -15,16 +15,6 @@
 #include "mysofa.h"
 #include "tools.h"
 
-static double loudness(double *in, int size) {
-	double res = 0;
-	while (size > 0) {
-		res += *in * *in;
-		in++;
-		size--;
-	}
-	return res;
-}
-
 double mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
 	double c[3], factor;
 	double min = DBL_MAX;
