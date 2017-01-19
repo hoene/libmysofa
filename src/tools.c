@@ -5,7 +5,6 @@
  *      Author: hoene
  */
 
-#define _GNU_SOURCE
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -62,10 +61,12 @@ void convertSphericalToCartesian(double *values, int elements) {
 		phi = values[i] * (M_PI / 180);
 		theta = values[i + 1] * (M_PI / 180);
 		r = values[i + 2];
-		sincos(theta, &z, &x);
+		z = sin(theta);
+		x = cos(theta);
 		values[i + 2] = z * r;
 		x *= r;
-		sincos(phi, &y, &z);
+		y = sin(phi);
+		z = cos(phi);
 		values[i] = z * x;
 		values[i + 1] = y * x;
 	}
