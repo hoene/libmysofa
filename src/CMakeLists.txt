@@ -2,7 +2,7 @@ add_library(mysofa mysofa.c superblock.c dataobject.c btree.c fractalhead.c gunz
 target_link_libraries (mysofa m z resample)
 set_property(TARGET mysofa PROPERTY C_STANDARD 11)
 
-add_executable(mysofa2json sofa2json.c)
+add_executable(mysofa2json sofa2json.c json.c)
 target_link_libraries (mysofa2json mysofa)
 
 add_executable(test_tools test_tools.c tools.c)
@@ -33,6 +33,6 @@ add_executable(test_minphase test_minphase.c)
 target_link_libraries (test_minphase mysofa)
 add_test(minphase test_minphase)
 
-add_executable(test_easy test_easy.c)
+add_executable(test_easy test_easy.c json.c)
 target_link_libraries (test_easy mysofa)
 add_test(easy test_easy)

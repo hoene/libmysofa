@@ -128,9 +128,12 @@ struct MYSOFA_EASY {
 };
 
 struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
-void mysofa_getfilter(struct MYSOFA_EASY* easy, double x, double y, double z,
+void mysofa_getfilter_short(struct MYSOFA_EASY* easy, double x, double y, double z,
 		short *IRleft, short *IRright,
 		int *delayLeft, int *delayRight);
+void mysofa_getfilter_double(struct MYSOFA_EASY* easy, double x, double y, double z,
+		double *IRleft, double *IRright,
+		double *delayLeft, double *delayRight);
 void mysofa_close(struct MYSOFA_EASY* easy);
 
 
