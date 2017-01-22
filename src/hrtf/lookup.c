@@ -54,7 +54,7 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 	 */
 	for (i = 0; i < hrtf->M; i++) {
 		double *f = hrtf->SourcePosition.values + i * hrtf->C;
-		kd_insert((struct kdtree *) lookup->kdtree, f, (void*)i);
+		kd_insert((struct kdtree *) lookup->kdtree, f, (void*)(intptr_t)i);
 	}
 
 	return lookup;

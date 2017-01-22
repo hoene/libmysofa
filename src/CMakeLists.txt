@@ -6,10 +6,7 @@ add_executable(mysofa2json tests/sofa2json.c tests/json.c)
 target_link_libraries (mysofa2json mysofa)
 set_property(TARGET mysofa2json PROPERTY C_STANDARD 11)
 
-add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c tests/minphase.c)
+add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c tests/minphase.c tests/easy.c tests/json.c)
 target_link_libraries (tests mysofa cunit)
 set_property(TARGET tests PROPERTY C_STANDARD 11)
-add_test(tests tests)
-
-#add_executable(test_minphase tests/test_minphase.c)
-#add_executable(test_easy tests/test_easy.c tests/json.c)
+add_test(NAME tests COMMAND tests WORKING_DIRECTORY ../../)

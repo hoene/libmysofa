@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <string.h>
 #include <float.h>
 #include <stdio.h>
@@ -8,18 +7,17 @@
 #include <stdlib.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
+#include "tests.h"
+#include "json.h"
 
-int main() {
+void test_easy() {
 	struct MYSOFA_EASY *easy;
 	int err = 0;
 	int filterlength;
 
-	easy = mysofa_open("../../tests/sofa_api_mo_test/Pulse.sofa", 44100, &filterlength, &err);
-	if (!easy)
-		easy = mysofa_open("tests/sofa_api_mo_test/Pulse.sofa", 44100, &filterlength, &err);
+	easy = mysofa_open("tests/sofa_api_mo_test/Pulse.sofa", 44100, &filterlength, &err);
 	if (!easy) {
-		fprintf(stderr, "Error reading file. Error code: %d\n", err);
-		return err;
+		CU_FAIL_FATAL("Error reading file.");
 	}
 
 	int filters=0;
@@ -29,7 +27,9 @@ int main() {
 		if(r==0.) r=1;
 		filters+=r;
 	}
+#ifdef VDEBUG
 	printf("Filters %d\n",filters);
+#endif
 
 	double *coordinates = malloc(filters*sizeof(double)*3);
 	double *ir = malloc(filters*easy->hrtf->N*sizeof(double)*2);
@@ -45,7 +45,9 @@ int main() {
 			coordinates[count*3+1] = theta;
 			coordinates[count*3+2] = 1;
 			convertSphericalToCartesian(coordinates+count*3,3);
+#ifdef VDEBUG
 			printf("%f %d %d %f %f %f\n",theta,phi,count,coordinates[count*3+0],coordinates[count*3+1],coordinates[count*3+2]);
+#endif
 			mysofa_getfilter_double(easy,
 					coordinates[count*3+0],
 					coordinates[count*3+1],
@@ -66,10 +68,14 @@ int main() {
 	easy->hrtf->DataIR.values=ir;
 	easy->hrtf->SourcePosition.elements=filters*3;
 	easy->hrtf->SourcePosition.values=coordinates;
+	easy->hrtf->M = filters;
 
-	json(easy->hrtf);
+	FILE *file = fopen("easy.tmp.json","w");
+	CU_ASSERT(file!=NULL);
+	printJson(file,easy->hrtf);
+	fclose(file);
+	// TODO verify correctness of the easy.json file
 
 	mysofa_close(easy);
-
-	return 0;
 }
+

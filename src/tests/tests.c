@@ -30,6 +30,7 @@ int main() {
 		|| (NULL == CU_add_test(pSuite, "test of mysofa_resample", test_resample))
 		|| (NULL == CU_add_test(pSuite, "test of mysofa_loudness", test_loudness))
 		|| (NULL == CU_add_test(pSuite, "test of mysofa_minphase", test_minphase))
+		|| (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy))
 			) {
 		CU_cleanup_registry();
 		return CU_get_error();

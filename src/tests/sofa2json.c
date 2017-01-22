@@ -22,6 +22,7 @@
 #include <string.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
+#include "json.h"
 
 int main(int argc, char **argv) {
 	struct MYSOFA_HRTF *hrtf = NULL;
@@ -40,7 +41,7 @@ int main(int argc, char **argv) {
 		return err;
 	}
 
-	json(hrtf);
+	printJson(stdout,hrtf);
 
 	mysofa_free(hrtf);
 

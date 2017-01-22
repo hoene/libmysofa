@@ -5,6 +5,7 @@
  *      Author: hoene
  */
 
+#define _GNU_SOURCE         /* See feature_test_macros(7) */
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>

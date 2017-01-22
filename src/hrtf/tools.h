@@ -33,6 +33,4 @@ double loudness(double *in, int size);
 void nsearch(const void *key, const void *base, size_t num, size_t size,
 		int (*cmp)(const void *key, const void *elt), int *lower, int *higher);
 
-void json(struct MYSOFA_HRTF *hrtf);
-
 #endif /* SRC_TOOLS_H_ */

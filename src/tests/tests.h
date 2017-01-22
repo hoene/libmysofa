@@ -28,4 +28,6 @@ void test_loudness();
 
 void test_minphase();
 
+void test_easy();
+
 #endif /* TESTS_H_ */
