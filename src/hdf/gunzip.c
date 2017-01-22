@@ -19,8 +19,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
-
-#include "mysofa.h"
 #include "reader.h"
 
 int gunzip(int inlen, char *in, int *outlen, char *out) {

@@ -16,13 +16,12 @@
 
  */
 
-#include "mysofa.h"
-
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "tools.h"
+#include "../hrtf/mysofa.h"
+#include "../hrtf/tools.h"
 
 int main(int argc, char **argv) {
 	struct MYSOFA_HRTF *hrtf = NULL;

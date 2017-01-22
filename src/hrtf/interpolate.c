@@ -36,58 +36,58 @@ double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
 
 	if (neighborhood[0] >= 0 && neighborhood[1] >= 0) {
 		d6[0] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[0]);
+				hrtf->SourcePosition.values + neighborhood[0] * hrtf->C);
 		d6[1] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[1]);
+				hrtf->SourcePosition.values + neighborhood[1] * hrtf->C);
 		if (d6[0] < d6[1])
 			use[0] = 1;
 		else
 			use[1] = 1;
 	} else if (neighborhood[0] >= 0) {
 		d6[0] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[0]);
+				hrtf->SourcePosition.values + neighborhood[0] * hrtf->C);
 		use[0] = 1;
 	} else if (neighborhood[1] >= 0) {
 		d6[1] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[1]);
+				hrtf->SourcePosition.values + neighborhood[1] * hrtf->C);
 		use[1] = 1;
 	}
 
 	if (neighborhood[2] >= 0 && neighborhood[3] >= 0) {
 		d6[2] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[2]);
+				hrtf->SourcePosition.values + neighborhood[2] * hrtf->C);
 		d6[3] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[3]);
+				hrtf->SourcePosition.values + neighborhood[3] * hrtf->C);
 		if (d6[2] < d6[3])
 			use[2] = 1;
 		else
 			use[3] = 1;
 	} else if (neighborhood[2] >= 0) {
 		d6[2] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[2]);
+				hrtf->SourcePosition.values + neighborhood[2] * hrtf->C);
 		use[2] = 1;
 	} else if (neighborhood[3] >= 0) {
 		d6[3] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[3]);
+				hrtf->SourcePosition.values + neighborhood[3] * hrtf->C);
 		use[3] = 1;
 	}
 
 	if (neighborhood[4] >= 0 && neighborhood[5] >= 0) {
 		d6[4] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[4]);
+				hrtf->SourcePosition.values + neighborhood[4] * hrtf->C);
 		d6[5] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[5]);
+				hrtf->SourcePosition.values + neighborhood[5] * hrtf->C);
 		if (d6[4] < d6[5])
 			use[4] = 1;
 		else
 			use[5] = 1;
 	} else if (neighborhood[4] >= 0) {
 		d6[4] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[4]);
+				hrtf->SourcePosition.values + neighborhood[4] * hrtf->C);
 		use[4] = 1;
 	} else if (neighborhood[5] >= 0) {
 		d6[5] = distance(cordinate,
-				hrtf->SourcePosition.values + neighborhood[5]);
+				hrtf->SourcePosition.values + neighborhood[5] * hrtf->C);
 		use[5] = 1;
 	}
 
@@ -102,7 +102,7 @@ double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
 		if (use[i]) {
 			double w = 1 / d6[i];
 			addArrayWeighted(fir,
-					hrtf->DataIR.values + (neighborhood[i] / 3) * size, size,
+					hrtf->DataIR.values + neighborhood[i] * size, size,
 					w);
 			weight += w;
 			if (hrtf->DataDelay.elements > hrtf->R) {

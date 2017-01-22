@@ -24,7 +24,7 @@
 #include <ctype.h>
 
 #include "mysofa.h"
-#include "reader.h"
+#include "../hdf/reader.h"
 
 /* checks file address.
  * NULL is an invalid address indicating a invalid field

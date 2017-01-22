@@ -5,48 +5,48 @@
 #include <math.h>
 #include <sys/time.h>
 #include <sys/resource.h>
-#include "mysofa.h"
-#include "tools.h"
+#include "../hrtf/mysofa.h"
+#include "../hrtf/tools.h"
+#include "tests.h"
 
-int main() {
+void test_loudness() {
 	struct MYSOFA_HRTF *hrtf;
 	int err = 0;
 	double factor;
 
-	hrtf = mysofa_load("../../tests/sofa_api_mo_test/Pulse.sofa", &err);
-	if (!hrtf)
-		hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
+	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 	if (!hrtf) {
-		fprintf(stderr, "Error reading file. Error code: %d\n", err);
-		return err;
+		CU_FAIL_FATAL("Error reading file.");
 	}
 
 	factor = mysofa_loudness(hrtf);
+#ifdef VDEBUG
 	printf("loudness of Pulse.sofa %f\n", factor);
-	assert(fequals(factor,1));
+#endif
+	CU_ASSERT(fequals(factor,1));
 	mysofa_free(hrtf);
 
-	hrtf = mysofa_load("../../tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
-			&err);
-	if (!hrtf)
+
+
 		hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 			&err);
 	if (!hrtf) {
-		fprintf(stderr, "Error reading file. Error code: %d\n", err);
-		return err;
+		CU_FAIL_FATAL("Error reading file.");
 	}
 
 	factor = mysofa_loudness(hrtf);
+#ifdef VDEBUG
 	printf("loudness of MIT_KEMAR_normal_pinna.sofa.sofa %f\n", factor);
-	assert(fequals(factor,1.116589));
+#endif
+	CU_ASSERT(fequals(factor,1.116589));
 
 	factor = mysofa_loudness(hrtf);
+#ifdef VDEBUG
 	printf(
 			"loudness of MIT_KEMAR_normal_pinna.sofa.sofa after normalization %f\n",
 			factor);
-	assert(fequals(factor,1.));
+#endif
+	CU_ASSERT(fequals(factor,1.));
 
 	mysofa_free(hrtf);
-
-	return 0;
 }

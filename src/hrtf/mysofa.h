@@ -106,7 +106,7 @@ void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf);
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
 
 struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf);
-double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
+int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
 
 struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,

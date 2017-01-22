@@ -25,11 +25,12 @@
  OF SUCH DAMAGE.
  */
 /* single nearest neighbor search written by Tamas Nepusz <tamas@cs.rhul.ac.uk> */
+#include "kdtree.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "kdtree.h"
 
 #if defined(WIN32) || defined(__WIN32__)
 #include <malloc.h>

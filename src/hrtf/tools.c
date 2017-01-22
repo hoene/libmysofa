@@ -5,7 +5,6 @@
  *      Author: hoene
  */
 
-#define _GNU_SOURCE
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>

@@ -21,9 +21,9 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "mysofa.h"
+#include "../hrtf/mysofa.h"
 
-#ifdef DEBUG
+#ifdef VDEBUG
 #define log(...) {fprintf (stderr, "%s:%d: ", __FILE__, __LINE__);fprintf (stderr, __VA_ARGS__);}
 #else
 #define log(...) 

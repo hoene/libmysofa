@@ -7,8 +7,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "mysofa.h"
-#include "tools.h"
+#include "../hrtf/mysofa.h"
+#include "../hrtf/tools.h"
 
 static void printString(char *string) {
 	putchar('"');

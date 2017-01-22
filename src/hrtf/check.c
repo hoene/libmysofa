@@ -154,20 +154,3 @@ int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 	return MYSOFA_OK;
 }
 
-// if needed, sampling rate convertion
-
-// if needed, minphase filter
-
-// amplitute normalization (sum of frontal hearing is 1)
-
-// to frequency domain
-
-// remove phase
-
-// if wanted, to time domain
-
-// coordinates convertion to xyz
-
-// sorting coordinates for better searching
-
-// adding neighbors for interpolation

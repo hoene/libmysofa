@@ -6,8 +6,8 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <stdlib.h>
-#include "mysofa.h"
-#include "tools.h"
+#include "../hrtf/mysofa.h"
+#include "../hrtf/tools.h"
 
 int main() {
 	struct MYSOFA_EASY *easy;
