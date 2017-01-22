@@ -1,7 +1,7 @@
 ### Eclipse 
 
-.project
-.cproject
+#.project
+#.cproject
 bin/
 .settings/
 
