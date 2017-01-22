@@ -37,11 +37,9 @@ For example, a SOFA to JSON converter written with NETCDF C++ has a size of 7983
 <a id="designer-templates" class="anchor" href="#designer-templates" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h3>
 
 <p>
-Libmysofa is for C programs. Add a <code>#include &lt;mysofa.h&gt;</code>
-A SOFA file can then be accessed with one line statement:
+Libmysofa is for C programs. Add a <code>#include &lt;mysofa.h&gt;</code>. You read a SOFA file with one function call (mysofa_open and mysofa_close). To et HRTF filters for given positions with an efficient lookup and interpolation algorithm, call mysofa_getfilter
+(see <a href="README.md">README.md</a>).
 </p>
-<p>Read a SOFA file:</br><code>struct MYSOFA_HRTF *hrtf = mysofa_load("file.sofa", &err);</code></p>
-<p>To free the HRTF structure, call:</br><code>mysofa_free(hrtf);</code></p>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>

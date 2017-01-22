@@ -1,14 +1,16 @@
-#include <assert.h>
 #include <string.h>
 #include <stdio.h>
-#include "tools.h"
+#include "../hrtf/tools.h"
+#include "tests.h"
 
 static void copy(double *src, double *dst) {
 	memcpy(src, dst, sizeof(double) * 3);
 }
 
 static void print(double *c) {
+#ifdef VDEBUG
 	printf("%f %f %f\n", c[0], c[1], c[2]);
+#endif
 }
 
 static int same(double *a, double *b) {
@@ -24,36 +26,36 @@ void test_coordinates() {
 	double array9001[3] = { 90, 0, 1 };
 	double result[3] = { 1, 1, 1 };
 
-	assert(!same(array000, result));
+	CU_ASSERT(!same(array000, result));
 	copy(result, array000);
-	assert(same(array000, result));
+	CU_ASSERT(same(array000, result));
 	print(result);
 
 	convertCartesianToSpherical(result, 3);
-	assert(same(array000, result));
+	CU_ASSERT(same(array000, result));
 	convertSphericalToCartesian(result, 3);
-	assert(same(array000, result));
+	CU_ASSERT(same(array000, result));
 
 	copy(result, array100);
 	convertCartesianToSpherical(result, 3);
-	assert(same(array001, result));
+	CU_ASSERT(same(array001, result));
 	convertSphericalToCartesian(result, 3);
-	assert(same(array100, result));
+	CU_ASSERT(same(array100, result));
 	print(result);
 
 	copy(result, array001);
 	convertCartesianToSpherical(result, 3);
 	print(result);
-	assert(same(array0901, result));
+	CU_ASSERT(same(array0901, result));
 	convertSphericalToCartesian(result, 3);
-	assert(same(array001, result));
+	CU_ASSERT(same(array001, result));
 
 	copy(result, array010);
 	convertCartesianToSpherical(result, 3);
 	print(result);
-	assert(same(array9001, result));
+	CU_ASSERT(same(array9001, result));
 	convertSphericalToCartesian(result, 3);
-	assert(same(array010, result));
+	CU_ASSERT(same(array010, result));
 
 }
 
@@ -72,46 +74,39 @@ void test_nsearch() {
 	int l, h;
 	int key;
 
-	assert(cmp(array, array + 1) < 0);
-	assert(cmp(array, array) == 0);
-	assert(cmp(array + 1, array) > 0);
+	CU_ASSERT(cmp(array, array + 1) < 0);
+	CU_ASSERT(cmp(array, array) == 0);
+	CU_ASSERT(cmp(array + 1, array) > 0);
 
 	key = 10;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 0 && h == 0);
+	CU_ASSERT(l == 0 && h == 0);
 
 	key = 20;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 1 && h == 1);
+	CU_ASSERT(l == 1 && h == 1);
 
 	key = 50;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 4 && h == 4);
+	CU_ASSERT(l == 4 && h == 4);
 
 	key = 0;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l < 0 && h == 0);
+	CU_ASSERT(l < 0 && h == 0);
 
 	key = 60;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 4 && h < 0);
+	CU_ASSERT(l == 4 && h < 0);
 
 	key = 11;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 0 && h == 1);
+	CU_ASSERT(l == 0 && h == 1);
 
 	key = 41;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 3 && h == 4);
+	CU_ASSERT(l == 3 && h == 4);
 
 	key = 19;
 	nsearch(&key, array, 5, sizeof(int), cmp, &l, &h);
-	assert(l == 0 && h == 1);
-}
-
-int main() {
-	test_coordinates();
-	test_nsearch();
-
-	return 0;
+	CU_ASSERT(l == 0 && h == 1);
 }

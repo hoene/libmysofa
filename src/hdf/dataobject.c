@@ -30,7 +30,6 @@
 #include <string.h> 
 #include <ctype.h>
 #include <errno.h>
-#include "mysofa.h"
 #include "reader.h"
 
 static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,

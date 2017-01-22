@@ -21,7 +21,6 @@
 #include <string.h>
 #include <math.h>
 #include <errno.h>
-#include "mysofa.h"
 #include "reader.h"
 
 static int log2i(int a) {

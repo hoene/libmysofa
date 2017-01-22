@@ -106,7 +106,7 @@ void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf);
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
 
 struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf);
-double* mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
+int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
 
 struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
@@ -120,6 +120,22 @@ double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
 int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate);
 double mysofa_loudness(struct MYSOFA_HRTF *hrtf);
 int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold);
+
+struct MYSOFA_EASY {
+	struct MYSOFA_HRTF *hrtf;
+	struct MYSOFA_LOOKUP *lookup;
+	struct MYSOFA_NEIGHBORHOOD *neighborhood;
+};
+
+struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
+void mysofa_getfilter_short(struct MYSOFA_EASY* easy, double x, double y, double z,
+		short *IRleft, short *IRright,
+		int *delayLeft, int *delayRight);
+void mysofa_getfilter_double(struct MYSOFA_EASY* easy, double x, double y, double z,
+		double *IRleft, double *IRright,
+		double *delayLeft, double *delayRight);
+void mysofa_close(struct MYSOFA_EASY* easy);
+
 
 #ifdef __cplusplus
 }

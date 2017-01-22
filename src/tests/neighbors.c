@@ -1,0 +1,88 @@
+#include <string.h>
+#include <float.h>
+#include <stdio.h>
+#include <math.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include "../hrtf/mysofa.h"
+#include "../hrtf/tools.h"
+#include "tests.h"
+
+void test_neighbors() {
+	struct MYSOFA_HRTF *hrtf = NULL;
+	int err = 0;
+
+	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+			&err);
+	if (!hrtf) {
+		CU_FAIL_FATAL("Error reading file.");
+	}
+
+	mysofa_tocartesian(hrtf);
+
+	struct MYSOFA_LOOKUP *lookup = mysofa_lookup_init(hrtf);
+	if (lookup == NULL) {
+		CU_FAIL("Error sorting HRTF.");
+		mysofa_free(hrtf);
+		return;
+	}
+
+	struct MYSOFA_NEIGHBORHOOD *neighborhood = mysofa_neighborhood_init(hrtf,
+			lookup);
+
+	if (neighborhood == NULL) {
+		CU_FAIL("Error getting neighborhood.");
+		mysofa_lookup_free(lookup);
+		mysofa_free(hrtf);
+		return;
+	}
+
+	int i, j, *res;
+	double c[3],C[3];
+#ifdef VDEBUG
+	const char *dir = "RLUDFB";
+#endif
+
+	for (i = 0; i < hrtf->M; i ++) {
+		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(double) * hrtf->C);
+		convertCartesianToSpherical(c, 3);
+#ifdef VDEBUG
+		printf("%4.0f %4.0f %5.2f\t", c[0], c[1], c[2]);
+#endif
+		res = mysofa_neighborhood(neighborhood, i);
+		CU_ASSERT(res!=NULL);
+		for (j = 0; j < 6; j++) {
+			if (res[j] >= 0) {
+				memcpy(C, hrtf->SourcePosition.values + res[j] * hrtf->C,
+						sizeof(double) * hrtf->C);
+				convertCartesianToSpherical(C, 3);
+#ifdef VDEBUG
+				printf("\t%c %4.0f %4.0f %5.2f", dir[j], C[0], C[1], C[2]);
+#endif
+				switch(j) {
+				case 0:
+					if(C[0]<c[0]) C[0]+=360;
+					CU_ASSERT_FATAL(c[0] < C[0] && c[0]+45 > C[0]);
+					break;
+				case 1:
+					if(C[0]>c[0]) C[0]-=360;
+					CU_ASSERT_FATAL(c[0] > C[0] && c[0]-45 < C[0]);
+					break;
+				case 2:
+					CU_ASSERT_FATAL(c[1] < C[1] || c[1]==90);
+					break;
+				case 3:
+					CU_ASSERT_FATAL(c[1] > C[1]);
+					break;
+				}
+			}
+		}
+#ifdef VDEBUG
+		printf("\n");
+#endif
+	}
+
+	mysofa_neighborhood_free(neighborhood);
+	mysofa_lookup_free(lookup);
+	mysofa_free(hrtf);
+}

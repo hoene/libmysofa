@@ -16,34 +16,34 @@
 
  */
 
+#include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-#include <zlib.h>
+#include "../hrtf/mysofa.h"
+#include "../hrtf/tools.h"
+#include "json.h"
 
-#include "mysofa.h"
-#include "reader.h"
+int main(int argc, char **argv) {
+	struct MYSOFA_HRTF *hrtf = NULL;
+	int err = 0;
 
-int gunzip(int inlen, char *in, int *outlen, char *out) {
-	int err;
-	z_stream stream;
+	if (argc != 2) {
+		fprintf(stderr, "Usage: %s <FILE.SOFA>\n", argv[0]);
+		return 1;
+	}
 
-	memset(&stream, 0, sizeof(stream));
-	stream.avail_in = inlen;
-	stream.next_in = (unsigned char*) in;
-	stream.avail_out = *outlen;
-	stream.next_out = (unsigned char*) out;
+	hrtf = mysofa_load(argv[1], &err);
 
-	err = inflateInit(&stream);
-	if (err)
-		return err;
-
-	err = inflate(&stream, Z_SYNC_FLUSH);
-	*outlen = stream.total_out;
-	inflateEnd(&stream);
-	if (err && err != Z_STREAM_END) {
-		log(" gunzip error %d %s\n",err,stream.msg);
+	if (!hrtf) {
+		fprintf(stderr, "Error reading file %s. Error code: %d\n", argv[1],
+				err);
 		return err;
 	}
 
-	return MYSOFA_OK;
+	printJson(stdout,hrtf);
+
+	mysofa_free(hrtf);
+
+	return 0;
 }
