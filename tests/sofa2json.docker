@@ -1,0 +1,5 @@
+#!/bin/bash
+docker build -t sofa2json s2j
+docker run sofa2json ./sofa2json && exit 1
+exit 0
+

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 ../build/src/mysofa2json "$1" >tmp1.json 2>tmp1.txt 
 
@@ -9,7 +9,7 @@ if [ "$ret" != 0 ]; then
     exit $ret
 fi
 
-../tests/sofa2json "$1" >tmp2.json 2>tmp2.txt
+cat "$1" | docker run -i sofa2json  /bin/bash -c 'cat >test.sofa && ./sofa2json test.sofa' >tmp2.json 2>tmp2.txt
 ret=$?
 if [ "$ret" != 0 ]; then 
     cat tmp2.txt
@@ -26,3 +26,4 @@ if [ "$ret" != 0 ]; then
 fi
 
 rm tmp1.json tmp1.txt tmp2.json tmp2.txt
+
