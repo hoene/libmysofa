@@ -56,13 +56,13 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 	return easy;
 }
 
-void mysofa_getfilter_short(struct MYSOFA_EASY* easy, double x, double y, double z,
+void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 		short *IRleft, short *IRright,
 		int *delayLeft, int *delayRight)
 {
-	double c[3] = { x,y,z };
-	double fir[easy->hrtf->N * easy->hrtf->R];
-	double delays[2];
+	float c[3] = { x,y,z };
+	float fir[easy->hrtf->N * easy->hrtf->R];
+	float delays[2];
 
 	int nearest = mysofa_lookup(easy->lookup, c);
 	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
@@ -74,8 +74,8 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, double x, double y, double
 	*delayLeft  = delays[0] * easy->hrtf->DataSamplingRate.values[0];
 	*delayRight = delays[1] * easy->hrtf->DataSamplingRate.values[0];
 
-	double *fl = fir;
-	double *fr = fir + easy->hrtf->N;
+	float *fl = fir;
+	float *fr = fir + easy->hrtf->N;
 	int i;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++ * 32767.;
@@ -83,13 +83,13 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, double x, double y, double
 	}
 }
 
-void mysofa_getfilter_double(struct MYSOFA_EASY* easy, double x, double y, double z,
-		double *IRleft, double *IRright,
-		double *delayLeft, double *delayRight)
+void mysofa_getfilter_double(struct MYSOFA_EASY* easy, float x, float y, float z,
+		float *IRleft, float *IRright,
+		float *delayLeft, float *delayRight)
 {
-	double c[3] = { x,y,z };
-	double fir[easy->hrtf->N * easy->hrtf->R];
-	double delays[2];
+	float c[3] = { x,y,z };
+	float fir[easy->hrtf->N * easy->hrtf->R];
+	float delays[2];
 
 	int nearest = mysofa_lookup(easy->lookup, c);
 	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
@@ -101,8 +101,8 @@ void mysofa_getfilter_double(struct MYSOFA_EASY* easy, double x, double y, doubl
 	*delayLeft  = delays[0];
 	*delayRight = delays[1];
 
-	double *fl = fir;
-	double *fr = fir + easy->hrtf->N;
+	float *fl = fir;
+	float *fr = fir + easy->hrtf->N;
 	int i;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++;

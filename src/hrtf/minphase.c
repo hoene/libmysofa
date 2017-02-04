@@ -14,13 +14,13 @@
 #include "mysofa.h"
 #include "tools.h"
 
-static void trunk(double *in, int size, int *start, int *end, double threshold) {
-	double energy = 0;
+static void trunk(float *in, int size, int *start, int *end, float threshold) {
+	float energy = 0;
 	int s = 0;
 	int e = size - 1;
-	double ss, ee;
+	float ss, ee;
 
-	double l = loudness(in, size);
+	float l = loudness(in, size);
 	threshold = threshold * l;
 
 	ss = in[s] * in[s];
@@ -44,7 +44,7 @@ static void trunk(double *in, int size, int *start, int *end, double threshold) 
 	*end = e + 1;
 }
 
-int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold) {
+int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	int i;
 	int max = 0;
 
@@ -71,18 +71,18 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold) {
 	/*
 	 * update delay and filters
 	 */
-	double samplerate = hrtf->DataSamplingRate.values[0];
-	double d[2] = { hrtf->DataDelay.values[0], hrtf->DataDelay.values[1] };
+	float samplerate = hrtf->DataSamplingRate.values[0];
+	float d[2] = { hrtf->DataDelay.values[0], hrtf->DataDelay.values[1] };
 	hrtf->DataDelay.elements = filters;
 	hrtf->DataDelay.values = realloc(hrtf->DataDelay.values,
-			sizeof(double) * filters);
+			sizeof(float) * filters);
 	for (i = 0; i < filters; i++) {
 		if (start[i] + max > hrtf->N)
 			start[i] = hrtf->N - max;
 		hrtf->DataDelay.values[i] = d[i % 1] + (start[i] / samplerate);
 		memmove(hrtf->DataIR.values + i * max,
 				hrtf->DataIR.values + i * hrtf->N + start[i],
-				max * sizeof(double));
+				max * sizeof(float));
 	}
 
 	/*
@@ -91,7 +91,7 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold) {
 	hrtf->N = max;
 	hrtf->DataIR.elements = max * filters;
 	hrtf->DataIR.values = realloc(hrtf->DataIR.values,
-			sizeof(double) * hrtf->DataIR.elements);
+			sizeof(float) * hrtf->DataIR.elements);
 
 	return max;
 }

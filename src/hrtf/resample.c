@@ -14,7 +14,7 @@
 #include "mysofa.h"
 #include "tools.h"
 
-int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate) {
+int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 	int i, res;
 
 	if (hrtf->DataSamplingRate.elements != 1 || samplerate <= 8000.)
@@ -29,7 +29,7 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate) {
 	/*
 	 * resample FIR filter
 	 */
-	double *values = malloc(newN * hrtf->R * hrtf->M * sizeof(double));
+	float *values = malloc(newN * hrtf->R * hrtf->M * sizeof(float));
 	if (values == NULL)
 		return MYSOFA_NO_MEMORY;
 

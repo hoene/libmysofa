@@ -11,10 +11,10 @@
 #include "mysofa.h"
 #include "tools.h"
 
-double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
-		int nearest, int *neighborhood, double *fir, double *delays) {
+float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
+		int nearest, int *neighborhood, float *fir, float *delays) {
 	int i, use[6];
-	double d, d6[6];
+	float d, d6[6];
 	int size = hrtf->N * hrtf->R;
 
 	if (hrtf->DataDelay.elements == hrtf->R) {
@@ -91,7 +91,7 @@ double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
 		use[5] = 1;
 	}
 
-	double weight = 1 / d;
+	float weight = 1 / d;
 	copyArrayWeighted(fir, hrtf->DataIR.values + nearest * size, size, weight);
 	if (hrtf->DataDelay.elements > hrtf->R) {
 		delays[0] = hrtf->DataDelay.values[nearest * hrtf->R] * weight;
@@ -100,7 +100,7 @@ double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
 
 	for (i = 0; i < 6; i++) {
 		if (use[i]) {
-			double w = 1 / d6[i];
+			float w = 1 / d6[i];
 			addArrayWeighted(fir,
 					hrtf->DataIR.values + neighborhood[i] * size, size,
 					w);

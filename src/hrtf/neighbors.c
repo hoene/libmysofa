@@ -29,13 +29,13 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 	for (i = 0; i < neighbor->elements * 6; i++)
 		neighbor->index[i] = -1;
 
-	double origin[hrtf->C], test[hrtf->C];
+	float origin[hrtf->C], test[hrtf->C];
 
 	for (i = 0; i < hrtf->M; i ++) {
-		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(double) * hrtf->C);
+		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
 		convertCartesianToSpherical(origin, hrtf->C);
 
-		double phi = 0.5;
+		float phi = 0.5;
 		do {
 			test[0] = origin[0] + phi;
 			test[1] = origin[1];
@@ -63,7 +63,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 			phi -= 0.5;
 		} while (phi >= -45);
 
-		double theta = 0.5;
+		float theta = 0.5;
 		do {
 			test[0] = origin[0];
 			test[1] = origin[1] + theta;
@@ -91,7 +91,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 			theta -= 0.5;
 		} while (theta >= -45);
 
-		double radius = 0.1, radius2;
+		float radius = 0.1, radius2;
 		do {
 			test[0] = origin[0];
 			test[1] = origin[1];

@@ -106,9 +106,17 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 
 	array->attributes = dataobject->attributes;
 	dataobject->attributes = NULL;
-	array->values = dataobject->data;
-	dataobject->data = NULL;
 	array->elements = dataobject->data_len / 8;
+
+	float *p1 = dataobject->data;
+	double *p2 = dataobject->data;
+	int i;
+	for(i=0;i<array->elements;i++)
+		*p1++=*p2++;
+	array->values=realloc(dataobject->data,array->elements*sizeof(float));
+
+	dataobject->data = NULL;
+
 	return MYSOFA_OK;
 }
 

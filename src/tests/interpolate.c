@@ -22,9 +22,9 @@ void test_interpolate() {
 
 	mysofa_tocartesian(hrtf);
 
-	double fir[hrtf->N * hrtf->R];
-	double delays[2];
-	double *res;
+	float fir[hrtf->N * hrtf->R];
+	float delays[2];
+	float *res;
 	int neighborhood[6] = { -1, -1, -1, -1, -1, -1 };
 
 	res = mysofa_interpolate(hrtf, hrtf->SourcePosition.values, 0, neighborhood,
@@ -33,7 +33,7 @@ void test_interpolate() {
 	CU_ASSERT(delays[0] == 0);
 	CU_ASSERT(delays[1] == 0);
 
-	double c[3];
+	float c[3];
 	c[0] = (hrtf->SourcePosition.values[0] + hrtf->SourcePosition.values[3])
 			/ 2;
 	c[1] = (hrtf->SourcePosition.values[1] + hrtf->SourcePosition.values[4])

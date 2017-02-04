@@ -21,7 +21,7 @@ void test_easy() {
 	}
 
 	int filters=0;
-	double theta,r;
+	float theta,r;
 	for(theta=-90.;theta<=90.;theta+=5.) {
 		r = round(cos(theta*M_PI/180.) * 120.);
 		if(r==0.) r=1;
@@ -31,9 +31,9 @@ void test_easy() {
 	printf("Filters %d\n",filters);
 #endif
 
-	double *coordinates = malloc(filters*sizeof(double)*3);
-	double *ir = malloc(filters*easy->hrtf->N*sizeof(double)*2);
-	double *delays = malloc(filters*2*sizeof(double));
+	float *coordinates = malloc(filters*sizeof(float)*3);
+	float *ir = malloc(filters*easy->hrtf->N*sizeof(float)*2);
+	float *delays = malloc(filters*2*sizeof(float));
 
 	int count=0;
 	for(theta=-90.;theta<=90.;theta+=5.) {

@@ -14,7 +14,6 @@ enable_testing()
 
 add_subdirectory(src)
 
-add_test(InstallDeepDiff npm install deep-diff)
 add_test(sofa2json ../tests/sofa2json.docker ../tests/sofa_api_mo_test/Pulse.sofa)
 # add_test(ARI_NH2_hrtf_M_dtf256 ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH2_hrtf_M_dtf\ 256.sofa)
 # add_test(ARI_NH4_4_freqs ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH4_4_freqs.sofa)

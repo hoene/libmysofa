@@ -30,10 +30,10 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 	/*
 	 * find smallest and largest radius
 	 */
-	lookup->radius_min = DBL_MAX;
-	lookup->radius_max = DBL_MIN;
+	lookup->radius_min = FLT_MAX;
+	lookup->radius_max = FLT_MIN;
 	for (i = 0; i < hrtf->M; i ++) {
-		double r = radius(hrtf->SourcePosition.values + i * hrtf->C);
+		float r = radius(hrtf->SourcePosition.values + i * hrtf->C);
 		if (r < lookup->radius_min)
 			lookup->radius_min = r;
 		if (r > lookup->radius_max)
@@ -53,7 +53,7 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 	 * add coordinates to the tree
 	 */
 	for (i = 0; i < hrtf->M; i++) {
-		double *f = hrtf->SourcePosition.values + i * hrtf->C;
+		float *f = hrtf->SourcePosition.values + i * hrtf->C;
 		kd_insert((struct kdtree *) lookup->kdtree, f, (void*)(intptr_t)i);
 	}
 
@@ -64,9 +64,9 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
  * looks for a filter that is similar to the given Cartesian coordinate
  * BE AWARE: The coordinate vector will be normalized if required
  */
-int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate) {
+int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
 
-	double r = radius(coordinate);
+	float r = radius(coordinate);
 	if(r>lookup->radius_max) {
 		r = lookup->radius_max / r;
 		coordinate[0] *= r;

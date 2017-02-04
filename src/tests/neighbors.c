@@ -8,6 +8,8 @@
 #include "../hrtf/tools.h"
 #include "tests.h"
 
+#define VDEBUG
+
 void test_neighbors() {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
@@ -38,13 +40,13 @@ void test_neighbors() {
 	}
 
 	int i, j, *res;
-	double c[3],C[3];
+	float c[3],C[3];
 #ifdef VDEBUG
 	const char *dir = "RLUDFB";
 #endif
 
 	for (i = 0; i < hrtf->M; i ++) {
-		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(double) * hrtf->C);
+		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
 		convertCartesianToSpherical(c, 3);
 #ifdef VDEBUG
 		printf("%4.0f %4.0f %5.2f\t", c[0], c[1], c[2]);
@@ -54,7 +56,7 @@ void test_neighbors() {
 		for (j = 0; j < 6; j++) {
 			if (res[j] >= 0) {
 				memcpy(C, hrtf->SourcePosition.values + res[j] * hrtf->C,
-						sizeof(double) * hrtf->C);
+						sizeof(float) * hrtf->C);
 				convertCartesianToSpherical(C, 3);
 #ifdef VDEBUG
 				printf("\t%c %4.0f %4.0f %5.2f", dir[j], C[0], C[1], C[2]);
@@ -69,7 +71,7 @@ void test_neighbors() {
 					CU_ASSERT_FATAL(c[0] > C[0] && c[0]-45 < C[0]);
 					break;
 				case 2:
-					CU_ASSERT_FATAL(c[1] < C[1] || c[1]==90);
+					CU_ASSERT_FATAL(c[1] < C[1] || fequals(c[1],90.f));
 					break;
 				case 3:
 					CU_ASSERT_FATAL(c[1] > C[1]);

@@ -17,13 +17,13 @@ if [ "$ret" != 0 ]; then
     exit $ret
 fi
 
-cp -f ../tests/json-diff.js .
+cp -f ../tests/json-diff.js . 2>/dev/null || true
 node ./json-diff.js ./tmp1.json ./tmp2.json
 ret=$?
 if [ "$ret" != 0 ]; then 
     echo Diff $ret
     exit $ret
 fi
-
+echo ok
 rm tmp1.json tmp1.txt tmp2.json tmp2.txt
 

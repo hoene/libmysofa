@@ -32,7 +32,7 @@ struct MYSOFA_ATTRIBUTE {
 };
 
 struct MYSOFA_ARRAY {
-	double *values;
+	float *values;
 	int elements;
 	struct MYSOFA_ATTRIBUTE *attributes;
 };
@@ -81,7 +81,7 @@ struct MYSOFA_HRTF {
 /* structure for lookup HRTF filters */
 struct MYSOFA_LOOKUP {
 	void *kdtree;
-	double radius_min, radius_max;
+	float radius_min, radius_max;
 };
 
 struct MYSOFA_NEIGHBORHOOD {
@@ -106,7 +106,7 @@ void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf);
 void mysofa_free(struct MYSOFA_HRTF *hrtf);
 
 struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf);
-int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, double *coordinate);
+int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate);
 void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup);
 
 struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
@@ -114,12 +114,12 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos);
 void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
 
-double* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, double *cordinate,
-		int nearest, int *neighborhood, double *fir, double *delays);
+float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
+		int nearest, int *neighborhood, float *fir, float *delays);
 
-int mysofa_resample(struct MYSOFA_HRTF *hrtf, double samplerate);
-double mysofa_loudness(struct MYSOFA_HRTF *hrtf);
-int mysofa_minphase(struct MYSOFA_HRTF *hrtf, double threshold);
+int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate);
+float mysofa_loudness(struct MYSOFA_HRTF *hrtf);
+int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold);
 
 struct MYSOFA_EASY {
 	struct MYSOFA_HRTF *hrtf;
@@ -128,12 +128,12 @@ struct MYSOFA_EASY {
 };
 
 struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
-void mysofa_getfilter_short(struct MYSOFA_EASY* easy, double x, double y, double z,
+void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 		short *IRleft, short *IRright,
 		int *delayLeft, int *delayRight);
-void mysofa_getfilter_double(struct MYSOFA_EASY* easy, double x, double y, double z,
-		double *IRleft, double *IRright,
-		double *delayLeft, double *delayRight);
+void mysofa_getfilter_double(struct MYSOFA_EASY* easy, float x, float y, float z,
+		float *IRleft, float *IRright,
+		float *delayLeft, float *delayRight);
 void mysofa_close(struct MYSOFA_EASY* easy);
 
 

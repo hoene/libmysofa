@@ -34,9 +34,9 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
 	return 0;
 }
 
-void convertCartesianToSpherical(double *values, int elements) {
+void convertCartesianToSpherical(float *values, int elements) {
 	int i;
-	double x, y, z, r, theta, phi;
+	float x, y, z, r, theta, phi;
 
 	for (i = 0; i < elements - 2; i += 3) {
 		x = values[i];
@@ -44,41 +44,41 @@ void convertCartesianToSpherical(double *values, int elements) {
 		z = values[i + 2];
 		r = radius(values);
 
-		theta = atan2(z, sqrt(x * x + y * y));
-		phi = atan2(y, x);
+		theta = atan2f(z, sqrtf(x * x + y * y));
+		phi = atan2f(y, x);
 
-		values[i] = fmod(phi * (180 / M_PI) + 360, 360);
+		values[i] = fmodf(phi * (180 / M_PI) + 360, 360);
 		values[i + 1] = theta * (180 / M_PI);
 		values[i + 2] = r;
 	}
 }
 
-void convertSphericalToCartesian(double *values, int elements) {
+void convertSphericalToCartesian(float *values, int elements) {
 	int i;
-	double x, r, theta, phi;
+	float x, r, theta, phi;
 
 	for (i = 0; i < elements - 2; i += 3) {
 		phi = values[i] * (M_PI / 180);
 		theta = values[i + 1] * (M_PI / 180);
 		r = values[i + 2];
-		x = cos(theta) * r;
-		values[i + 2] = sin(theta) * r;
-		values[i] = cos(phi) * x;
-		values[i + 1] = sin(phi) * x;
+		x = cosf(theta) * r;
+		values[i + 2] = sinf(theta) * r;
+		values[i] = cosf(phi) * x;
+		values[i + 1] = sinf(phi) * x;
 	}
 }
 
-double radius(double *cartesian) {
-	return sqrt(
-			pow(cartesian[0], 2.) + pow(cartesian[1], 2.)
-					+ pow(cartesian[2], 2.));
+float radius(float *cartesian) {
+	return sqrtf(
+			powf(cartesian[0], 2.f) + powf(cartesian[1], 2.f)
+					+ powf(cartesian[2], 2.f));
 }
 
-double distance(double *cartesian1, double *cartesian2) {
-	return sqrt(
-			pow(cartesian1[0] - cartesian2[0], 2.)
-					+ pow(cartesian1[1] - cartesian2[1], 2.)
-					+ pow(cartesian1[2] - cartesian2[2], 2.));
+float distance(float *cartesian1, float *cartesian2) {
+	return sqrtf(
+			powf(cartesian1[0] - cartesian2[0], 2.f)
+					+ powf(cartesian1[1] - cartesian2[1], 2.f)
+					+ powf(cartesian1[2] - cartesian2[2], 2.f));
 }
 
 /*
@@ -88,8 +88,8 @@ double distance(double *cartesian1, double *cartesian2) {
  }
  */
 
-int fequals(double a, double b) {
-	return fabs(a - b) < 0.000001;
+int fequals(float a, float b) {
+	return fabsf(a - b) < 0.00001;
 }
 
 /*
@@ -128,42 +128,42 @@ void nsearch(const void *key, const void *base, size_t num, size_t size,
 	}
 }
 
-void copyToFloat(float *out, double *in, int size) {
+void copyToFloat(float *out, float *in, int size) {
 	while (size > 0) {
 		*out++ = *in++;
 		size--;
 	}
 }
 
-void copyFromFloat(double *out, float *in, int size) {
+void copyFromFloat(float *out, float *in, int size) {
 	while (size > 0) {
 		*out++ = *in++;
 		size--;
 	}
 }
 
-void copyArrayWeighted(double *dst, double *src, int size, double w) {
+void copyArrayWeighted(float *dst, float *src, int size, float w) {
 	while (size > 0) {
 		*dst++ = *src++ * w;
 		size--;
 	}
 }
 
-void addArrayWeighted(double *dst, double *src, int size, double w) {
+void addArrayWeighted(float *dst, float *src, int size, float w) {
 	while (size > 0) {
 		*dst++ += *src++ * w;
 		size--;
 	}
 }
 
-void scaleArray(double *dst, int size, double w) {
+void scaleArray(float *dst, int size, float w) {
 	while (size > 0) {
 		*dst++ *= w;
 		size--;
 	}
 }
-double loudness(double *in, int size) {
-	double res = 0;
+float loudness(float *in, int size) {
+	float res = 0;
 	while (size > 0) {
 		res += *in * *in;
 		in++;

@@ -3,28 +3,28 @@
 #include "../hrtf/tools.h"
 #include "tests.h"
 
-static void copy(double *src, double *dst) {
-	memcpy(src, dst, sizeof(double) * 3);
+static void copy(float *src, float *dst) {
+	memcpy(src, dst, sizeof(float) * 3);
 }
 
-static void print(double *c) {
+static void print(float *c) {
 #ifdef VDEBUG
 	printf("%f %f %f\n", c[0], c[1], c[2]);
 #endif
 }
 
-static int same(double *a, double *b) {
+static int same(float *a, float *b) {
 	return fequals(a[0], b[0]) && fequals(a[1], b[1]) && fequals(a[2], b[2]);
 }
 
 void test_coordinates() {
-	double array000[3] = { 0, 0, 0 };
-	double array100[3] = { 1, 0, 0 };
-	double array010[3] = { 0, 1, 0 };
-	double array001[3] = { 0, 0, 1 };
-	double array0901[3] = { 0, 90, 1 };
-	double array9001[3] = { 90, 0, 1 };
-	double result[3] = { 1, 1, 1 };
+	float array000[3] = { 0, 0, 0 };
+	float array100[3] = { 1, 0, 0 };
+	float array010[3] = { 0, 1, 0 };
+	float array001[3] = { 0, 0, 1 };
+	float array0901[3] = { 0, 90, 1 };
+	float array9001[3] = { 90, 0, 1 };
+	float result[3] = { 1, 1, 1 };
 
 	CU_ASSERT(!same(array000, result));
 	copy(result, array000);

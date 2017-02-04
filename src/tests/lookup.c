@@ -11,7 +11,7 @@ void test_lookup() {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
 	struct timeval r1, r2;
-	double duration1, duration2;
+	float duration1, duration2;
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 
@@ -31,7 +31,7 @@ void test_lookup() {
 	printf("r  %f %f\n", lookup->radius_min, lookup->radius_max);
 #endif
 
-	double find[3];
+	float find[3];
 	int j;
 	for (j = 0; j < 10000; j++) {
 		find[0] = rand() * (4. / RAND_MAX) - 2;
@@ -46,10 +46,10 @@ void test_lookup() {
 
 		gettimeofday(&r1, NULL);
 		int index = -1;
-		double dmin = DBL_MAX;
+		float dmin = FLT_MAX;
 		int i;
 		for (i = 0; i < hrtf->M; i ++) {
-			double r = distance(find, hrtf->SourcePosition.values + i * hrtf->C);
+			float r = distance(find, hrtf->SourcePosition.values + i * hrtf->C);
 			if (r < dmin) {
 				dmin = r;
 				index = i;
