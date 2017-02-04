@@ -48,7 +48,7 @@ void test_easy() {
 #ifdef VDEBUG
 			printf("%f %d %d %f %f %f\n",theta,phi,count,coordinates[count*3+0],coordinates[count*3+1],coordinates[count*3+2]);
 #endif
-			mysofa_getfilter_double(easy,
+			mysofa_getfilter_float(easy,
 					coordinates[count*3+0],
 					coordinates[count*3+1],
 					coordinates[count*3+2],

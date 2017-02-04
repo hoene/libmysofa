@@ -8,8 +8,6 @@
 #include "../hrtf/tools.h"
 #include "tests.h"
 
-#define VDEBUG
-
 void test_neighbors() {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;

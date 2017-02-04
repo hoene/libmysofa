@@ -18,7 +18,7 @@ void test_resample() {
 		CU_FAIL_FATAL("Error reading file.");
 	}
 
-	double backup[hrtf->N * 3];
+	float backup[hrtf->N * 3];
 
 	for (i = 0; i < hrtf->N * 3; i++) {
 		backup[i]=hrtf->DataIR.values[i];

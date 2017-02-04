@@ -12,7 +12,7 @@
 void test_loudness() {
 	struct MYSOFA_HRTF *hrtf;
 	int err = 0;
-	double factor;
+	float factor;
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 	if (!hrtf) {
