@@ -10,3 +10,12 @@ add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c te
 target_link_libraries (tests mysofa cunit)
 set_property(TARGET tests PROPERTY C_STANDARD 11)
 add_test(NAME tests WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND tests)
+
+install(TARGETS mysofa mysofa2json 
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
+    
+install(FILES hrtf/mysofa.h DESTINATION include)
+
+
