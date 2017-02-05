@@ -43,6 +43,13 @@ void test_coordinates() {
 	CU_ASSERT(same(array100, result));
 	print(result);
 
+	copy(result, array100);
+	mysofa_c2s(result);
+	CU_ASSERT(same(array001, result));
+	mysofa_s2c(result);
+	CU_ASSERT(same(array100, result));
+	print(result);
+
 	copy(result, array001);
 	convertCartesianToSpherical(result, 3);
 	print(result);

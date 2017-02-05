@@ -121,6 +121,9 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate);
 float mysofa_loudness(struct MYSOFA_HRTF *hrtf);
 int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold);
 
+void mysofa_c2s(float values[3]);
+void mysofa_s2c(float values[3]);
+
 struct MYSOFA_EASY {
 	struct MYSOFA_HRTF *hrtf;
 	struct MYSOFA_LOOKUP *lookup;

@@ -32,7 +32,7 @@ float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
 		c[2] = hrtf->SourcePosition.values[i + 2];
 
 		if (cartesian)
-			convertCartesianToSpherical(c, 3);
+			mysofa_c2s(c);
 
 		if (min > c[0] + c[1]) {
 			min = c[0] + c[1];

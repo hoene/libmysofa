@@ -34,37 +34,48 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
 	return 0;
 }
 
+void mysofa_c2s(float values[3])
+{
+	float x,y,z,r,theta,phi;
+	x = values[0];
+	y = values[1];
+	z = values[2];
+	r = radius(values);
+
+	theta = atan2f(z, sqrtf(x * x + y * y));
+	phi = atan2f(y, x);
+
+	values[0] = fmodf(phi * (180 / M_PI) + 360, 360);
+	values[1] = theta * (180 / M_PI);
+	values[2] = r;
+}
+
+void mysofa_s2c(float values[3])
+{
+	float x, r, theta, phi;
+	phi = values[0] * (M_PI / 180);
+	theta = values[1] * (M_PI / 180);
+	r = values[2];
+	x = cosf(theta) * r;
+	values[2] = sinf(theta) * r;
+	values[0] = cosf(phi) * x;
+	values[1] = sinf(phi) * x;
+}
+
 void convertCartesianToSpherical(float *values, int elements) {
 	int i;
-	float x, y, z, r, theta, phi;
 
 	for (i = 0; i < elements - 2; i += 3) {
-		x = values[i];
-		y = values[i + 1];
-		z = values[i + 2];
-		r = radius(values);
-
-		theta = atan2f(z, sqrtf(x * x + y * y));
-		phi = atan2f(y, x);
-
-		values[i] = fmodf(phi * (180 / M_PI) + 360, 360);
-		values[i + 1] = theta * (180 / M_PI);
-		values[i + 2] = r;
+		mysofa_c2s(values+i);
 	}
 }
 
 void convertSphericalToCartesian(float *values, int elements) {
+
 	int i;
-	float x, r, theta, phi;
 
 	for (i = 0; i < elements - 2; i += 3) {
-		phi = values[i] * (M_PI / 180);
-		theta = values[i + 1] * (M_PI / 180);
-		r = values[i + 2];
-		x = cosf(theta) * r;
-		values[i + 2] = sinf(theta) * r;
-		values[i] = cosf(phi) * x;
-		values[i + 1] = sinf(phi) * x;
+		mysofa_s2c(values+i);
 	}
 }
 

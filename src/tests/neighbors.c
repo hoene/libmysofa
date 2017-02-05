@@ -45,7 +45,7 @@ void test_neighbors() {
 
 	for (i = 0; i < hrtf->M; i ++) {
 		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
-		convertCartesianToSpherical(c, 3);
+		mysofa_c2s(c);
 #ifdef VDEBUG
 		printf("%4.0f %4.0f %5.2f\t", c[0], c[1], c[2]);
 #endif
@@ -55,7 +55,7 @@ void test_neighbors() {
 			if (res[j] >= 0) {
 				memcpy(C, hrtf->SourcePosition.values + res[j] * hrtf->C,
 						sizeof(float) * hrtf->C);
-				convertCartesianToSpherical(C, 3);
+				mysofa_c2s(C);
 #ifdef VDEBUG
 				printf("\t%c %4.0f %4.0f %5.2f", dir[j], C[0], C[1], C[2]);
 #endif

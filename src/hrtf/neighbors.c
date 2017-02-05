@@ -54,7 +54,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 			test[0] = origin[0] + phi;
 			test[1] = origin[1];
 			test[2] = origin[2];
-			convertSphericalToCartesian(test, 3);
+			mysofa_s2c(test);
 			index = mysofa_lookup(lookup, test);
 			if (index != i) {
 				neighbor->index[i * 6 + 1] = index;
