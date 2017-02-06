@@ -37,3 +37,14 @@ add_test(TU-Berlin_QU_KEMAR_anechoic_radius_3m.sofa ../tests/compare.sh ../tests
 #add_test( ../tests/compare.sh ../sofa_api_mo_test/)
 
 
+SET(CPACK_PACKAGE_DESCRIPTION "SOFA file reader for better HRTFs")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This library read AES SOFA files and normalizes them")
+SET(CPACK_PACKAGE_VENDOR "Symonics GmbH")
+SET(CPACK_PACKAGE_CONTACT "christian.hoene@symonics.com")
+SET(CPACK_GENERATOR "DEB")
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christian Hoene") 
+SET(CPACK_PACKAGE_VERSION_MAJOR "0")
+SET(CPACK_PACKAGE_VERSION_MINOR "5")
+SET(CPACK_PACKAGE_VERSION_PATCH "pre") 
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib1g, libresample1")
+INCLUDE(CPack)
