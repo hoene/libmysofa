@@ -221,7 +221,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	return NULL;
 }
 
-struct MYSOFA_HRTF* mysofa_load(char *filename, int *err) {
+struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 

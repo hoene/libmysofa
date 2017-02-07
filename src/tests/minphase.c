@@ -9,6 +9,8 @@
 #include "../hrtf/tools.h"
 #include "tests.h"
 
+#define VDEBUG
+
 void test_minphase() {
 	struct MYSOFA_HRTF *hrtf;
 	int err = 0;
@@ -55,4 +57,22 @@ void test_minphase() {
 #endif
 	CU_ASSERT(len==463);
 	mysofa_free(hrtf);
+
+
+
+	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+			&err);
+	if (!hrtf) {
+		CU_FAIL_FATAL("Error reading file.");
+	}
+	err = mysofa_resample(hrtf, 8000.);
+	CU_ASSERT_FATAL(err == MYSOFA_OK);
+
+	len = mysofa_minphase(hrtf, 0.01);
+#ifdef VDEBUG
+	printf("max length %d\n", len);
+#endif
+	CU_ASSERT(len==70);
+	mysofa_free(hrtf);
+
 }

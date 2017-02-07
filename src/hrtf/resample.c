@@ -17,7 +17,7 @@
 int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 	int i, res;
 
-	if (hrtf->DataSamplingRate.elements != 1 || samplerate <= 8000.)
+	if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000.)
 		return MYSOFA_INVALID_FORMAT;
 
 	if (samplerate == hrtf->DataSamplingRate.values[0])

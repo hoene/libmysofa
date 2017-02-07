@@ -15,6 +15,13 @@ void test_easy() {
 	int err = 0;
 	int filterlength;
 
+	easy = mysofa_open("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
+	if (!easy) {
+		CU_FAIL_FATAL("Error reading file.");
+	}
+
+	mysofa_close(easy);
+
 	easy = mysofa_open("tests/sofa_api_mo_test/Pulse.sofa", 44100, &filterlength, &err);
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");

@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "mysofa.h"
 /**
  *
@@ -21,25 +22,30 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 	easy->lookup = NULL;
 	easy->neighborhood = NULL;
 
-	easy->hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", err);
+	easy->hrtf = mysofa_load(filename, err);
 	if (!easy->hrtf) {
+		fprintf(stderr,"cnanot open");
 		mysofa_close(easy);
 		return NULL;
 	}
 
 	*err = mysofa_check(easy->hrtf);
 	if (*err != MYSOFA_OK) {
+		fprintf(stderr,"check failed");
 		mysofa_close(easy);
 		return NULL;
 	}
 
 	*err = mysofa_resample(easy->hrtf, samplerate);
 	if (*err != MYSOFA_OK) {
+		fprintf(stderr,"resample failed");
 		mysofa_close(easy);
 		return NULL;
 	}
 
 	mysofa_loudness(easy->hrtf);
+
+	mysofa_minphase(easy->hrtf,0.01);
 
 	mysofa_tocartesian(easy->hrtf);
 
