@@ -7,13 +7,19 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
 #include "mysofa.h"
+
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 /**
  *
  */
 
 struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
 {
+	fprintf(stderr,"mysofa_open %s %f\n",filename,samplerate);
+
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
 		*err = MYSOFA_NO_MEMORY;
@@ -60,6 +66,20 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 			easy->lookup);
 
 	return easy;
+}
+
+struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
+{
+	struct MYSOFA_EASY* res = mysofa_cache_lookup(filename, samplerate);
+	if(res) {
+		*filterlength = res->hrtf->N;
+		return res;
+	}
+	res = mysofa_open(filename,samplerate,filterlength,err);
+	if(res) {
+		res = mysofa_cache_store(res,filename,samplerate);
+	}
+	return res;
 }
 
 void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
@@ -118,8 +138,18 @@ void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 
 void mysofa_close(struct MYSOFA_EASY* easy)
 {
-	mysofa_neighborhood_free(easy->neighborhood);
-	mysofa_lookup_free(easy->lookup);
-	mysofa_free(easy->hrtf);
-	free(easy);
+	if(easy) {
+		if(easy->neighborhood)
+			mysofa_neighborhood_free(easy->neighborhood);
+		if(easy->lookup)
+			mysofa_lookup_free(easy->lookup);
+		if(easy->hrtf)
+			mysofa_free(easy->hrtf);
+		free(easy);
+	}
+}
+
+void mysofa_close_cached(struct MYSOFA_EASY* easy)
+{
+	mysofa_cache_release(easy);
 }

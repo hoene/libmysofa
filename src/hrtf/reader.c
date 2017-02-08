@@ -225,6 +225,7 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 
+	fprintf(stderr,"filename %s\n",filename);
 	reader.fhd = fopen(filename, "rb");
 
 	if (!reader.fhd) {

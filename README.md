@@ -42,13 +42,35 @@ If you need HRTF filter for a given coordinate, just call
 ```
 short leftIR[filter_length];
 short rightIR[filter_length];
-int leftDelay;
-int rightDelay;
+int leftDelay;          // unit is samples
+int rightDelay;         // unit is samples
 
 mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
-and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR.
+and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR. Alternative, if you are using float values for the filtering, call.
+```
+float leftIR[filter_length]; [-1. till 1]
+float rightIR[filter_length];
+float leftDelay;          // unit is sec.
+float rightDelay;         // unit is sec.
 
+mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
+```
+
+Sometimes, you want to use multiple SOFA filters or if you have to open a SOFA file multiple times, you may use
+```
+hrtf1 = mysofa_open_cached("file.sofa", 48000, &filter_length, &err);
+hrtf2 = mysofa_open_cached("file.sofa", 48000, &filter_length, &err);
+hrtf3 = mysofa_open_cached("file.sofa", 8000, &filter_length, &err);
+hrtf3 = mysofa_open_cached("file2.sofa", 8000, &filter_length, &err);
+mysofa_close_cached(hrtf1);
+mysofa_close_cached(hrtf2);
+mysofa_close_cached(hrtf3);
+mysofa_close_cached(hrtf4);
+...
+mysofa_cache_release_all();
+```
+Then, all HRTFs having the same filename and sampling rate are stored only once in memory. 
 
 ## Disclaimer
 

@@ -12,6 +12,7 @@
 #include <CUnit/CUnit.h>
 
 void test_coordinates();
+
 void test_nsearch();
 
 void test_check();
@@ -27,6 +28,8 @@ void test_resample();
 void test_loudness();
 
 void test_minphase();
+
+void test_cache();
 
 void test_easy();
 

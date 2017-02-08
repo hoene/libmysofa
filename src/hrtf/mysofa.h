@@ -121,6 +121,11 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate);
 float mysofa_loudness(struct MYSOFA_HRTF *hrtf);
 int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold);
 
+struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate);
+struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *, const char *filename, float samplerate);
+void mysofa_cache_release(struct MYSOFA_EASY *);
+void mysofa_cache_release_all();
+
 void mysofa_c2s(float values[3]);
 void mysofa_s2c(float values[3]);
 
@@ -131,6 +136,7 @@ struct MYSOFA_EASY {
 };
 
 struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
+struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err);
 void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 		short *IRleft, short *IRright,
 		int *delayLeft, int *delayRight);
@@ -138,6 +144,7 @@ void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 		float *IRleft, float *IRright,
 		float *delayLeft, float *delayRight);
 void mysofa_close(struct MYSOFA_EASY* easy);
+void mysofa_close_cached(struct MYSOFA_EASY* easy);
 
 
 #ifdef __cplusplus
