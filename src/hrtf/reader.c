@@ -226,7 +226,10 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct MYSOFA_HRTF *hrtf = NULL;
 
 	fprintf(stderr,"filename %s\n",filename);
-	reader.fhd = fopen(filename, "rb");
+	if(strcmp(filename,"-"))
+    	reader.fhd = fopen(filename, "rb");
+    else
+        reader.fhd = stdin;
 
 	if (!reader.fhd) {
 		log("cannot open file %s\n", filename);
@@ -244,7 +247,8 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 
 	superblockFree(&reader, &reader.superblock);
 	gcolFree(reader.gcol);
-	fclose(reader.fhd);
+	if(strcmp(filename,"-"))
+    	fclose(reader.fhd);
 
 	return hrtf;
 }
