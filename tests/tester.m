@@ -1,5 +1,9 @@
 for n=1:size(hrtf.SourcePosition,1)
     a = round(hrtf.SourcePosition(n,1) / 2);
+    if a < 0 
+        a = a + 180;
+    end
+    a = a + 1;
     
     for u=1:size(hrtf.Data.IR,3) 
         if u == a
@@ -15,6 +19,7 @@ for n=1:size(hrtf.SourcePosition,1)
     if a < 0 
         a = a + 180;
     end
+    a = a + 1;
  
     for u=1:size(hrtf.Data.IR,3) 
         if u == a

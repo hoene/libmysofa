@@ -11,6 +11,8 @@
 #include "mysofa.h"
 #include "tools.h"
 
+#define VDEBUG
+
 float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 		int nearest, int *neighborhood, float *fir, float *delays) {
 	int i, use[6];
@@ -107,8 +109,8 @@ float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 					w);
 			weight += w;
 			if (hrtf->DataDelay.elements > hrtf->R) {
-				delays[0] += hrtf->DataDelay.values[nearest * hrtf->R] * w;
-				delays[1] += hrtf->DataDelay.values[nearest * hrtf->R + 1] * w;
+				delays[0] += hrtf->DataDelay.values[neighborhood[i] * hrtf->R] * w;
+				delays[1] += hrtf->DataDelay.values[neighborhood[i] * hrtf->R + 1] * w;
 			}
 		}
 	}
