@@ -27,7 +27,7 @@
  00000380  00 00 00 f8 ea 72 15 00  c9 03 00 00 00 26 00 00  |.....r.......&..|
  00000390  14 00 00 00 32 32 7c 17  00 22 02 00 00 00 32 00  |....22|.."....2.|
  000003a0  00 0b 00 00 00 07 ef 9c  26 00 bb 01 00 00 00 46  |........&......F|
- 000003b0  00 00 09 00 00 00 e5 f6  ba 26 00 45 03 00 00 00  |.........&.E....|parse
+ 000003b0  00 00 09 00 00 00 e5 f6  ba 26 00 45 03 00 00 00  |.........&.E....|
  000003c0  34 00 00 11 00 00 00 f6  71 f0 2e 00 a3 02 00 00  |4.......q.......|
  000003d0  00 3e 00 00 0d 00 00 00  61 36 dc 36 00 79 03 00  |.>......a6.6.y..|
  000003e0  00 00 35 00 00 12 00 00  00 97 1b 4e 45 00 88 01  |..5........NE...|
@@ -93,7 +93,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTLF", 4)) {
 		log("cannot read signature of BTLF\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object BTLF must have version 0\n");
@@ -137,7 +137,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 		}
 	}
 
-//	fseeko(reader->fhd, bthd->root_node_address + bthd->node_size, SEEK_SET); /* skip checksum */
+/*	fseeko(reader->fhd, bthd->root_node_address + bthd->node_size, SEEK_SET); skip checksum */
 
 	return MYSOFA_OK;
 }
@@ -159,7 +159,7 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTHD", 4)) {
 		log("cannot read signature of BTHD\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object BTHD must have version 0\n");
@@ -227,7 +227,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "TREE", 4)) {
 		log("cannot read signature of TREE\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", (uint64_t )ftello(reader->fhd) - 4, buf);
+	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	node_type = fgetc(reader->fhd);
 	node_level = fgetc(reader->fhd);
@@ -281,8 +281,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 			log(" data at %lX len %u\n", child_pointer, size_of_chunk);
 
 			/* read data */
-			store = ftello(reader->fhd);
-			if (fseeko(reader->fhd, child_pointer, SEEK_SET)) {
+			store = ftell(reader->fhd);
+			if (fseek(reader->fhd, child_pointer, SEEK_SET)) {
 				free(output);
 				return errno;
 			}
@@ -312,7 +312,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 					x = i % elements + start[0];
 					if (x < sx) {
 						j = x * size + b;
-						*(char*) (data->data + j) = output[i];
+						((char*)data->data)[j] = output[i];
 					}
 				}
 				break;
@@ -324,7 +324,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 					x = x / dy + start[0];
 					if (y < sy && x < sx) {
 						j = ((x * sy + y) * size) + b;
-						*(char*) (data->data + j) = output[i];
+						((char*)data->data)[j] = output[i];
 					}
 				}
 				break;
@@ -337,7 +337,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 					x = (x / dzy) + start[0];
 					if (z < sz && y < sy && x < sx) {
 						j = (x * szy + y * sz + z) * size + b;
-						*(char*) (data->data + j) = output[i];
+						((char*)data->data)[j] = output[i];
 					}
 				}
 				break;
@@ -346,7 +346,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 				return MYSOFA_INTERNAL_ERROR;
 			}
 
-			fseeko(reader->fhd, store, SEEK_SET);
+			fseek(reader->fhd, store, SEEK_SET);
 		}
 	}
 

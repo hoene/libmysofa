@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <stdio.h>
 #include "reader.h"
 
 /* read superblock
@@ -72,7 +73,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
 	if (fseek(reader->fhd, 0L, SEEK_END))
 		return errno;
 
-	if (superblock->end_of_file_address != ftello(reader->fhd)) {
+	if (superblock->end_of_file_address != ftell(reader->fhd)) {
 		log("file size mismatch\n");
 		return MYSOFA_INVALID_FORMAT;
 
@@ -82,7 +83,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
 	/* end of superblock */
 
 	/* seek to first object */
-	if (fseeko(reader->fhd, superblock->root_group_object_header_address,
+	if (fseek(reader->fhd, superblock->root_group_object_header_address,
 	SEEK_SET)) {
 		log("cannot seek to first object at %ld\n",
 				superblock->root_group_object_header_address);

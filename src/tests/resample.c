@@ -3,8 +3,6 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include "tests.h"
@@ -12,13 +10,14 @@
 void test_resample() {
 	struct MYSOFA_HRTF *hrtf;
 	int err = 0, i;
+	float *backup;
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
 
-	float backup[hrtf->N * 3];
+	backup = malloc(sizeof(float)*hrtf->N * 3);
 
 	for (i = 0; i < hrtf->N * 3; i++) {
 		backup[i]=hrtf->DataIR.values[i];
@@ -37,6 +36,7 @@ void test_resample() {
 				(hrtf->DataIR.values[i]<=0.3 && backup[i/2]==1.) ) );
 	}
 
+    free(backup);
 	mysofa_free(hrtf);
 }
 

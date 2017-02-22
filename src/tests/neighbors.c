@@ -2,8 +2,6 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include "tests.h"
@@ -11,6 +9,13 @@
 void test_neighbors() {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
+	struct MYSOFA_LOOKUP *lookup;
+	struct MYSOFA_NEIGHBORHOOD *neighborhood;
+	int i, j, *res;
+	float c[3],C[3];
+#ifdef VDEBUG
+	const char *dir = "RLUDFB";
+#endif
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 			&err);
@@ -20,14 +25,14 @@ void test_neighbors() {
 
 	mysofa_tocartesian(hrtf);
 
-	struct MYSOFA_LOOKUP *lookup = mysofa_lookup_init(hrtf);
+	lookup = mysofa_lookup_init(hrtf);
 	if (lookup == NULL) {
 		CU_FAIL("Error sorting HRTF.");
 		mysofa_free(hrtf);
 		return;
 	}
 
-	struct MYSOFA_NEIGHBORHOOD *neighborhood = mysofa_neighborhood_init(hrtf,
+	neighborhood = mysofa_neighborhood_init(hrtf,
 			lookup);
 
 	if (neighborhood == NULL) {
@@ -37,11 +42,6 @@ void test_neighbors() {
 		return;
 	}
 
-	int i, j, *res;
-	float c[3],C[3];
-#ifdef VDEBUG
-	const char *dir = "RLUDFB";
-#endif
 
 	for (i = 0; i < hrtf->M; i ++) {
 		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);

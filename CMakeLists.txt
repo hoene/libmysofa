@@ -19,6 +19,7 @@ install(FILES tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa DESTINATION sha
 
 
 add_test(sofa2json ../tests/sofa2json.docker ../tests/sofa_api_mo_test/Pulse.sofa)
+add_test(nodejs nodejs --version)
 # add_test(ARI_NH2_hrtf_M_dtf256 ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH2_hrtf_M_dtf\ 256.sofa)
 # add_test(ARI_NH4_4_freqs ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH4_4_freqs.sofa)
 # add_test(ARI_NH4_hrtf_M_dtf256 ../tests/compare.sh ../tests/sofa_api_mo_test/ARI_NH4_hrtf_M_dtf\ 256.sofa)

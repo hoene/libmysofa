@@ -115,7 +115,7 @@ void nsearch(const void *key, const void *base, size_t num, size_t size,
 	while (start < end) {
 		size_t mid = start + (end - start) / 2;
 
-		result = cmp(key, base + mid * size);
+		result = cmp(key, ((char*)base) + mid * size);
 		if (result < 0)
 			end = mid;
 		else if (result > 0)

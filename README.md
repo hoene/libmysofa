@@ -49,7 +49,7 @@ mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
 and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR. Alternative, if you are using float values for the filtering, call.
 ```
-float leftIR[filter_length]; [-1. till 1]
+float leftIR[filter_length]; // [-1. till 1]
 float rightIR[filter_length];
 float leftDelay;          // unit is sec.
 float rightDelay;         // unit is sec.

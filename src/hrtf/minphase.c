@@ -47,13 +47,18 @@ static void trunk(float *in, int size, int *start, int *end, float threshold) {
 int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	int i;
 	int max = 0;
+	int filters;
+	int *start;
+	int *end;
+	float samplerate;
+	float d[2];
 
 	if (hrtf->DataDelay.elements != 2)
 		return -1;
 
-	int filters = hrtf->M * hrtf->R;
-	int start[filters];
-	int end[filters];
+	filters = hrtf->M * hrtf->R;
+	start = malloc(filters * sizeof(int));
+	end = malloc(filters * sizeof(int));
 
 	/*
 	 * find maximal length of a filter
@@ -65,14 +70,18 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 			max = end[i] - start[i];
 	}
 
-	if (max == hrtf->N)
+	if (max == hrtf->N) {
+	    free(start);
+	    free(end);
 		return max;
+	}
 
 	/*
 	 * update delay and filters
 	 */
-	float samplerate = hrtf->DataSamplingRate.values[0];
-	float d[2] = { hrtf->DataDelay.values[0], hrtf->DataDelay.values[1] };
+	samplerate = hrtf->DataSamplingRate.values[0];
+	d[0] = hrtf->DataDelay.values[0];
+	d[1] = hrtf->DataDelay.values[1];
 	hrtf->DataDelay.elements = filters;
 	hrtf->DataDelay.values = realloc(hrtf->DataDelay.values,
 			sizeof(float) * filters);
@@ -93,6 +102,8 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	hrtf->DataIR.values = realloc(hrtf->DataIR.values,
 			sizeof(float) * hrtf->DataIR.elements);
 
+    free(start);
+    free(end);
 	return max;
 }
 

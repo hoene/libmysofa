@@ -18,13 +18,12 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
 {
-	fprintf(stderr,"mysofa_open %s %f\n",filename,samplerate);
-
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
 		*err = MYSOFA_NO_MEMORY;
 		return NULL;
 	}
+
 	easy->lookup = NULL;
 	easy->neighborhood = NULL;
 
@@ -86,13 +85,19 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 		short *IRleft, short *IRright,
 		int *delayLeft, int *delayRight)
 {
-	float c[3] = { x,y,z };
-	float fir[easy->hrtf->N * easy->hrtf->R];
+	float c[3];
+	float *fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
 	float delays[2];
-
+    float *fl;
+	float *fr;
 	int nearest = mysofa_lookup(easy->lookup, c);
 	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+	int i;
 
+    c[0] = x;
+    c[1] = y;
+    c[2] = z;
+    
 	mysofa_interpolate(easy->hrtf, c,
 			nearest, neighbors,
 			fir, delays);
@@ -100,25 +105,31 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 	*delayLeft  = delays[0] * easy->hrtf->DataSamplingRate.values[0];
 	*delayRight = delays[1] * easy->hrtf->DataSamplingRate.values[0];
 
-	float *fl = fir;
-	float *fr = fir + easy->hrtf->N;
-	int i;
+	fl = fir;
+	fr = fir + easy->hrtf->N;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++ * 32767.;
 		*IRright++ = *fr++ * 32767.;
 	}
+	free(fir);
 }
 
 void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 		float *IRleft, float *IRright,
 		float *delayLeft, float *delayRight)
 {
-	float c[3] = { x,y,z };
-	float fir[easy->hrtf->N * easy->hrtf->R];
+	float c[3];
+	float *fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
 	float delays[2];
-
+    float *fl;
+	float *fr;
 	int nearest = mysofa_lookup(easy->lookup, c);
 	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+	int i;
+
+    c[0] = x;
+    c[1] = y;
+    c[2] = z;
 
 	mysofa_interpolate(easy->hrtf, c,
 			nearest, neighbors,
@@ -127,13 +138,13 @@ void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 	*delayLeft  = delays[0];
 	*delayRight = delays[1];
 
-	float *fl = fir;
-	float *fr = fir + easy->hrtf->N;
-	int i;
+	fl = fir;
+	fr = fir + easy->hrtf->N;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++;
 		*IRright++ = *fr++;
 	}
+	free(fir);
 }
 
 void mysofa_close(struct MYSOFA_EASY* easy)

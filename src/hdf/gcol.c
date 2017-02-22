@@ -46,12 +46,12 @@ static int readGCOL(struct READER *reader) {
 	fgetc(reader->fhd);
 	fgetc(reader->fhd);
 
-	address = ftello(reader->fhd);
+	address = ftell(reader->fhd);
 	end = address;
 	collection_size = readValue(reader, reader->superblock.size_of_lengths);
 	end += collection_size - 8;
 
-	while (ftello(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
+	while (ftell(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
 
 		gcol = malloc(sizeof(*gcol));
 		gcol->heap_object_index = readValue(reader, 2);
@@ -72,8 +72,8 @@ static int readGCOL(struct READER *reader) {
 		reader->gcol = gcol;
 	}
 
-	log(" END %08lX vs. %08lX\n", ftello(reader->fhd), end); /* bug in the normal hdf5 specification */
-//	fseeko(reader->fhd, end, SEEK_SET);
+	log(" END %08lX vs. %08lX\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
+/*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
 
@@ -86,10 +86,10 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 		p = p->next;
 	}
 	if (!p) {
-		pos = ftello(reader->fhd);
-		fseeko(reader->fhd, gcol, SEEK_SET);
+		pos = ftell(reader->fhd);
+		fseek(reader->fhd, gcol, SEEK_SET);
 		readGCOL(reader);
-		fseeko(reader->fhd, pos, SEEK_SET);
+		fseek(reader->fhd, pos, SEEK_SET);
 
 		p = reader->gcol;
 		while (p && p->address != gcol && p->heap_object_index != reference) {
@@ -115,13 +115,13 @@ for (;;) {
 	if (gcol->heap_object_index == reference) {
 		log("found reference at %LX\n", gcol->object_pos);
 		break;
-		pos = ftello(reader->fhd);
-		fseeko(reader->fhd, gcol->object_pos, SEEK_SET);
+		pos = ftell(reader->fhd);
+		fseek(reader->fhd, gcol->object_pos, SEEK_SET);
 		dt2 = *dt;
 		dt2.list = 0;
 		dt2.size = gcol->object_size;
 		readDataVar(reader, &dt2, ds);
-		fseeko(reader->fhd, pos, SEEK_SET);
+		fseek(reader->fhd, pos, SEEK_SET);
 		break;
 	}
 	gcol = gcol->next;

@@ -3,8 +3,6 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include "tests.h"

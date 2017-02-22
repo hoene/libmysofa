@@ -2,8 +2,6 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include <stdlib.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
@@ -14,6 +12,13 @@ void test_easy() {
 	struct MYSOFA_EASY *easy;
 	int err = 0;
 	int filterlength;
+	int filters=0;
+	float theta,r;
+	float *coordinates;
+	float *ir;
+	float *delays;
+	int count=0;
+	FILE *file;
 
 	easy = mysofa_open("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
 	if (!easy) {
@@ -27,8 +32,6 @@ void test_easy() {
 		CU_FAIL_FATAL("Error reading file.");
 	}
 
-	int filters=0;
-	float theta,r;
 	for(theta=-90.;theta<=90.;theta+=5.) {
 		r = round(cos(theta*M_PI/180.) * 120.);
 		if(r==0.) r=1;
@@ -38,15 +41,14 @@ void test_easy() {
 	printf("Filters %d\n",filters);
 #endif
 
-	float *coordinates = malloc(filters*sizeof(float)*3);
-	float *ir = malloc(filters*easy->hrtf->N*sizeof(float)*2);
-	float *delays = malloc(filters*2*sizeof(float));
+	coordinates = malloc(filters*sizeof(float)*3);
+	ir = malloc(filters*easy->hrtf->N*sizeof(float)*2);
+	delays = malloc(filters*2*sizeof(float));
 
-	int count=0;
 	for(theta=-90.;theta<=90.;theta+=5.) {
 		int r = round(cos(theta*M_PI/180.) * 120.);
-		if(r==0) r=1;
 		int phi;
+		if(r==0) r=1;
 		for(phi=0;phi<r;phi++) {
 			coordinates[count*3+0] = phi * (360. / r);
 			coordinates[count*3+1] = theta;
@@ -77,11 +79,11 @@ void test_easy() {
 	easy->hrtf->SourcePosition.values=coordinates;
 	easy->hrtf->M = filters;
 
-	FILE *file = fopen("easy.tmp.json","w");
+	file = fopen("easy.tmp.json","w");
 	CU_ASSERT(file!=NULL);
 	printJson(file,easy->hrtf);
 	fclose(file);
-	// TODO verify correctness of the easy.json file
+	/* TODO verify correctness of the easy.json file */
 
 	mysofa_close(easy);
 }

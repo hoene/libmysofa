@@ -15,6 +15,7 @@ float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 		int nearest, int *neighborhood, float *fir, float *delays) {
 	int i, use[6];
 	float d, d6[6];
+	float weight;
 	int size = hrtf->N * hrtf->R;
 
 	if (hrtf->DataDelay.elements == hrtf->R) {
@@ -91,7 +92,7 @@ float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 		use[5] = 1;
 	}
 
-	float weight = 1 / d;
+	weight = 1 / d;
 	copyArrayWeighted(fir, hrtf->DataIR.values + nearest * size, size, weight);
 	if (hrtf->DataDelay.elements > hrtf->R) {
 		delays[0] = hrtf->DataDelay.values[nearest * hrtf->R] * weight;

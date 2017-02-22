@@ -94,6 +94,10 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 }
 
 static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
+	float *p1;
+	double *p2;
+	int i;
+
 	struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
 	while (attr) {
 		log(" %s=%s\n",attr->name,attr->value);
@@ -101,16 +105,15 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 		attr = attr->next;
 	}
 
-	if (dataobject->dt.f.bit_precision != 64)
+	if (dataobject->dt.u.f.bit_precision != 64)
 		return MYSOFA_UNSUPPORTED_FORMAT;
 
 	array->attributes = dataobject->attributes;
 	dataobject->attributes = NULL;
 	array->elements = dataobject->data_len / 8;
 
-	float *p1 = dataobject->data;
-	double *p2 = dataobject->data;
-	int i;
+	p1 = dataobject->data;
+	p2 = dataobject->data;
 	for(i=0;i<array->elements;i++)
 		*p1++=*p2++;
 	array->values=realloc(dataobject->data,array->elements*sizeof(float));
@@ -169,7 +172,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 				dimensionflags |= 0x20;
 				break;
 			case 'S':
-				break;  // be graceful, some issues with API version 0.4.4
+				break;  /* be graceful, some issues with API version 0.4.4 */
 			default:
 				log("UNKNOWN SOFA VARIABLE %s", dir->dataobject.name);
 				goto error;
@@ -225,7 +228,6 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 
-	fprintf(stderr,"filename %s\n",filename);
 	if(strcmp(filename,"-"))
     	reader.fhd = fopen(filename, "rb");
     else

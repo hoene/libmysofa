@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash 
 
 ../build/src/mysofa2json "$1" >tmp1.json 2>tmp1.txt 
 
@@ -18,7 +18,7 @@ if [ "$ret" != 0 ]; then
 fi
 
 cp -f ../tests/json-diff.js . 2>/dev/null || true
-node ./json-diff.js ./tmp1.json ./tmp2.json
+nodejs ./json-diff.js ./tmp1.json ./tmp2.json
 ret=$?
 if [ "$ret" != 0 ]; then 
     echo Diff $ret

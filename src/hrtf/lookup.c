@@ -16,6 +16,7 @@
 
 struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 	int i;
+	struct MYSOFA_LOOKUP *lookup;
 
 	/*
 	 * alloc memory structure
@@ -23,7 +24,7 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 	if (!verifyAttribute(hrtf->SourcePosition.attributes, "Type", "cartesian"))
 		return NULL;
 
-	struct MYSOFA_LOOKUP *lookup = malloc(sizeof(struct MYSOFA_LOOKUP));
+	lookup = malloc(sizeof(struct MYSOFA_LOOKUP));
 	if (!lookup)
 		return NULL;
 
@@ -66,6 +67,8 @@ struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
  */
 int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
 
+    int index;
+    struct kdres *res;
 	float r = radius(coordinate);
 	if(r>lookup->radius_max) {
 		r = lookup->radius_max / r;
@@ -80,13 +83,13 @@ int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
 		coordinate[2] *= r;
 	}
 
-	struct kdres *res = kd_nearest((struct kdtree *) lookup->kdtree,
+	res = kd_nearest((struct kdtree *) lookup->kdtree,
 			coordinate);
 	if (kd_res_size(res) != 1) {
 		kd_res_free(res);
 		return -1;
 	}
-	int index = (uintptr_t) kd_res_item_data(res);
+	index = (uintptr_t) kd_res_item_data(res);
 	kd_res_free(res);
 	return index;
 }

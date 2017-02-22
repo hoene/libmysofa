@@ -2,8 +2,6 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
-#include <sys/time.h>
-#include <sys/resource.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include "tests.h"
@@ -12,6 +10,11 @@ void test_interpolate() {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
 	int i;
+	float *fir;
+	float delays[2];
+	float *res;
+	int neighborhood[6] = { -1, -1, -1, -1, -1, -1 };
+	float c[3];
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 				&err);
@@ -22,10 +25,7 @@ void test_interpolate() {
 
 	mysofa_tocartesian(hrtf);
 
-	float fir[hrtf->N * hrtf->R];
-	float delays[2];
-	float *res;
-	int neighborhood[6] = { -1, -1, -1, -1, -1, -1 };
+	fir = malloc(hrtf->N * hrtf->R * sizeof(float));
 
 	res = mysofa_interpolate(hrtf, hrtf->SourcePosition.values, 0, neighborhood,
 			fir, delays);
@@ -33,7 +33,6 @@ void test_interpolate() {
 	CU_ASSERT(delays[0] == 0);
 	CU_ASSERT(delays[1] == 0);
 
-	float c[3];
 	c[0] = (hrtf->SourcePosition.values[0] + hrtf->SourcePosition.values[3])
 			/ 2;
 	c[1] = (hrtf->SourcePosition.values[1] + hrtf->SourcePosition.values[4])
@@ -55,7 +54,7 @@ void test_interpolate() {
 		CU_ASSERT(fequals(res[i],(hrtf->DataIR.values[i]+hrtf->DataIR.values[i+hrtf->N*hrtf->R])/2));
 	}
 
-	// TODO add some tests...
+	/* TODO add some tests... */
 
 	mysofa_free(hrtf);
 }

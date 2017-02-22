@@ -2,16 +2,28 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
+
+#ifdef __GNUC__
+#define HAVE_GETTIMEOFDAY
+#endif
+
+#ifdef HAVE_GETTIMEOFDAY
 #include <sys/time.h>
-#include <sys/resource.h>
+#endif
+
 #include "../hrtf/tools.h"
 #include "tests.h"
 
 void test_lookup() {
 	struct MYSOFA_HRTF *hrtf = NULL;
 	int err = 0;
+#ifdef HAVE_GETTIMEOFDAY
 	struct timeval r1, r2;
-	float duration1, duration2;
+#endif
+	float duration1=0.f, duration2=0.f;
+	float find[3];
+	int j;
+	struct MYSOFA_LOOKUP *lookup;
 
 	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
 
@@ -20,7 +32,7 @@ void test_lookup() {
 
 	mysofa_tocartesian(hrtf);
 
-	struct MYSOFA_LOOKUP *lookup = mysofa_lookup_init(hrtf);
+	lookup = mysofa_lookup_init(hrtf);
 	if (lookup == NULL) {
 		CU_FAIL("Error sorting HRTF.");
 		mysofa_free(hrtf);
@@ -31,23 +43,26 @@ void test_lookup() {
 	printf("r  %f %f\n", lookup->radius_min, lookup->radius_max);
 #endif
 
-	float find[3];
-	int j;
 	for (j = 0; j < 10000; j++) {
+		int index = -1;
+		float dmin = FLT_MAX;
+		int i,lk;
+
 		find[0] = rand() * (4. / RAND_MAX) - 2;
 		find[1] = rand() * (4. / RAND_MAX) - 2;
 		find[2] = rand() * (4. / RAND_MAX) - 2;
 
+#ifdef HAVE_GETTIMEOFDAY
 		gettimeofday(&r1, NULL);
-		int lk = mysofa_lookup(lookup, find);
+#endif		
+	    lk = mysofa_lookup(lookup, find);
+#ifdef HAVE_GETTIMEOFDAY
 		gettimeofday(&r2, NULL);
 		duration1 = (r2.tv_sec - r1.tv_sec) * 1000000.
 				+ (r2.tv_usec - r1.tv_usec);
 
 		gettimeofday(&r1, NULL);
-		int index = -1;
-		float dmin = FLT_MAX;
-		int i;
+#endif		
 		for (i = 0; i < hrtf->M; i ++) {
 			float r = distance(find, hrtf->SourcePosition.values + i * hrtf->C);
 			if (r < dmin) {
@@ -55,9 +70,11 @@ void test_lookup() {
 				index = i;
 			}
 		}
+#ifdef HAVE_GETTIMEOFDAY		
 		gettimeofday(&r2, NULL);
 		duration2 = (r2.tv_sec - r1.tv_sec) * 1000000.
 				+ (r2.tv_usec - r1.tv_usec);
+#endif
 
 		CU_ASSERT(lk==index);
 		if(lk!=index) {

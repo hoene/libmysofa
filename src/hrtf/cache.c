@@ -24,12 +24,14 @@ static struct MYSOFA_CACHE_ENTRY {
 
 struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 {
+	struct MYSOFA_CACHE_ENTRY *p;
+	struct MYSOFA_EASY *res = NULL;
+
 	assert(filename);
 
 	pthread_mutex_lock(&mutex);
 
-	struct MYSOFA_CACHE_ENTRY *p = cache;
-	struct MYSOFA_EASY *res = NULL;
+	p = cache;
 
 	while(p) {
 		if(samplerate == p->samplerate && !strcmp(filename, p->filename)) {
@@ -46,12 +48,14 @@ struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 
 struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *filename, float samplerate)
 {
+	struct MYSOFA_CACHE_ENTRY *p;
+
 	assert(easy);
 	assert(filename);
 
 	pthread_mutex_lock(&mutex);
 
-	struct MYSOFA_CACHE_ENTRY *p = cache;
+	p = cache;
 
 	while(p) {
 		if(samplerate == p->samplerate && !strcmp(filename, p->filename)) {
@@ -84,15 +88,14 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 
 void mysofa_cache_release(struct MYSOFA_EASY *easy)
 {
+	struct MYSOFA_CACHE_ENTRY **p;
+	int count;
+
 	assert(easy);
 	assert(cache);
 
 	pthread_mutex_lock(&mutex);
-	struct MYSOFA_CACHE_ENTRY **p = &cache;
-	int count;
-
-	assert(cache);
-	assert(easy);
+	p = &cache;
 
 	for(count=0;;count++) {
 		if((*p)->easy == easy)
@@ -117,15 +120,17 @@ void mysofa_cache_release(struct MYSOFA_EASY *easy)
 
 void mysofa_cache_release_all()
 {
+	struct MYSOFA_CACHE_ENTRY *p;
+
 	pthread_mutex_lock(&mutex);
-	struct MYSOFA_CACHE_ENTRY *p = cache;
+	p = cache;
 	while(p) {
 		struct MYSOFA_CACHE_ENTRY *gone = p;
-		fprintf(stderr,"ra %p %s %p\n",p,gone->filename,p->easy);
+		fprintf(stderr,"ra %p %s %p\n",(void*)p,gone->filename,(void*)p->easy);
 		p=p->next;
 		free(gone->filename);
 		free(gone->easy);
-//		mysofa_close2(gone->easy);
+/*		mysofa_close2(gone->easy); */
 		free(gone);
 	}
 	cache = NULL;

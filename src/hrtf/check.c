@@ -20,7 +20,7 @@ static float array100[] = { 1, 0, 0 };
 
 int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 
-	// check for valid parameter ranges
+	/* check for valid parameter ranges */
 	/*
 	 Attributes":{
 	 "APIName":"ARI SOFA API for Matlab\/Octave",
@@ -52,21 +52,18 @@ int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 					"SimpleFreeFieldHRIR")
 			||
 
-			// TODO: Support FT too
+			/* TODO: Support FT too */
 			!verifyAttribute(hrtf->attributes, "DataType", "FIR")
 			|| !verifyAttribute(hrtf->attributes, "RoomType", "free field"))
 
 		return MYSOFA_INVALID_FORMAT;
 
-	//==============================================================================
-	// dimensions
-	//==============================================================================
+	/*==============================================================================
+	 dimensions
+	============================================================================== */
 
 	if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2)
 		return MYSOFA_INVALID_FORMAT;
-
-//	size_t numMeasurements = file.GetDimension("M");
-//	size_t numDataSamples = file.GetDimension("N");
 
 	/* verify format */
 
@@ -100,30 +97,30 @@ int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 		}
 	}
 
-	// TODO. support M,C too
+	/* TODO. support M,C too */
 	if(!verifyAttribute(hrtf->ListenerPosition.attributes,"DIMENSION_LIST","I,C"))
 	return MYSOFA_INVALID_FORMAT;
 	if(!compareValues(&hrtf->ListenerPosition,array000,3))
 	return MYSOFA_INVALID_FORMAT;
 #endif
 
-	// TODO: support ECM too
+	/* TODO: support ECM too */
 	if (!verifyAttribute(hrtf->EmitterPosition.attributes, "DIMENSION_LIST",
 			"E,C,I"))
 		return MYSOFA_INVALID_FORMAT;
 	if (!compareValues(&hrtf->EmitterPosition, array000, 3))
 		return MYSOFA_INVALID_FORMAT;
 
-	// TODO: Support data delays for each filter
-	// However, so far, I have not seen any sofa files with an format other and I,R
+	/* TODO: Support data delays for each filter
+	 However, so far, I have not seen any sofa files with an format other and I,R */
 	if (hrtf->DataDelay.values) {
 		if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST",
 				"I,R"))
 			return MYSOFA_INVALID_FORMAT;
 	}
 
-	// TODO: Support different sampling rate per measurement, support default sampling rate of 48000
-	// However, so far, I have not seen any sofa files with an format other and I
+	/* TODO: Support different sampling rate per measurement, support default sampling rate of 48000
+	 However, so far, I have not seen any sofa files with an format other and I */
 	if (!verifyAttribute(hrtf->DataSamplingRate.attributes, "DIMENSION_LIST",
 			"I"))
 		return MYSOFA_INVALID_FORMAT;
@@ -145,7 +142,7 @@ int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 		return MYSOFA_INVALID_FORMAT;
 	}
 
-	// read source positions
+	/* read source positions */
 	if (!verifyAttribute(hrtf->SourcePosition.attributes, "DIMENSION_LIST",
 			"M,C"))
 		return MYSOFA_INVALID_FORMAT;

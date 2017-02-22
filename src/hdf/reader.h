@@ -120,7 +120,7 @@ struct DATATYPE {
 					mantissa_size;
 			uint32_t exponent_bias;
 		} f;
-	};
+	} u;
 
 	uint32_t list; /* size of a list in bytes */
 };
