@@ -1,0 +1,9 @@
+To generate the tester.sofa file, open Matlab and enter
+
+SOFAstart;
+hrtf = SOFAload('/home/hoene/git/libmysofa/tests/sofa_api_mo_test/Pulse.sofa');
+tester;
+SOFAsave('/tmp/test.sofa',hrtf,9);
+
+You need API_MO for this.
+
