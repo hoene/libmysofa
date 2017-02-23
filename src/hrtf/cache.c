@@ -126,7 +126,7 @@ void mysofa_cache_release_all()
 	p = cache;
 	while(p) {
 		struct MYSOFA_CACHE_ENTRY *gone = p;
-		fprintf(stderr,"ra %p %s %p\n",(void*)p,gone->filename,(void*)p->easy);
+/*		fprintf(stderr,"ra %p %s %p\n",(void*)p,gone->filename,(void*)p->easy); */
 		p=p->next;
 		free(gone->filename);
 		free(gone->easy);

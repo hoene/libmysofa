@@ -32,7 +32,7 @@ add_test(MIT_KEMAR_large_pinna.sofa ../tests/compare.sh ../tests/sofa_api_mo_tes
 add_test(MIT_KEMAR_normal_pinna.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa)
 # add_test(Oldenburg_OfficeII.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/Oldenburg_OfficeII.sofa)
 add_test(Pulse ../tests/compare.sh ../tests/sofa_api_mo_test/Pulse.sofa)
-add_test(Tester ../tests/compare.sh ../tests/Tester.sofa)
+add_test(Tester ../tests/compare.sh ../tests/tester.sofa)
 add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa)
 add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa)
 add_test(TU-Berlin_QU_KEMAR_anechoic_radius_1m.sofa ../tests/compare.sh ../tests/sofa_api_mo_test/TU-Berlin_QU_KEMAR_anechoic_radius_1m.sofa)

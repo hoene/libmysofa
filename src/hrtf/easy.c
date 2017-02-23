@@ -90,13 +90,15 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 	float delays[2];
     float *fl;
 	float *fr;
-	int nearest = mysofa_lookup(easy->lookup, c);
-	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+	int nearest;
+	int *neighbors;
 	int i;
 
     c[0] = x;
     c[1] = y;
     c[2] = z;
+    nearest = mysofa_lookup(easy->lookup, c);
+    neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
     
 	mysofa_interpolate(easy->hrtf, c,
 			nearest, neighbors,
@@ -123,14 +125,16 @@ void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 	float delays[2];
     float *fl;
 	float *fr;
-	int nearest = mysofa_lookup(easy->lookup, c);
-	int *neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+	int nearest;
+	int *neighbors;
 	int i;
 
     c[0] = x;
     c[1] = y;
     c[2] = z;
-
+    nearest = mysofa_lookup(easy->lookup, c);
+    neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+    
 	mysofa_interpolate(easy->hrtf, c,
 			nearest, neighbors,
 			fir, delays);

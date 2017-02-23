@@ -11,7 +11,7 @@
 #include "mysofa.h"
 #include "tools.h"
 
-#define VDEBUG
+/* #define VDEBUG */
 
 float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 		int nearest, int *neighborhood, float *fir, float *delays) {
@@ -20,17 +20,16 @@ float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 	float weight;
 	int size = hrtf->N * hrtf->R;
 
-	if (hrtf->DataDelay.elements == hrtf->R) {
-		delays[0] = hrtf->DataDelay.values[0];
-		delays[1] = hrtf->DataDelay.values[1];
-	}
-
 	d = distance(cordinate, hrtf->SourcePosition.values + nearest);
 	if (fequals(d, 0)) {
 		if (hrtf->DataDelay.elements > hrtf->R) {
 			delays[0] = hrtf->DataDelay.values[nearest * hrtf->R];
 			delays[1] = hrtf->DataDelay.values[nearest * hrtf->R + 1];
 		}
+		else {
+    		delays[0] = hrtf->DataDelay.values[0];
+    		delays[1] = hrtf->DataDelay.values[1];
+    	}
 		return hrtf->DataIR.values + nearest * size;
 	}
 
@@ -100,10 +99,19 @@ float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 		delays[0] = hrtf->DataDelay.values[nearest * hrtf->R] * weight;
 		delays[1] = hrtf->DataDelay.values[nearest * hrtf->R + 1] * weight;
 	}
-
+	else {
+		delays[0] = hrtf->DataDelay.values[0] * weight;
+		delays[1] = hrtf->DataDelay.values[1] * weight;
+	}
+#ifdef VDEBUG			
+	printf("%d ! %f ",nearest,d);
+#endif
 	for (i = 0; i < 6; i++) {
 		if (use[i]) {
 			float w = 1 / d6[i];
+#ifdef VDEBUG			
+        	printf("%d - %f ",neighborhood[i], d6[i]);
+#endif        	
 			addArrayWeighted(fir,
 					hrtf->DataIR.values + neighborhood[i] * size, size,
 					w);
@@ -114,13 +122,13 @@ float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 			}
 		}
 	}
-
+#ifdef VDEBUG			
+    printf("\n");
+#endif
 	weight = 1 / weight;
 	scaleArray(fir, size, weight);
-	if (hrtf->DataDelay.elements > hrtf->R) {
-		delays[0] *= weight;
-		delays[1] *= weight;
-	}
+	delays[0] *= weight;
+	delays[1] *= weight;
 	return fir;
 }
 

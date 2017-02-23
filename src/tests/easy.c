@@ -8,7 +8,7 @@
 #include "tests.h"
 #include "json.h"
 
-#define VDEBUG
+/* #define VDEBUG */
 
 void test_easy() {
 	struct MYSOFA_EASY *easy;
@@ -23,6 +23,7 @@ void test_easy() {
 	FILE *file;
 	float c[3];
 	float l1,l2;
+	float sdiff1, sdiff2, diff1, diff2;
 
 	easy = mysofa_open("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
 	if (!easy) {
@@ -42,15 +43,18 @@ void test_easy() {
         c[2]=easy->hrtf->SourcePosition.values[filters*3+2];
         convertCartesianToSpherical(c,3);
         
+#ifdef VDEBUG        
+   		printf("in %d %f %f %f # %f %f %f\n",filters,c[0],c[1],c[2],easy->hrtf->SourcePosition.values[filters*3],easy->hrtf->SourcePosition.values[filters*3+1],easy->hrtf->SourcePosition.values[filters*3+2]);
+#endif   		
         c[0] = fmod(round(c[0]+360),360);
         c[1] = fmod(round(c[1]+361),360);        
         l1 = round(easy->hrtf->DataDelay.values[filters*2]*48000*2);
         l2 = round(easy->hrtf->DataDelay.values[filters*2+1]*48000*2);
-        
-        if((fabs(c[0]-l1)>2 || fabs(c[1]-l2)>2) && !fequals(l2,90)) {
-    		printf("in %d %f %f %f %f %f\n",filters,c[0],c[1],c[2],l1,l2);
-    		CU_ASSERT(0);
-    	}
+
+#ifdef VDEBUG        
+/*   		printf("compare %d %f %f %f %f %f\n",filters,c[0],c[1],c[2],l1,l2); */
+#endif   		
+        CU_ASSERT(!((fabs(c[0]-l1)>2 || fabs(c[1]-l2)>2) && !fequals(l2,90)));
     }
     
     
@@ -68,6 +72,8 @@ void test_easy() {
 	ir = malloc(filters*easy->hrtf->N*sizeof(float)*2);
 	delays = malloc(filters*2*sizeof(float));
 
+    sdiff1 = sdiff2 = 0;
+    err = 0;
 	for(theta=-90.;theta<=90.;theta+=5.) {
 		int r = round(cos(theta*M_PI/180.) * 120.);
 		int phi;
@@ -78,7 +84,7 @@ void test_easy() {
 			coordinates[count*3+2] = 1;
 			convertSphericalToCartesian(coordinates+count*3,3);
 #ifdef VDEBUG
-			printf("%f %d %d %f %f %f\n",theta,phi,count,coordinates[count*3+0],coordinates[count*3+1],coordinates[count*3+2]);
+			printf("req %f %f %d %f %f %f\n",phi* (360. / r),theta,count,coordinates[count*3+0],coordinates[count*3+1],coordinates[count*3+2]);
 #endif
 			mysofa_getfilter_float(easy,
 					coordinates[count*3+0],
@@ -87,13 +93,33 @@ void test_easy() {
 					ir + 2*count * easy->hrtf->N,
 					ir + (2*count+1) * easy->hrtf->N,
 					&delays[2*count], &delays[2*count+1]);
+            diff1 = fabs(phi * (360. / r) - delays[2*count] * 48000 * 2);
+            diff2 = fabs(fmod(theta + 360,360) - delays[2*count+1] * 48000 * 2);
+            if(diff1 > 5 || diff2 > 5)
+                err++;
+            else {
+                sdiff1 += diff1;
+                sdiff2 += diff2;
+            }
+                
 #ifdef VDEBUG
-			printf("delays %f %f %f %f\n",phi * (360. / r),fmod(theta + 360,360), delays[2*count] * 48000 * 2, delays[2*count+1] * 48000 * 2);
+			printf("diff %f %f\t", diff1, diff2);
+			printf("delays %f %f %f %f\n", phi * (360. / r), fmod(theta + 360,360), delays[2*count] * 48000 * 2, delays[2*count+1] * 48000 * 2);
 #endif
 			count++;
 			
 		}
 	}
+	err = err*100./count;
+	sdiff1 = sdiff1 / (count-err);
+	sdiff2 = sdiff2 / (count-err);
+	
+#ifdef VDEBUG
+	printf("errors %f%% diffs %f %f\n", err*100./count, sdiff1 / (count-err), sdiff2 / (count-err));
+#endif
+    CU_ASSERT(err < 31.7);
+    CU_ASSERT(sdiff1 < 1.67);
+    CU_ASSERT(sdiff2 < 1.43);
 
 	free(easy->hrtf->DataDelay.values);
 	free(easy->hrtf->DataIR.values);
