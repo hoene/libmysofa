@@ -8,21 +8,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <libresample.h>
 #include <math.h>
 #include <assert.h>
 #include "mysofa.h"
 #include "tools.h"
+#include "../resampler/speex_resampler.h"
 
 int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
-	int i, res;
+	int i, err;
 	float factor;
-	int newN;
+	unsigned newN;
     float *values;
-    void* handle;
-	int used;
-	float *in;
+    SpeexResamplerState *resampler;
 	float *out;
+	float zero[10] = { 0,0,0,0,0,0,0,0,0,0 };
     
 	if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000.)
 		return MYSOFA_INVALID_FORMAT;
@@ -40,26 +39,29 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 	if (values == NULL)
 		return MYSOFA_NO_MEMORY;
 
-	handle = resample_open(1, factor, factor);
+    resampler = speex_resampler_init(1, hrtf->DataSamplingRate.values[0], samplerate, 10, &err);
+    if(resampler == NULL)
+        return err;
 
-    in = malloc(sizeof(float)*hrtf->N);
-    out = malloc(sizeof(float)*newN);
-    
+    out = malloc(sizeof(float)*(newN+ speex_resampler_get_output_latency(resampler)));
 	for (i = 0; i < hrtf->R * hrtf->M; i++) {
-		copyToFloat(in, hrtf->DataIR.values + i * hrtf->N, hrtf->N);
-		res = resample_process(handle, factor, in, hrtf->N, 1, &used, out,
-				newN);
-		assert(res > newN - 8 && res <= newN);
-		assert(used == hrtf->N);
-		copyFromFloat(values + i * newN, out, res);
-		while (res < newN) {
-			values[i * newN + res] = 0.;
-			res++;
+	    unsigned inlen = hrtf->N;
+	    unsigned outlen = newN;
+		speex_resampler_reset_mem(resampler);
+		speex_resampler_skip_zeros(resampler);
+        speex_resampler_process_float(resampler, 0, hrtf->DataIR.values + i * hrtf->N, &inlen,
+                                    values + i * newN, &outlen);
+		assert(inlen == hrtf->N);
+		while (outlen < newN) {
+		    unsigned difflen = newN - outlen;
+		    inlen = 10;
+            speex_resampler_process_float(resampler, 0, zero, &inlen,
+                                    values + i * newN + outlen, &difflen);
+			outlen+=difflen;
 		}
 	}
 	free(out);
-	free(in);
-	resample_close(handle);
+	speex_resampler_destroy(resampler);
 
 	free(hrtf->DataIR.values);
 	hrtf->DataIR.values = values;

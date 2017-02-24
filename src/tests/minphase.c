@@ -68,7 +68,7 @@ void test_minphase() {
 #ifdef VDEBUG
 	printf("max length %d\n", len);
 #endif
-	CU_ASSERT(len==70);
+	CU_ASSERT(len==70 || len==71);
 	mysofa_free(hrtf);
 
 }
