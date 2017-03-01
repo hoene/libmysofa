@@ -15,9 +15,15 @@ Enter following commands
 
 > make all test
 
+For testing, you will need Docker. 
+
+If you need an Debian package, call
+
+> cd build && cpack
+
 ## Usage 
 
-Libmysofa has three main function calls.
+Libmysofa has a few main function calls.
 
 To read a SOFA file call 
 
@@ -47,7 +53,7 @@ int rightDelay;         // unit is samples
 
 mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
-and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR. Alternative, if you are using float values for the filtering, call.
+and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR. Alternative, if you are using float values for the filtering, call
 ```
 float leftIR[filter_length]; // [-1. till 1]
 float rightIR[filter_length];
@@ -56,6 +62,17 @@ float rightDelay;         // unit is sec.
 
 mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
+
+If you have spherical coordinates but you need Cartesian coordinates, call
+```
+void mysofa_s2c(float values[3])
+```
+which phi, theta, and r as parameters in the float array and x,y,z as response in the same array. Similar, call
+```
+void mysofa_c2s(float values[3])
+```
+The coordinate system is defined in the SOFA specification and is the same as in the SOFA file.
+
 
 Sometimes, you want to use multiple SOFA filters or if you have to open a SOFA file multiple times, you may use
 ```
@@ -74,6 +91,6 @@ Then, all HRTFs having the same filename and sampling rate are stored only once 
 
 ## Disclaimer
 
-The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under Apache 2.0 license. This work has been funded by German Federal Ministry of Education and Research, funding code 01IS14027A.
+The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The resampler is by Jean-Marc Valin. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under Apache 2.0 license. This work has been funded by German Federal Ministry of Education and Research, funding code 01IS14027A.
 
 
