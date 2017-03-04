@@ -60,7 +60,7 @@ float rightIR[filter_length];
 float leftDelay;          // unit is sec.
 float rightDelay;         // unit is sec.
 
-mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
+mysofa_getfilter_float(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
 
 If you have spherical coordinates but you need Cartesian coordinates, call

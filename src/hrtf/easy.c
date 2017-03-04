@@ -29,21 +29,18 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 
 	easy->hrtf = mysofa_load(filename, err);
 	if (!easy->hrtf) {
-		fprintf(stderr,"cannot open\n");
 		mysofa_close(easy);
 		return NULL;
 	}
 
 	*err = mysofa_check(easy->hrtf);
 	if (*err != MYSOFA_OK) {
-		fprintf(stderr,"check failed\n");
 		mysofa_close(easy);
 		return NULL;
 	}
 
 	*err = mysofa_resample(easy->hrtf, samplerate);
 	if (*err != MYSOFA_OK) {
-		fprintf(stderr,"resample failed\n");
 		mysofa_close(easy);
 		return NULL;
 	}
