@@ -67,11 +67,11 @@ If you have spherical coordinates but you need Cartesian coordinates, call
 ```
 void mysofa_s2c(float values[3])
 ```
-which phi, theta, and r as parameters in the float array and x,y,z as response in the same array. Similar, call
+which phi (azimuth measure counterwise from the X axis), theta (elevation measured up from the x-y plane), and r (distance between listener and source) as parameters in the float array and x,y,z as response in the same array. Similar, call
 ```
 void mysofa_c2s(float values[3])
 ```
-The coordinate system is defined in the SOFA specification and is the same as in the SOFA file.
+The coordinate system is defined in the SOFA specification and is the same as in the SOFA file. Typically, the x axis vector (1 0 0) is the listening direction. The y axis (0 1 0) is the left side of the listener and z (0 0 1) is upwards.
 
 
 Sometimes, you want to use multiple SOFA filters or if you have to open a SOFA file multiple times, you may use
