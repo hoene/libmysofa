@@ -25,7 +25,7 @@ void test_easy() {
 	float l1,l2;
 	float sdiff1, sdiff2, diff1, diff2;
 
-	easy = mysofa_open("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
+	easy = mysofa_open("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");
 	}

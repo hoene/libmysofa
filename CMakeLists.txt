@@ -15,7 +15,7 @@ enable_testing()
 add_subdirectory(src)
 
 
-install(FILES tests/MIT_KEMAR_normal_pinna.sofa DESTINATION share/libmysofa)
+install(FILES share/default.sofa DESTINATION share/libmysofa)
 
 
 add_test(sofa2json ../tests/sofa2json.docker sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa)

@@ -27,7 +27,7 @@ static void check(char *filename)
 }
 
 void test_check() {
-	check("tests/sofa_api_mo_test/Pulse.sofa");
-	check("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa");
+	check("build/sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa");
+	check("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa");
 }
 

@@ -16,7 +16,7 @@ void test_interpolate() {
 	int neighborhood[6] = { -1, -1, -1, -1, -1, -1 };
 	float c[3];
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 				&err);
 
 	if (!hrtf) {

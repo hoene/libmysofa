@@ -9,8 +9,8 @@
 #include "tests.h"
 
 void test_cache() {
-	char *filename1 = "tests/sofa_api_mo_test/Pulse.sofa";
-	char *filename2 = "tests/sofa_api_mo_test/Pulse2.sofa";
+	char *filename1 = "build/sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa";
+	char *filename2 = "tests/tester.sofa";
 	float sr1 = 48000;
 	float sr2 = 8000;
 

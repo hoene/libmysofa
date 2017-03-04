@@ -12,7 +12,7 @@ void test_minphase() {
 	int err = 0;
 	int len, i;
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/Pulse.sofa", &err);
+	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
@@ -28,7 +28,7 @@ void test_minphase() {
 
 
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 			&err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
@@ -41,7 +41,7 @@ void test_minphase() {
 	CU_ASSERT(len==361);
 	mysofa_free(hrtf);
 
-		hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+		hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 				&err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
@@ -56,7 +56,7 @@ void test_minphase() {
 
 
 
-	hrtf = mysofa_load("tests/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
 			&err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
