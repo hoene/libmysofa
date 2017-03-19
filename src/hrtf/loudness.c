@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <libresample.h>
+#include "../resampler/speex_resampler.h"
 #include <float.h>
 #include <math.h>
 #include <assert.h>

@@ -33,7 +33,7 @@ struct MYSOFA_ATTRIBUTE {
 
 struct MYSOFA_ARRAY {
 	float *values;
-	int elements;
+	unsigned int elements;
 	struct MYSOFA_ATTRIBUTE *attributes;
 };
 
@@ -124,7 +124,7 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold);
 struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate);
 struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *, const char *filename, float samplerate);
 void mysofa_cache_release(struct MYSOFA_EASY *);
-void mysofa_cache_release_all();
+void mysofa_cache_release_all(void);
 
 void mysofa_c2s(float values[3]);
 void mysofa_s2c(float values[3]);
