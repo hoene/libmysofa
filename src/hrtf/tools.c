@@ -26,7 +26,7 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
 		if (!strcmp(name, attr->name)
 				&& (value == NULL || !strcmp(value, attr->value))) {
 			free(attr->value);
-			attr->value = strdup(newvalue);
+			attr->value = _strdup(newvalue);
 			return 1;
 		}
 		attr = attr->next;

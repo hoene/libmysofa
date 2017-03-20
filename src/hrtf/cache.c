@@ -73,7 +73,7 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	}
 	p->next = cache;
 	p->samplerate = samplerate;
-	p->filename = strdup(filename);
+	p->filename = _strdup(filename);
 	if(p->filename == NULL) {
 		free(p);
 		pthread_mutex_unlock(&mutex);
