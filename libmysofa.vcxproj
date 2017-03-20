@@ -98,7 +98,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;DEBUG;CMAKE_INTDIR="Debug";mysofa_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>third-party;third-party\zlib-1.2.11;third-party\CUnit-2.1-3;third-party\pthreads-win32\Pre-built.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>third-party;third-party\zlib-1.2.11;third-party\CUnit-2.1-3;third-party\pthreads-win32\pthreads.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>false</ExceptionHandling>
@@ -136,7 +136,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>third-party;third-party\zlib-1.2.11;third-party\CUnit-2.1-3;third-party\pthreads-win32\Pre-built.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>third-party;third-party\zlib-1.2.11;third-party\CUnit-2.1-3;third-party\pthreads-win32\pthreads.2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-DHAVE_STRUCT_TIMESPEC  -D_CRT_SECURE_NO_WARNINGS -DNO_ALLOCA
  %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
