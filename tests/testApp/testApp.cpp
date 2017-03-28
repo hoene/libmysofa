@@ -22,7 +22,7 @@ int main()
 	hrtf->lookup = NULL;
 	hrtf->neighborhood = NULL;
 
-	hrtf->hrtf = mysofa_load("../sofa_api_mo_test/ARI_NH4_hrtf_M_dtf 256.sofa", &err);
+	hrtf->hrtf = mysofa_load("../sofa_api_mo_test/FHK_HRIR_L2354.sofa", &err);
 	if (!hrtf->hrtf) {
 		mysofa_close(hrtf);
 		return err;
