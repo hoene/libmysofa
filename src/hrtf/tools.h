@@ -30,7 +30,7 @@ void addArrayWeighted(float *dst, float *src, int size, float w);
 void scaleArray(float *dst, int size, float w);
 float loudness(float *in, int size);
 
-void nsearch(const void *key, const void *base, size_t num, size_t size,
+void nsearch(const void *key, const char *base, size_t num, size_t size,
 		int (*cmp)(const void *key, const void *elt), int *lower, int *higher);
 
 #endif /* SRC_TOOLS_H_ */
