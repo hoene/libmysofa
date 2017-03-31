@@ -61,6 +61,8 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 	easy->neighborhood = mysofa_neighborhood_init(easy->hrtf,
 			easy->lookup);
 
+    *filterlength = easy->hrtf->N;
+
 	return easy;
 }
 
