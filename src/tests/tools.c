@@ -3,8 +3,8 @@
 #include "../hrtf/tools.h"
 #include "tests.h"
 
-static void copy(float *src, float *dst) {
-	memcpy(src, dst, sizeof(float) * 3);
+static void copy(float *dst, float *src) {
+	memcpy(dst, src, sizeof(float) * 3);
 }
 
 static void print(float *c) {
