@@ -22,7 +22,7 @@ int fequals(float a, float b);
 float radius(float *cartesian);
 float distance(float *cartesian1, float *cartesian2);
 
-void copyToFloat(float *out, float *in, int size);
+void copyToFloat(float *out, float *in, int size);  
 void copyFromFloat(float *out, float *in, int size);
 
 void copyArrayWeighted(float *dst, float *src, int size, float w);

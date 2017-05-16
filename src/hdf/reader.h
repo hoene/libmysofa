@@ -201,4 +201,7 @@ uint64_t readValue(struct READER *reader, int size);
 
 int gunzip(int inlen, char *in, int *outlen, char *out);
 
+char *mysofa_strdup(const char *s);
+
+
 #endif /* READER_H_ */

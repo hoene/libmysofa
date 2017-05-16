@@ -554,7 +554,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 			strcat(data->string, ",");
 			strcat(data->string, buffer);
 		} else {
-			data->string = _strdup(buffer);
+			data->string = mysofa_strdup(buffer);
 		}
 		break;
 

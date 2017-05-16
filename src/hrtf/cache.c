@@ -11,6 +11,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include "mysofa.h"
+#include "../hdf/reader.h"
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -73,7 +74,7 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	}
 	p->next = cache;
 	p->samplerate = samplerate;
-	p->filename = _strdup(filename);
+	p->filename = mysofa_strdup(filename);
 	if(p->filename == NULL) {
 		free(p);
 		pthread_mutex_unlock(&mutex);

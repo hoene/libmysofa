@@ -11,6 +11,15 @@
 #include <string.h>
 #include "tools.h"
 
+char *mysofa_strdup(const char *str)
+{
+    size_t size = strlen(str) + 1;
+    char *copy = malloc(size);
+    if(copy)
+        memcpy(copy, str, size);
+    return copy;
+}
+
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value) {
 	while (attr) {
 		if (!strcmp(name, attr->name) && !strcmp(value, attr->value))
@@ -26,7 +35,7 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
 		if (!strcmp(name, attr->name)
 				&& (value == NULL || !strcmp(value, attr->value))) {
 			free(attr->value);
-			attr->value = _strdup(newvalue);
+			attr->value = mysofa_strdup(newvalue);
 			return 1;
 		}
 		attr = attr->next;
@@ -182,4 +191,5 @@ float loudness(float *in, int size) {
 	}
 	return res;
 }
+
 
