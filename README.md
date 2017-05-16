@@ -91,6 +91,6 @@ Then, all HRTFs having the same filename and sampling rate are stored only once 
 
 ## Disclaimer
 
-The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The resampler is by Jean-Marc Valin. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under Apache 2.0 license. This work has been funded by German Federal Ministry of Education and Research, funding code 01IS14027A.
+The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The resampler is by Jean-Marc Valin. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under BSD-3-Clause license. This work has been funded by German Federal Ministry of Education and Research, funding code 01IS14027A.
 
 
