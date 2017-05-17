@@ -20,20 +20,26 @@ target_link_libraries (mysofa-shared m z)
 SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
 SET_TARGET_PROPERTIES(mysofa-shared PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
 
-add_executable(mysofa2json tests/sofa2json.c tests/json.c )
-target_link_libraries (mysofa2json ${CMAKE_SOURCE_DIR}/build/src/libmysofa.a m z)
-
-add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c 
-  tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
-  
-target_link_libraries (tests mysofa-shared cunit)
-add_test(NAME tests WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND tests)
-
-install(TARGETS mysofa-shared mysofa-static mysofa2json 
+install(TARGETS mysofa-shared mysofa-static
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib)
-    
+
 install(FILES hrtf/mysofa.h DESTINATION include)
 
+if(BUILD_TESTS)
+    add_executable(mysofa2json tests/sofa2json.c tests/json.c )
+    target_link_libraries (mysofa2json ${CMAKE_SOURCE_DIR}/build/src/libmysofa.a m z)
+
+    add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
+      tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
+
+    target_link_libraries (tests mysofa-shared cunit)
+    add_test(NAME tests WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND tests)
+
+    install(TARGETS mysofa2json
+        RUNTIME DESTINATION bin
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib)
+endif(BUILD_TESTS)
 
