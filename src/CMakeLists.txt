@@ -17,7 +17,7 @@ add_library(mysofa-static STATIC ${libsrc})
 add_library(mysofa-shared SHARED ${libsrc})
 target_link_libraries (mysofa-static m z)
 target_link_libraries (mysofa-shared m z)
-SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
+SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1 POSITION_INDEPENDENT_CODE ON)
 SET_TARGET_PROPERTIES(mysofa-shared PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
 
 install(TARGETS mysofa-shared mysofa-static
