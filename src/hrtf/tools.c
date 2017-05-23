@@ -43,6 +43,17 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
 	return 0;
 }
 
+char* mysofa_getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name) {
+	while (attr) {
+		if (!strcmp(name, attr->name)) {
+			return attr->value;
+		}
+		attr = attr->next;
+	}
+	return NULL;
+}
+
+
 void mysofa_c2s(float values[3])
 {
 	float x,y,z,r,theta,phi;

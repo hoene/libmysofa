@@ -49,12 +49,14 @@ int main()
 	fprintf(stderr, "Number of HRTFs: %d\n", hrtf->hrtf->M);
 	fprintf(stderr, "Filter length: %d samples\n", hrtf->hrtf->N);
 	fprintf(stderr, "Radius min: %f, max: %f\n", hrtf->lookup->radius_min, hrtf->lookup->radius_max);
+	fprintf(stderr, "Database: %s\n", mysofa_getAttribute(hrtf->hrtf->attributes, "DatabaseName"));
+	fprintf(stderr, "Listener: %s\n", mysofa_getAttribute(hrtf->hrtf->attributes, "ListenerShortName"));
 	 
 	// get index to a position given in t (in spherical)
 	float t[3], a[3];
 	t[0] = 0; // azimuth in deg
 	t[1] = 0; // elevation in deg
-	t[2] = 1.2; // radius in m
+	t[2] = 1.2f; // radius in m
 	
 	fprintf(stderr, "Wanted Position: %f, %f, %f\n", t[0], t[1], t[2]);
 	mysofa_s2c(t);
