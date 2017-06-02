@@ -8,12 +8,9 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <stdio.h>
 #include "mysofa.h"
 #include "../hdf/reader.h"
-
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static struct MYSOFA_CACHE_ENTRY {
 	struct MYSOFA_CACHE_ENTRY *next;
@@ -30,8 +27,6 @@ struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 
 	assert(filename);
 
-	pthread_mutex_lock(&mutex);
-
 	p = cache;
 
 	while(p) {
@@ -43,7 +38,6 @@ struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 		p=p->next;
 	}
 
-	pthread_mutex_unlock(&mutex);
 	return res;
 }
 
@@ -54,13 +48,10 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	assert(easy);
 	assert(filename);
 
-	pthread_mutex_lock(&mutex);
-
 	p = cache;
 
 	while(p) {
 		if(samplerate == p->samplerate && !strcmp(filename, p->filename)) {
-			pthread_mutex_unlock(&mutex);
 			mysofa_close(easy);
 			return p->easy;
 		}
@@ -69,7 +60,6 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 
 	p = malloc(sizeof(struct MYSOFA_CACHE_ENTRY));
 	if(p == NULL) {
-		pthread_mutex_unlock(&mutex);
 		return NULL;
 	}
 	p->next = cache;
@@ -77,13 +67,11 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	p->filename = mysofa_strdup(filename);
 	if(p->filename == NULL) {
 		free(p);
-		pthread_mutex_unlock(&mutex);
 		return NULL;
 	}
 	p->easy = easy;
 	p->count = 1;
 	cache = p;
-	pthread_mutex_unlock(&mutex);
 	return easy;
 }
 
@@ -95,7 +83,6 @@ void mysofa_cache_release(struct MYSOFA_EASY *easy)
 	assert(easy);
 	assert(cache);
 
-	pthread_mutex_lock(&mutex);
 	p = &cache;
 
 	for(count=0;;count++) {
@@ -115,15 +102,12 @@ void mysofa_cache_release(struct MYSOFA_EASY *easy)
 	else {
 		(*p)->count--;
 	}
-
-	pthread_mutex_unlock(&mutex);
 }
 
 void mysofa_cache_release_all()
 {
 	struct MYSOFA_CACHE_ENTRY *p;
 
-	pthread_mutex_lock(&mutex);
 	p = cache;
 	while(p) {
 		struct MYSOFA_CACHE_ENTRY *gone = p;
@@ -135,5 +119,4 @@ void mysofa_cache_release_all()
 		free(gone);
 	}
 	cache = NULL;
-	pthread_mutex_unlock(&mutex);
 }

@@ -23,7 +23,8 @@ If you need an Debian package, call
 
 ## Usage 
 
-Libmysofa has a few main function calls.
+Libmysofa has a few main function calls.  
+If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the library at a given time.
 
 To read a SOFA file call 
 
