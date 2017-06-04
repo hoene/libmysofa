@@ -4,6 +4,7 @@ project (libmysofa)
 INCLUDE(CheckCCompilerFlag)
 
 option(BUILD_TESTS "Build test programs" ON)
+option(BUILD_SHARED_LIBS "Build shared library" ON)
 
 CHECK_C_COMPILER_FLAG(-Wall C_HAS_WALL)
 IF(C_HAS_WALL)
