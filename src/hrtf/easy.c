@@ -47,7 +47,9 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 
 	mysofa_loudness(easy->hrtf);
 
+/* does not sound well:
 	mysofa_minphase(easy->hrtf,0.01);
+*/
 
 	mysofa_tocartesian(easy->hrtf);
 
