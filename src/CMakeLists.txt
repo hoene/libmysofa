@@ -32,7 +32,7 @@ install(FILES hrtf/mysofa.h DESTINATION include)
 
 if(BUILD_TESTS)
     add_executable(mysofa2json tests/sofa2json.c tests/json.c )
-    target_link_libraries (mysofa2json ${CMAKE_SOURCE_DIR}/build/src/libmysofa.a m z)
+    target_link_libraries (mysofa2json mysofa-static m z)
 
     add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
       tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
