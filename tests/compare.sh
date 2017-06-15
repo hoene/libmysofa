@@ -18,7 +18,7 @@ if [ "$ret" != 0 ]; then
 fi
 
 cp -f ../tests/json-diff.js . 2>/dev/null || true
-nodejs ./json-diff.js ./tmp1.json ./tmp2.json
+node ./json-diff.js ./tmp1.json ./tmp2.json
 ret=$?
 if [ "$ret" != 0 ]; then 
     echo Diff $ret

@@ -1,0 +1,17 @@
+dist: trusty
+sudo: require
+language: c
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libcunit1-dev 
+  
+before_script:
+  - mkdir -p build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=Debug ..
+
+script:
+  - pwd
+  - make all test
+  

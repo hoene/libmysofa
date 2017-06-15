@@ -24,9 +24,15 @@ if(BUILD_TESTS)
     find_package(CUnit REQUIRED cunit)
 
     enable_testing()
+
     add_test(sofa2json ../tests/sofa2json.docker sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa)
-    add_test(nodejs nodejs --version)
-    add_test(getsofafiles wget -N -r -l 1 -np -c -U libmysofa-tests http://sofacoustics.org/data/sofa_api_mo_test/)
+
+    add_test(node.js node --version)
+
+#    add_test(getsofafiles wget -N -r -l 1 -np -c -U libmysofa-tests http://sofacoustics.org/data/sofa_api_mo_test/)
+    add_test(getsofafiles wget -N -r -l 1 -np -c -U libmysofa-tests http://symonics.com/sofacoustics.org/data/sofa_api_mo_test/)
+    add_test(getsofafiles2  ln -f -s symonics.com/sofacoustics.org sofacoustics.org)
+
     # add_test(ARI_NH2_hrtf_M_dtf256 ../tests/compare.sh sofacoustics.org/data/sofa_api_mo_test/ARI_NH2_hrtf_M_dtf\ 256.sofa)
     # add_test(ARI_NH4_4_freqs ../tests/compare.sh sofacoustics.org/data/sofa_api_mo_test/ARI_NH4_4_freqs.sofa)
     # add_test(ARI_NH4_hrtf_M_dtf256 ../tests/compare.sh sofacoustics.org/data/sofa_api_mo_test/ARI_NH4_hrtf_M_dtf\ 256.sofa)
@@ -61,3 +67,4 @@ SET(CPACK_PACKAGE_VERSION_MINOR "5")
 SET(CPACK_PACKAGE_VERSION_PATCH "pre") 
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib1g")
 INCLUDE(CPack)
+

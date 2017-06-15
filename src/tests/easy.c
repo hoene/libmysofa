@@ -36,7 +36,8 @@ void test_easy() {
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
-
+	mysofa_minphase(easy->hrtf, 0.01);
+	
     for(filters=0;filters<easy->hrtf->M;filters++) {
         c[0]=easy->hrtf->SourcePosition.values[filters*3];
         c[1]=easy->hrtf->SourcePosition.values[filters*3+1];
