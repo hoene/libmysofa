@@ -18,6 +18,11 @@ add_subdirectory(src)
 install(FILES share/default.sofa DESTINATION share/libmysofa)
 
 if(BUILD_TESTS)
+
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")  
+    include(FindCUnit)
+    find_package(CUnit REQUIRED cunit)
+
     enable_testing()
     add_test(sofa2json ../tests/sofa2json.docker sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa)
     add_test(nodejs nodejs --version)
@@ -46,7 +51,7 @@ if(BUILD_TESTS)
 endif(BUILD_TESTS)
 
 SET(CPACK_PACKAGE_DESCRIPTION "SOFA file reader for better HRTFs")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This library read AES SOFA files and normalizes them")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This library reads AES SOFA files and normalizes them")
 SET(CPACK_PACKAGE_VENDOR "Symonics GmbH")
 SET(CPACK_PACKAGE_CONTACT "christian.hoene@symonics.com")
 SET(CPACK_GENERATOR "DEB")
