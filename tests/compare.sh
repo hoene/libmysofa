@@ -12,7 +12,7 @@ fi
 
 cp -f ../tests/json-diff.js . 2>/dev/null || true
 bunzip2 -c -k "$1".json.bz2 >./tmp2.json
-nodejs ./json-diff.js ./tmp1.json ./tmp2.json
+$NODEJS ./json-diff.js ./tmp1.json ./tmp2.json
 ret=$?
 if [ "$ret" != 0 ]; then 
     echo Diff $ret
