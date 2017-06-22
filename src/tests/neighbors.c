@@ -17,7 +17,7 @@ void test_neighbors() {
 	const char *dir = "RLUDFB";
 #endif
 
-	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/MIT_KEMAR_normal_pinna.sofa",
+	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
 			&err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");

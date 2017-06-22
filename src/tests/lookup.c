@@ -25,7 +25,7 @@ void test_lookup() {
 	int j;
 	struct MYSOFA_LOOKUP *lookup;
 
-	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa", &err);
+	hrtf = mysofa_load("tests/Pulse.sofa", &err);
 
 	if (!hrtf)
 		CU_FAIL_FATAL("Error reading file.");

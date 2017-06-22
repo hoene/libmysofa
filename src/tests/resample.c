@@ -12,7 +12,7 @@ void test_resample() {
 	int err = 0, i;
 	float *backup;
 
-	hrtf = mysofa_load("build/sofacoustics.org/data/sofa_api_mo_test/Pulse.sofa", &err);
+	hrtf = mysofa_load("tests/Pulse.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}

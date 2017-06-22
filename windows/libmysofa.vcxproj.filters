@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="hdf">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="hrtf">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="resampler">
+      <UniqueIdentifier>{08ccd75a-c9c0-4cac-8afb-9e0459db1bdf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\hrtf\cache.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\check.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\easy.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\interpolate.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\kdtree.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\lookup.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\loudness.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\minphase.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\neighbors.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\reader.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\resample.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\spherical.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hrtf\tools.c">
+      <Filter>hrtf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hdf\superblock.c">
+      <Filter>hdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hdf\gunzip.c">
+      <Filter>hdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hdf\gcol.c">
+      <Filter>hdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hdf\fractalhead.c">
+      <Filter>hdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hdf\dataobject.c">
+      <Filter>hdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hdf\btree.c">
+      <Filter>hdf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resampler\speex_resampler.c">
+      <Filter>resampler</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\hrtf\kdtree.h">
+      <Filter>hrtf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hrtf\mysofa.h">
+      <Filter>hrtf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hrtf\tools.h">
+      <Filter>hrtf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\hdf\reader.h">
+      <Filter>hdf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resampler\arch.h">
+      <Filter>resampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resampler\speex_resampler.h">
+      <Filter>resampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resampler\stack_alloc.h">
+      <Filter>resampler</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
