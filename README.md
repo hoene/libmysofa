@@ -15,8 +15,6 @@ Enter following commands
 
 > make all test
 
-For testing, you will need Docker. 
-
 If you need an Debian package, call
 
 > cd build && cpack
@@ -24,7 +22,6 @@ If you need an Debian package, call
 ## Usage 
 
 Libmysofa has a few main function calls.  
-If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the library at a given time.
 
 To read a SOFA file call 
 
@@ -89,6 +86,8 @@ mysofa_close_cached(hrtf4);
 mysofa_cache_release_all();
 ```
 Then, all HRTFs having the same filename and sampling rate are stored only once in memory. 
+
+If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the library at a given time.
 
 ## Disclaimer
 
