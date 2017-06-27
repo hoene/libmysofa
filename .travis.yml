@@ -5,6 +5,7 @@ language: c
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libcunit1-dev 
+  - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
   
 before_script:
   - mkdir -p build
@@ -13,5 +14,19 @@ before_script:
 
 script:
   - pwd
-  - make all test
+  - make -j 4 all test
   
+env:
+  global:
+   - secure: "4/u+9HdF0FZsQrZ50J+65MtmjdE3iNH1f0p4iY1zapihg03qVJ5S7hNDG1Suhvmk4YJ+WRxR1rimMlErL8Du72r4AfPoxmqnpuBSJJfLn3zYPTSx/jKSdRRKA9sWwaV+Fl+yIKvIn0eLmXBjY7KHtZufvNGEY7vV7rQoDPxiDhj5lDKz91wobMLA3Tw8YcpnvpyNgEkcIkBso6xKyTk/wJMhkZ9OmZFfv1FYHs373pluXH02NIpQqwIeLwG4hXzkkGHfuJvl/iVt72hBXQM02A9woNbst3pm0mg+CPJJpyhCd6Rk4zS/IW/1/Uh2JM/T0Lt/F0Nm0RhN8BCh6/YzETmYIak4lgR2DE/XvW7ban/5JGP7zgol0rFKIszEvieCTuHvqteY/h+xVMUDsmICFCDHBHVgJUgVAMN2aaRAthQ0/LWkYcuiRdZZvzzXpggPOHnPnB1TBPH0l1SNXnutv2TGP5z6P1WoZWv/YHD/CpQD4NB+jIw8vP5PDIrG5o9YMAwX1G5rVrxyowSFzx1PwNr+lDKPsysGKzlzpsev5wxd5lcwRGq9AtcBkAU2Lueq+9DMXRsSNLNkpzcblD6z8beuA81l64Qy/NNAUwNloauJXoeXm8pJmN3/KQB25RK2/7ej2SwCF0RwcWhPtso6rML1uEdB/aXJ4CvWjdc95hI="
+
+addons:
+  coverity_scan:
+    project:
+      name: "hoene/libmysofa"
+      description: "Build submitted via Travis CI"
+    notification_email: christian.hoene@symonics.com
+    build_command_prepend: "mkdir -p build ; cd build ; cmake -DCMAKE_BUILD_TYPE=Debug .."
+    build_command:   "make -j 4 all test"
+    branch_pattern: coverity_scan
+    
