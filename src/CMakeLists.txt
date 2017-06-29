@@ -23,6 +23,8 @@ if(BUILD_SHARED_LIBS)
   add_library(mysofa-shared SHARED ${libsrc})
   target_link_libraries (mysofa-shared m z)
   SET_TARGET_PROPERTIES(mysofa-shared PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
+  set_property(TARGET mysofa-shared PROPERTY VERSION "0.5.0")
+  set_property(TARGET mysofa-shared PROPERTY SOVERSION 0 )
   install(TARGETS mysofa-shared
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib)
