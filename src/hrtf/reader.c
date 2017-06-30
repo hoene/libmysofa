@@ -216,6 +216,9 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 
+	if(filename == NULL)
+		filename = "/usr/share/libmysofa/default.sofa";
+
 	if(strcmp(filename,"-"))
     	reader.fhd = fopen(filename, "rb");
     else
