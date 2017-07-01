@@ -9,11 +9,11 @@ pkg_check_modules(PC_CUNIT QUIET cunit)
 
 find_path(CUNIT_INCLUDE_DIR
   NAMES CUnit/CUnit.h
-  HINTS ${PC_CUNIT_INCLUDE_DIRS}
+  HINTS ${PC_CUNIT_INCLUDE_DIRS} C:/projects/cunit/include
 )
 find_library(CUNIT_LIBRARY
   NAMES cunit
-  HINTS ${PC_CUNIT_LIBRARY_DIRS}
+  HINTS ${PC_CUNIT_LIBRARY_DIRS} C:/projects/cunit/lib/Release-x64
 )
 
 if(CUNIT_INCLUDE_DIR)
