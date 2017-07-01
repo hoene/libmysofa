@@ -133,7 +133,7 @@ void test_easy() {
 	easy->hrtf->SourcePosition.values=coordinates;
 	easy->hrtf->M = filters;
 
-	file = fopen("easy.tmp.json","w");
+	file = fopen("/tmp/easy.tmp.json","w");
 	CU_ASSERT(file!=NULL);
 	printJson(file,easy->hrtf);
 	fclose(file);

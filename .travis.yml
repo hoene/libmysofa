@@ -27,5 +27,5 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email: christian.hoene@symonics.com
     build_command: make all
-    branch_pattern: master
+    branch_pattern: coverity
     

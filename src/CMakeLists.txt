@@ -27,9 +27,13 @@ if(BUILD_SHARED_LIBS)
   SET_TARGET_PROPERTIES(mysofa-shared PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
   set_property(TARGET mysofa-shared PROPERTY VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
   set_property(TARGET mysofa-shared PROPERTY SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR} )
-  install(TARGETS mysofa-shared
+  set_property(TARGET mysofa-shared PROPERTY C_VISIBILITY_PRESET hidden)
+  GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa)
+  install(TARGETS mysofa-shared 
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib)
+else()
+  GENERATE_EXPORT_HEADER(mysofa-static BASE_NAME mysofa)
 endif()
 
 install(FILES hrtf/mysofa.h DESTINATION include)
@@ -41,7 +45,7 @@ if(BUILD_TESTS)
     add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
       tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
 
-    target_link_libraries (tests mysofa-shared cunit)
+    target_link_libraries (tests mysofa-static cunit)
     add_test(NAME tests WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND tests)
 
     install(TARGETS mysofa2json
