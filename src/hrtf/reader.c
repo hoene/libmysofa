@@ -13,6 +13,7 @@
 
 #include "mysofa.h"
 #include "../hdf/reader.h"
+#include "../../build/src/config.h"
 
 /* checks file address.
  * NULL is an invalid address indicating a invalid field
@@ -217,7 +218,7 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct MYSOFA_HRTF *hrtf = NULL;
 
 	if(filename == NULL)
-		filename = "/usr/share/libmysofa/default.sofa";
+		filename = CMAKE_INSTALL_PREFIX "/share/libmysofa/default.sofa";
 
 	if(strcmp(filename,"-"))
     	reader.fhd = fopen(filename, "rb");
@@ -280,3 +281,11 @@ void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 	arrayFree(&hrtf->DataDelay);
 	free(hrtf);
 }
+
+void mysofa_getversion(int *major, int *minor, int *patch)
+{
+    *major = CPACK_PACKAGE_VERSION_MAJOR;
+    *minor = CPACK_PACKAGE_VERSION_MINOR;
+    *patch = CPACK_PACKAGE_VERSION_PATCH;
+}
+

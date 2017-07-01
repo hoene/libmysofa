@@ -135,6 +135,7 @@ void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 void mysofa_close(struct MYSOFA_EASY* easy);
 void mysofa_close_cached(struct MYSOFA_EASY* easy);
 
+void mysofa_getversion(int *major, int *minor, int *patch);
 
 #ifdef __cplusplus
 }

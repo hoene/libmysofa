@@ -10,6 +10,8 @@ endmacro(use_c99)
 
 use_c99()
 
+configure_file (config.h.in config.h)
+
 set(libsrc hrtf/reader.c hdf/superblock.c hdf/dataobject.c hdf/btree.c hdf/fractalhead.c hdf/gunzip.c hdf/gcol.c hrtf/check.c hrtf/spherical.c 
   hrtf/lookup.c hrtf/tools.c hrtf/kdtree.c hrtf/neighbors.c hrtf/interpolate.c hrtf/resample.c hrtf/loudness.c hrtf/minphase.c hrtf/easy.c hrtf/cache.c 
   resampler/speex_resampler.c)
@@ -23,8 +25,8 @@ if(BUILD_SHARED_LIBS)
   add_library(mysofa-shared SHARED ${libsrc})
   target_link_libraries (mysofa-shared m z)
   SET_TARGET_PROPERTIES(mysofa-shared PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
-  set_property(TARGET mysofa-shared PROPERTY VERSION "0.5.0")
-  set_property(TARGET mysofa-shared PROPERTY SOVERSION 0 )
+  set_property(TARGET mysofa-shared PROPERTY VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+  set_property(TARGET mysofa-shared PROPERTY SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR} )
   install(TARGETS mysofa-shared
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib)

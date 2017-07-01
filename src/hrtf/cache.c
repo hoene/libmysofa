@@ -20,17 +20,22 @@ static struct MYSOFA_CACHE_ENTRY {
 	int count;
 } *cache;
 
+static int compare_filenames(const char *a, const char *b)
+{
+    if(a == NULL && b == NULL)
+        return 0;
+    return strcmp(a,b);
+}
+
 struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 {
 	struct MYSOFA_CACHE_ENTRY *p;
 	struct MYSOFA_EASY *res = NULL;
 
-	assert(filename);
-
 	p = cache;
 
 	while(p) {
-		if(samplerate == p->samplerate && !strcmp(filename, p->filename)) {
+		if(samplerate == p->samplerate && !compare_filenames(filename, p->filename)) {
 			res = p->easy;
 			p->count++;
 			break;
@@ -46,12 +51,11 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	struct MYSOFA_CACHE_ENTRY *p;
 
 	assert(easy);
-	assert(filename);
 
 	p = cache;
 
 	while(p) {
-		if(samplerate == p->samplerate && !strcmp(filename, p->filename)) {
+		if(samplerate == p->samplerate && !compare_filenames(filename, p->filename)) {
 			mysofa_close(easy);
 			return p->easy;
 		}
@@ -64,11 +68,15 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	}
 	p->next = cache;
 	p->samplerate = samplerate;
-	p->filename = mysofa_strdup(filename);
-	if(p->filename == NULL) {
-		free(p);
-		return NULL;
-	}
+	if(filename != NULL) {
+    	p->filename = mysofa_strdup(filename);
+    	if(p->filename == NULL) {
+	    	free(p);
+	    	return NULL;
+    	}
+    }
+    else
+        p->filename = NULL;
 	p->easy = easy;
 	p->count = 1;
 	cache = p;
@@ -111,12 +119,11 @@ void mysofa_cache_release_all()
 	p = cache;
 	while(p) {
 		struct MYSOFA_CACHE_ENTRY *gone = p;
-/*		fprintf(stderr,"ra %p %s %p\n",(void*)p,gone->filename,(void*)p->easy); */
 		p=p->next;
 		free(gone->filename);
 		free(gone->easy);
-/*		mysofa_close2(gone->easy); */
 		free(gone);
 	}
 	cache = NULL;
 }
+
