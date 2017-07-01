@@ -12,7 +12,7 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "This library reads AES SOFA files and nor
 SET(CPACK_PACKAGE_VENDOR "Symonics GmbH")
 SET(CPACK_PACKAGE_CONTACT "umlaeute@debian.org")
 SET(CPACK_GENERATOR "DEB")
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "IOhannes M Zmölnig") 
+SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "IOhannes M Zmölnig")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "5")
 SET(CPACK_PACKAGE_VERSION_PATCH "1")
@@ -30,7 +30,7 @@ install(FILES share/MIT_KEMAR_normal_pinna.sofa DESTINATION share/libmysofa)
 
 if(BUILD_TESTS)
 
-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")  
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
     include(FindCUnit)
     find_package(CUnit REQUIRED cunit)
 
@@ -49,4 +49,3 @@ endif(BUILD_TESTS)
 add_subdirectory(src)
 
 INCLUDE(CPack)
-
