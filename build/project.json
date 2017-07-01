@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "zlib": "1.2.8.8",
+    },
+     "frameworks": {
+        ".NETFramework,Version=v4.0": { }
+    },
+    "runtimes": { "win-x64": { } }
+}
