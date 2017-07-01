@@ -1,7 +1,3 @@
-os:
-  - linux
-  - osx
-
 matrix:
   include:
     - os: linux
@@ -13,8 +9,10 @@ matrix:
 language: c
 
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libcunit1-dev 
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get -qq update  ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -y libcunit1-dev  ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cunit ; fi 
   - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
   
 before_script:
