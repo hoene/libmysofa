@@ -3,7 +3,6 @@
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
-#include <strings.h>
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include "tests.h"

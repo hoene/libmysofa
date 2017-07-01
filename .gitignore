@@ -76,13 +76,13 @@ crashlytics-build.properties
 *.pch
 
 # Libraries
-*.lib
+# *.lib
 *.a
 *.la
 *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
+# *.dll
 *.so
 *.so.*
 *.dylib
@@ -113,7 +113,7 @@ crashlytics-build.properties
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+# *.dll
 
 # Fortran module files
 *.mod
@@ -122,7 +122,7 @@ crashlytics-build.properties
 *.lai
 *.la
 *.a
-*.lib
+# *.lib
 
 # Executables
 *.exe

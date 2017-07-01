@@ -7,10 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <pthread.h>
 #include "mysofa.h"
-
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  *

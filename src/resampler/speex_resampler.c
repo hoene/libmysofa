@@ -465,9 +465,9 @@ static int resampler_basic_zero(SpeexResamplerState *st, spx_uint32_t channel_in
 
 static int _muldiv(spx_uint32_t *result, spx_uint32_t value, spx_uint32_t mul, spx_uint32_t div)
 {
-   speex_assert(result);
    spx_uint32_t major = value / div;
    spx_uint32_t remainder = value % div;
+   speex_assert(result);
    /* TODO: Could use 64 bits operation to check for overflow. But only guaranteed in C99+ */
    if (remainder > UINT32_MAX / mul || major > UINT32_MAX / mul
        || major * mul > UINT32_MAX - remainder * mul / div)
@@ -837,7 +837,7 @@ EXPORT void speex_resampler_get_rate(SpeexResamplerState *st, spx_uint32_t *in_r
    *out_rate = st->out_rate;
 }
 
-static inline spx_uint32_t _gcd(spx_uint32_t a, spx_uint32_t b)
+static spx_uint32_t _gcd(spx_uint32_t a, spx_uint32_t b)
 {
    while (b != 0)
    {
