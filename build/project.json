@@ -1,0 +1,7 @@
+{
+    "dependencies": {
+        "zlib": {
+        "version": "1.2.8.8",
+        }
+    }
+}
