@@ -3,6 +3,6 @@
         "zlib": "1.2.8.8",
     },
      "frameworks": {
-        "dotnet": { }
+        ".NETFramework,Version=v4.0": { }
     }
 }
