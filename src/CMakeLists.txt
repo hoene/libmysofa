@@ -12,14 +12,18 @@ use_c99()
 
 configure_file (config.h.in config.h)
 
-include(FindZLIB)
-include_directories(${ZLIB_INCLUDE_DIRS})
-MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
+# include(FindZLIB)
+# include_directories(${ZLIB_INCLUDE_DIRS})
+# MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
 
 if(NOT WIN32)
     find_library(MATH m)
 else()
     set(MATH "")
+    add_custom_command(TARGET ${PROJECT_NAME}
+       PRE_BUILD
+        COMMAND nuget restore ${CMAKE_BINARY_DIR}\libmysofa.sln
+    )
 endif()
 
 
