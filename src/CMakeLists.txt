@@ -25,7 +25,7 @@ else()
        PRE_BUILD
         COMMAND nuget restore ${CMAKE_BINARY_DIR}/libmysofa.sln
     )
-    include_directories(windows/third-party/zlib-1.2.11/include/)
+    include_directories(../src/windows/third-party/zlib-1.2.11/include/)
 endif()
 
 
