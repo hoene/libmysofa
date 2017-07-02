@@ -21,10 +21,12 @@ if(NOT WIN32)
     include(FindZLIB)
 else()
     set(MATH "")
-    add_custom_command(TARGET ${PROJECT_NAME}
-       PRE_BUILD
-        COMMAND nuget restore ${CMAKE_BINARY_DIR}/libmysofa.sln
-    )
+    find_program(NUGET nuget)
+    if (NOT NUGET)
+       message(FATAL "Cannot find nuget command line tool.\nInstall it with e.g. choco install nuget.commandline")
+    else()
+         execute_process(COMMAND ${NUGET} install zlib)
+    endif()
     include_directories(${CMAKE_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
 endif()
 
