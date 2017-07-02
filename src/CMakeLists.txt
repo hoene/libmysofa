@@ -18,14 +18,14 @@ configure_file (config.h.in config.h)
 
 if(NOT WIN32)
     find_library(MATH m)
-    FindZLIB()
+    include(FindZLIB)
 else()
     set(MATH "")
     add_custom_command(TARGET ${PROJECT_NAME}
        PRE_BUILD
         COMMAND nuget restore ${CMAKE_BINARY_DIR}/libmysofa.sln
     )
-    include_directories(../src/windows/third-party/zlib-1.2.11/include/)
+    include_directories(${CMAKE_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
 endif()
 
 
