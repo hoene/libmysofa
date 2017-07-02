@@ -12,9 +12,6 @@ use_c99()
 
 configure_file (config.h.in config.h)
 
-if (WIN32)
-    set(ZLIB_ROOT "C:/projects/libmysofa/windows/third-party/zlib-1.2.11")
-endif (WIN32)
 include(FindZLIB)
 include_directories(${ZLIB_INCLUDE_DIRS})
 MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
