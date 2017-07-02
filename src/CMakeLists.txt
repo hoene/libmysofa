@@ -22,7 +22,7 @@ else()
     set(MATH "")
     add_custom_command(TARGET ${PROJECT_NAME}
        PRE_BUILD
-        COMMAND nuget restore ${CMAKE_BINARY_DIR}\libmysofa.sln
+        COMMAND nuget restore ${CMAKE_BINARY_DIR}/libmysofa.sln
     )
 endif()
 
