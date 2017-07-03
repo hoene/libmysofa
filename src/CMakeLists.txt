@@ -10,7 +10,19 @@ endmacro(use_c99)
 
 use_c99()
 
-configure_file (config.h.in config.h)
+configure_file (config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
+
+if(NOT WIN32)
+    find_library(MATH m)
+    include(FindZLIB)
+else()
+    set(MATH "")
+    find_program(NUGET nuget)
+    if (NUGET)
+         execute_process(COMMAND ${NUGET} install zlib)
+    endif()
+    include_directories(${CMAKE_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
+endif()
 
 # include(FindZLIB)
 # include_directories(${ZLIB_INCLUDE_DIRS})
@@ -47,12 +59,12 @@ if(BUILD_SHARED_LIBS)
   set_property(TARGET mysofa-shared PROPERTY VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
   set_property(TARGET mysofa-shared PROPERTY SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR} )
   set_property(TARGET mysofa-shared PROPERTY C_VISIBILITY_PRESET hidden)
-  GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa)
+  GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa EXPORT_FILE_NAME ${CMAKE_SOURCE_DIR}/src/hrtf/mysofa_export.h)
   install(TARGETS mysofa-shared 
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib)
 else()
-  GENERATE_EXPORT_HEADER(mysofa-static BASE_NAME mysofa)
+  GENERATE_EXPORT_HEADER(mysofa-static BASE_NAME mysofa EXPORT_FILE_NAME ${CMAKE_SOURCE_DIR}/src/hrtf/mysofa_export.h)
 endif()
 
 install(FILES hrtf/mysofa.h DESTINATION include)

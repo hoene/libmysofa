@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include "../../build/src/mysofa_export.h"
+#include "mysofa_export.h"
 
 /** attributes */
 struct MYSOFA_ATTRIBUTE {

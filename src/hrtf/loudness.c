@@ -19,7 +19,7 @@ float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
 	float c[3], factor;
 	float min = FLT_MAX;
 	int radius = 0;
-	int i, index;
+	int i, index=0;
 	int cartesian = verifyAttribute(hrtf->SourcePosition.attributes, "Type",
 			"cartesian");
 

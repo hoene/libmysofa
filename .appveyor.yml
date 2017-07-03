@@ -1,0 +1,16 @@
+version: 1.0.{build}
+configuration: Release
+platform: x64
+install:
+- cmd: >-
+    cp "%APPVEYOR_BUILD_FOLDER%\src\hrtf\mysofa_export.h.in" "%APPVEYOR_BUILD_FOLDER%\src\hrtf\mysofa_export.h"
+
+    cp "%APPVEYOR_BUILD_FOLDER%\windows/config.h.sln" "%APPVEYOR_BUILD_FOLDER%\src\config.h"
+nuget:
+  account_feed: true
+  project_feed: true
+build:
+  project: windows/libmysofa.sln
+  verbosity: normal
+artifacts:
+- path: windows\bin

@@ -22,9 +22,9 @@ static struct MYSOFA_CACHE_ENTRY {
 
 static int compare_filenames(const char *a, const char *b)
 {
-    if(a == NULL && b == NULL)
-        return 0;
-    return strcmp(a,b);
+	if(a == NULL && b == NULL)
+		return 0;
+	return strcmp(a,b);
 }
 
 struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
@@ -68,15 +68,14 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	}
 	p->next = cache;
 	p->samplerate = samplerate;
+	p->filename = NULL;
 	if(filename != NULL) {
-    	p->filename = mysofa_strdup(filename);
-    	if(p->filename == NULL) {
-	    	free(p);
-	    	return NULL;
-    	}
-    }
-    else
-        p->filename = NULL;
+		p->filename = mysofa_strdup(filename);
+		if(p->filename == NULL) {
+			free(p);
+			return NULL;
+		}
+	}
 	p->easy = easy;
 	p->count = 1;
 	cache = p;
