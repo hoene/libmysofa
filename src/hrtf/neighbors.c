@@ -8,11 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
-struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
-		struct MYSOFA_LOOKUP *lookup) {
+MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
+								   struct MYSOFA_LOOKUP *lookup) {
 	int i, index;
 	float *origin, *test;
 	float radius, radius2;
@@ -20,7 +21,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 	float phi;
 
 	struct MYSOFA_NEIGHBORHOOD *neighbor = malloc(
-			sizeof(struct MYSOFA_NEIGHBORHOOD));
+		sizeof(struct MYSOFA_NEIGHBORHOOD));
 	if (!neighbor)
 		return NULL;
 
@@ -33,8 +34,8 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 	for (i = 0; i < neighbor->elements * 6; i++)
 		neighbor->index[i] = -1;
 
-    origin = malloc(sizeof(float)*hrtf->C);
-    test = malloc(sizeof(float)*hrtf->C);
+	origin = malloc(sizeof(float)*hrtf->C);
+	test = malloc(sizeof(float)*hrtf->C);
 
 	for (i = 0; i < hrtf->M; i ++) {
 		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
@@ -59,7 +60,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 			test[0] = origin[0] + phi;
 			test[1] = origin[1];
 			test[2] = origin[2];
-			mysofa_s2c(test);
+			convertSphericalToCartesian(test,3);
 			index = mysofa_lookup(lookup, test);
 			if (index != i) {
 				neighbor->index[i * 6 + 1] = index;
@@ -129,13 +130,13 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 	return neighbor;
 }
 
-int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int index) {
+MYSOFA_EXPORT int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int index) {
 	if (index < 0 || index >= neighborhood->elements)
 		return NULL ;
 	return neighborhood->index + index * 6;
 }
 
-void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood) {
+MYSOFA_EXPORT void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood) {
 	if(neighborhood) {
 		free(neighborhood->index);
 		free(neighborhood);

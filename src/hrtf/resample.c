@@ -10,16 +10,17 @@
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 #include "../resampler/speex_resampler.h"
 
-int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
+MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 	int i, err;
 	float factor;
 	unsigned newN;
-    float *values;
-    SpeexResamplerState *resampler;
+	float *values;
+	SpeexResamplerState *resampler;
 	float *out;
 	float zero[10] = { 0,0,0,0,0,0,0,0,0,0 };
     
@@ -39,24 +40,24 @@ int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 	if (values == NULL)
 		return MYSOFA_NO_MEMORY;
 
-    resampler = speex_resampler_init(1, hrtf->DataSamplingRate.values[0], samplerate, 10, &err);
-    if(resampler == NULL)
-        return err;
+	resampler = speex_resampler_init(1, hrtf->DataSamplingRate.values[0], samplerate, 10, &err);
+	if(resampler == NULL)
+		return err;
 
-    out = malloc(sizeof(float)*(newN+ speex_resampler_get_output_latency(resampler)));
+	out = malloc(sizeof(float)*(newN+ speex_resampler_get_output_latency(resampler)));
 	for (i = 0; i < hrtf->R * hrtf->M; i++) {
-	    unsigned inlen = hrtf->N;
-	    unsigned outlen = newN;
+		unsigned inlen = hrtf->N;
+		unsigned outlen = newN;
 		speex_resampler_reset_mem(resampler);
 		speex_resampler_skip_zeros(resampler);
-        speex_resampler_process_float(resampler, 0, hrtf->DataIR.values + i * hrtf->N, &inlen,
-                                    values + i * newN, &outlen);
+		speex_resampler_process_float(resampler, 0, hrtf->DataIR.values + i * hrtf->N, &inlen,
+					      values + i * newN, &outlen);
 		assert(inlen == hrtf->N);
 		while (outlen < newN) {
-		    unsigned difflen = newN - outlen;
-		    inlen = 10;
-            speex_resampler_process_float(resampler, 0, zero, &inlen,
-                                    values + i * newN + outlen, &difflen);
+			unsigned difflen = newN - outlen;
+			inlen = 10;
+			speex_resampler_process_float(resampler, 0, zero, &inlen,
+						      values + i * newN + outlen, &difflen);
 			outlen+=difflen;
 		}
 	}

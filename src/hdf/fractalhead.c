@@ -1,8 +1,8 @@
 /*
 
- Copyright 2016 Christian Hoene, Symonics GmbH
+  Copyright 2016 Christian Hoene, Symonics GmbH
 
- */
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,13 +16,13 @@ static int log2i(int a) {
 }
 
 static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
-		struct FRACTALHEAP *fractalheap) {
+			   struct FRACTALHEAP *fractalheap) {
 
 	char buf[4], *name, *value;
 	int size, offset_size, length_size, err;
 	uint8_t typeandversion;
 	uint64_t unknown, heap_header_address, block_offset, block_size, offset,
-			length, store;
+		length, store;
 	struct DIR *dir;
 	struct MYSOFA_ATTRIBUTE *attr;
 
@@ -151,7 +151,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			name[length] = 0;
 
 			heap_header_address = readValue(reader,
-					reader->superblock.size_of_offsets);
+							reader->superblock.size_of_offsets);
 
 			log("\nfractal head type 1 length %4lX name %s address %lX\n", length, name, heap_header_address);
 
@@ -188,12 +188,12 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
  */
 
 static int indirectblockRead(struct READER *reader,
-		struct DATAOBJECT *dataobject, struct FRACTALHEAP *fractalheap,
-		uint64_t iblock_size) {
+			     struct DATAOBJECT *dataobject, struct FRACTALHEAP *fractalheap,
+			     uint64_t iblock_size) {
 	int size, nrows, max_dblock_rows, k, n, err;
 	uint32_t filter_mask;
 	uint64_t store, heap_header_address, block_offset, child_direct_block=0,
-			size_filtered, child_indirect_block;
+		size_filtered, child_indirect_block;
 
 	char buf[4];
 
@@ -228,7 +228,7 @@ static int indirectblockRead(struct READER *reader,
 
 	/* The maximum number of rows of direct blocks, max_dblock_rows, in any indirect block of a fractal heap is given by the following expression: */
 	max_dblock_rows = (log2i(fractalheap->maximum_direct_block_size)
-			- log2i(fractalheap->starting_block_size)) + 2;
+			   - log2i(fractalheap->starting_block_size)) + 2;
 
 	/* Using the computed values for nrows and max_dblock_rows, along with the Width of the doubling table, the number of direct and indirect block entries (K and N in the indirect block description, below) in an indirect block can be computed: */
 	if (nrows < max_dblock_rows)
@@ -241,10 +241,10 @@ static int indirectblockRead(struct READER *reader,
 
 	while (k > 0) {
 		child_direct_block = readValue(reader,
-				reader->superblock.size_of_offsets);
+					       reader->superblock.size_of_offsets);
 		if (fractalheap->encoded_length > 0) {
 			size_filtered = readValue(reader,
-					reader->superblock.size_of_lengths);
+						  reader->superblock.size_of_lengths);
 			filter_mask = readValue(reader, 4);
 		} log(">> %d %lX %d\n",k,child_direct_block,size);
 		if (validAddress(reader, child_direct_block)) {
@@ -261,13 +261,13 @@ static int indirectblockRead(struct READER *reader,
 
 	while (n > 0) {
 		child_indirect_block = readValue(reader,
-				reader->superblock.size_of_offsets);
+						 reader->superblock.size_of_offsets);
 
 		if (validAddress(reader, child_direct_block)) {
 			store = ftell(reader->fhd);
 			fseek(reader->fhd, child_indirect_block, SEEK_SET);
 			err = indirectblockRead(reader, dataobject, fractalheap,
-					iblock_size * 2);
+						iblock_size * 2);
 			if (err)
 				return err;
 			fseek(reader->fhd, store, SEEK_SET);
@@ -281,21 +281,21 @@ static int indirectblockRead(struct READER *reader,
 
 /*  III.G. Disk Format: Level 1G - Fractal Heap
 
- 00000240  46 52 48 50 00 08 00 00  00 02 00 10 00 00 00 00  |FRHP............|
- 00000250  00 00 00 00 00 00 ff ff  ff ff ff ff ff ff a3 0b  |................|
- 00000260  00 00 00 00 00 00 1e 03  00 00 00 00 00 00 00 10  |................|
- 00000270  00 00 00 00 00 00 00 08  00 00 00 00 00 00 00 08  |................|
- 00000280  00 00 00 00 00 00 16 00  00 00 00 00 00 00 00 00  |................|
- 00000290  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
- 000002a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 04 00  |................|
- 000002b0  00 04 00 00 00 00 00 00  00 00 01 00 00 00 00 00  |................|
- 000002c0  28 00 01 00 29 32 00 00  00 00 00 00 01 00 60 49  |(...)2........`I|
- 000002d0  32 1d 42 54 48 44 00 08  00 02 00 00 11 00 00 00  |2.BTHD..........|
+    00000240  46 52 48 50 00 08 00 00  00 02 00 10 00 00 00 00  |FRHP............|
+    00000250  00 00 00 00 00 00 ff ff  ff ff ff ff ff ff a3 0b  |................|
+    00000260  00 00 00 00 00 00 1e 03  00 00 00 00 00 00 00 10  |................|
+    00000270  00 00 00 00 00 00 00 08  00 00 00 00 00 00 00 08  |................|
+    00000280  00 00 00 00 00 00 16 00  00 00 00 00 00 00 00 00  |................|
+    00000290  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+    000002a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 04 00  |................|
+    000002b0  00 04 00 00 00 00 00 00  00 00 01 00 00 00 00 00  |................|
+    000002c0  28 00 01 00 29 32 00 00  00 00 00 00 01 00 60 49  |(...)2........`I|
+    000002d0  32 1d 42 54 48 44 00 08  00 02 00 00 11 00 00 00  |2.BTHD..........|
 
- */
+*/
 
 int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
-		struct FRACTALHEAP *fractalheap) {
+		    struct FRACTALHEAP *fractalheap) {
 	int err;
 	char buf[4];
 
@@ -316,49 +316,49 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	fractalheap->maximum_size = readValue(reader, 4);
 
 	fractalheap->next_huge_object_id = readValue(reader,
-			reader->superblock.size_of_lengths);
+						     reader->superblock.size_of_lengths);
 	fractalheap->btree_address_of_huge_objects = readValue(reader,
-			reader->superblock.size_of_offsets);
+							       reader->superblock.size_of_offsets);
 	fractalheap->free_space = readValue(reader,
-			reader->superblock.size_of_lengths);
+					    reader->superblock.size_of_lengths);
 	fractalheap->address_free_space = readValue(reader,
-			reader->superblock.size_of_offsets);
+						    reader->superblock.size_of_offsets);
 	fractalheap->amount_managed_space = readValue(reader,
-			reader->superblock.size_of_lengths);
+						      reader->superblock.size_of_lengths);
 	fractalheap->amount_allocated_space = readValue(reader,
-			reader->superblock.size_of_lengths);
+							reader->superblock.size_of_lengths);
 	fractalheap->offset_managed_space = readValue(reader,
-			reader->superblock.size_of_lengths);
+						      reader->superblock.size_of_lengths);
 	fractalheap->number_managed_objects = readValue(reader,
-			reader->superblock.size_of_lengths);
+							reader->superblock.size_of_lengths);
 	fractalheap->size_huge_objects = readValue(reader,
-			reader->superblock.size_of_lengths);
+						   reader->superblock.size_of_lengths);
 	fractalheap->number_huge_objects = readValue(reader,
-			reader->superblock.size_of_lengths);
+						     reader->superblock.size_of_lengths);
 	fractalheap->size_tiny_objects = readValue(reader,
-			reader->superblock.size_of_lengths);
+						   reader->superblock.size_of_lengths);
 	fractalheap->number_tiny_objects = readValue(reader,
-			reader->superblock.size_of_lengths);
+						     reader->superblock.size_of_lengths);
 
 	fractalheap->table_width = readValue(reader, 2);
 
 	fractalheap->starting_block_size = readValue(reader,
-			reader->superblock.size_of_lengths);
+						     reader->superblock.size_of_lengths);
 	fractalheap->maximum_direct_block_size = readValue(reader,
-			reader->superblock.size_of_lengths);
+							   reader->superblock.size_of_lengths);
 
 	fractalheap->maximum_heap_size = readValue(reader, 2);
 	fractalheap->starting_row = readValue(reader, 2);
 
 	fractalheap->address_of_root_block = readValue(reader,
-			reader->superblock.size_of_offsets);
+						       reader->superblock.size_of_offsets);
 
 	fractalheap->current_row = readValue(reader, 2);
 
 	if (fractalheap->encoded_length > 0) {
 
 		fractalheap->size_of_filtered_block = readValue(reader,
-				reader->superblock.size_of_lengths);
+								reader->superblock.size_of_lengths);
 		fractalheap->fitler_mask = readValue(reader, 4);
 
 		fractalheap->filter_information = malloc(fractalheap->encoded_length);
@@ -366,7 +366,7 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			return MYSOFA_NO_MEMORY;
 
 		fread(fractalheap->filter_information, 1, fractalheap->encoded_length,
-				reader->fhd);
+		      reader->fhd);
 	}
 
 	fseek(reader->fhd, 4, SEEK_CUR); /* skip checksum */
@@ -386,7 +386,7 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 		fseek(reader->fhd, fractalheap->address_of_root_block, SEEK_SET);
 		if (fractalheap->current_row)
 			err = indirectblockRead(reader, dataobject, fractalheap,
-					fractalheap->starting_block_size);
+						fractalheap->starting_block_size);
 		else {
 			err = directblockRead(reader, dataobject, fractalheap);
 

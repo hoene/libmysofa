@@ -1,4 +1,3 @@
-#include <string.h>
 #include <float.h>
 #include <stdio.h>
 #include <math.h>
@@ -17,7 +16,7 @@ void test_interpolate() {
 	float c[3];
 
 	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-				&err);
+			   &err);
 
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
@@ -28,17 +27,17 @@ void test_interpolate() {
 	fir = malloc(hrtf->N * hrtf->R * sizeof(float));
 
 	res = mysofa_interpolate(hrtf, hrtf->SourcePosition.values, 0, neighborhood,
-			fir, delays);
+				 fir, delays);
 	CU_ASSERT(res == hrtf->DataIR.values);
 	CU_ASSERT(delays[0] == 0);
 	CU_ASSERT(delays[1] == 0);
 
 	c[0] = (hrtf->SourcePosition.values[0] + hrtf->SourcePosition.values[3])
-			/ 2;
+		/ 2;
 	c[1] = (hrtf->SourcePosition.values[1] + hrtf->SourcePosition.values[4])
-			/ 2;
+		/ 2;
 	c[2] = (hrtf->SourcePosition.values[2] + hrtf->SourcePosition.values[5])
-			/ 2;
+		/ 2;
 	neighborhood[0] = 1;
 
 	res = mysofa_interpolate(hrtf, c, 0, neighborhood, fir, delays);
@@ -49,7 +48,7 @@ void test_interpolate() {
 	for (i = 0; i < hrtf->N * hrtf->R; i++) {
 #ifdef VDEBUG
 		printf("%f %f %f\n", res[i], hrtf->DataIR.values[i],
-				hrtf->DataIR.values[i + hrtf->N * hrtf->R]);
+		       hrtf->DataIR.values[i + hrtf->N * hrtf->R]);
 #endif
 		CU_ASSERT(fequals(res[i],(hrtf->DataIR.values[i]+hrtf->DataIR.values[i+hrtf->N*hrtf->R])/2));
 	}

@@ -55,11 +55,11 @@ void test_lookup() {
 #ifdef HAVE_GETTIMEOFDAY
 		gettimeofday(&r1, NULL);
 #endif		
-	    lk = mysofa_lookup(lookup, find);
+		lk = mysofa_lookup(lookup, find);
 #ifdef HAVE_GETTIMEOFDAY
 		gettimeofday(&r2, NULL);
 		duration1 = (r2.tv_sec - r1.tv_sec) * 1000000.
-				+ (r2.tv_usec - r1.tv_usec);
+			+ (r2.tv_usec - r1.tv_usec);
 
 		gettimeofday(&r1, NULL);
 #endif		
@@ -73,15 +73,15 @@ void test_lookup() {
 #ifdef HAVE_GETTIMEOFDAY		
 		gettimeofday(&r2, NULL);
 		duration2 = (r2.tv_sec - r1.tv_sec) * 1000000.
-				+ (r2.tv_usec - r1.tv_usec);
+			+ (r2.tv_usec - r1.tv_usec);
 #endif
 
 		CU_ASSERT(lk==index);
 		if(lk!=index) {
 			printf("O(log n) %f %f %f -> %d %f \t\t", find[0], find[1], find[2], lk,
-				distance(find, hrtf->SourcePosition.values + lk  * hrtf->C));
+			       distance(find, hrtf->SourcePosition.values + lk  * hrtf->C));
 			printf("O(n): %f %f %f -> %d %f\t%f%%\n", find[0], find[1], find[2],
-				index, dmin, duration1 / duration2 * 100);
+			       index, dmin, duration1 / duration2 * 100);
 		}
 	}
 

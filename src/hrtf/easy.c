@@ -7,13 +7,14 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 
 /**
  *
  */
 
-struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
 {
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
@@ -45,7 +46,7 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 	mysofa_loudness(easy->hrtf);
 
 /* does not sound well:
-	mysofa_minphase(easy->hrtf,0.01);
+   mysofa_minphase(easy->hrtf,0.01);
 */
 
 	mysofa_tocartesian(easy->hrtf);
@@ -58,14 +59,14 @@ struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *fil
 	}
 
 	easy->neighborhood = mysofa_neighborhood_init(easy->hrtf,
-			easy->lookup);
+						      easy->lookup);
 
-    *filterlength = easy->hrtf->N;
+	*filterlength = easy->hrtf->N;
 
 	return easy;
 }
 
-struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
 {
 	struct MYSOFA_EASY* res = mysofa_cache_lookup(filename, samplerate);
 	if(res) {
@@ -79,28 +80,28 @@ struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, i
 	return res;
 }
 
-void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
-		short *IRleft, short *IRright,
-		int *delayLeft, int *delayRight)
+MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
+					  short *IRleft, short *IRright,
+					  int *delayLeft, int *delayRight)
 {
 	float c[3];
 	float *fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
 	float delays[2];
-    float *fl;
+	float *fl;
 	float *fr;
 	int nearest;
 	int *neighbors;
 	int i;
 
-    c[0] = x;
-    c[1] = y;
-    c[2] = z;
-    nearest = mysofa_lookup(easy->lookup, c);
-    neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+	c[0] = x;
+	c[1] = y;
+	c[2] = z;
+	nearest = mysofa_lookup(easy->lookup, c);
+	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
     
 	mysofa_interpolate(easy->hrtf, c,
-			nearest, neighbors,
-			fir, delays);
+			   nearest, neighbors,
+			   fir, delays);
 
 	*delayLeft  = delays[0] * easy->hrtf->DataSamplingRate.values[0];
 	*delayRight = delays[1] * easy->hrtf->DataSamplingRate.values[0];
@@ -114,28 +115,28 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 	free(fir);
 }
 
-void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
-		float *IRleft, float *IRright,
-		float *delayLeft, float *delayRight)
+MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
+					  float *IRleft, float *IRright,
+					  float *delayLeft, float *delayRight)
 {
 	float c[3];
 	float *fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
 	float delays[2];
-    float *fl;
+	float *fl;
 	float *fr;
 	int nearest;
 	int *neighbors;
 	int i;
 
-    c[0] = x;
-    c[1] = y;
-    c[2] = z;
-    nearest = mysofa_lookup(easy->lookup, c);
-    neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
+	c[0] = x;
+	c[1] = y;
+	c[2] = z;
+	nearest = mysofa_lookup(easy->lookup, c);
+	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
     
 	mysofa_interpolate(easy->hrtf, c,
-			nearest, neighbors,
-			fir, delays);
+			   nearest, neighbors,
+			   fir, delays);
 
 	*delayLeft  = delays[0];
 	*delayRight = delays[1];
@@ -149,7 +150,7 @@ void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 	free(fir);
 }
 
-void mysofa_close(struct MYSOFA_EASY* easy)
+MYSOFA_EXPORT void mysofa_close(struct MYSOFA_EASY* easy)
 {
 	if(easy) {
 		if(easy->neighborhood)
@@ -162,7 +163,7 @@ void mysofa_close(struct MYSOFA_EASY* easy)
 	}
 }
 
-void mysofa_close_cached(struct MYSOFA_EASY* easy)
+MYSOFA_EXPORT void mysofa_close_cached(struct MYSOFA_EASY* easy)
 {
 	mysofa_cache_release(easy);
 }

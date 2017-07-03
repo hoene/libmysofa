@@ -18,7 +18,7 @@ void test_neighbors() {
 #endif
 
 	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-			&err);
+			   &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
@@ -33,7 +33,7 @@ void test_neighbors() {
 	}
 
 	neighborhood = mysofa_neighborhood_init(hrtf,
-			lookup);
+						lookup);
 
 	if (neighborhood == NULL) {
 		CU_FAIL("Error getting neighborhood.");
@@ -41,7 +41,6 @@ void test_neighbors() {
 		mysofa_free(hrtf);
 		return;
 	}
-
 
 	for (i = 0; i < hrtf->M; i ++) {
 		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
@@ -54,7 +53,7 @@ void test_neighbors() {
 		for (j = 0; j < 6; j++) {
 			if (res[j] >= 0) {
 				memcpy(C, hrtf->SourcePosition.values + res[j] * hrtf->C,
-						sizeof(float) * hrtf->C);
+				       sizeof(float) * hrtf->C);
 				mysofa_c2s(C);
 #ifdef VDEBUG
 				printf("\t%c %4.0f %4.0f %5.2f", dir[j], C[0], C[1], C[2]);

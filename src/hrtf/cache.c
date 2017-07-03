@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "../hdf/reader.h"
 
@@ -27,7 +28,7 @@ static int compare_filenames(const char *a, const char *b)
 	return strcmp(a,b);
 }
 
-struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
+MYSOFA_EXPORT struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 {
 	struct MYSOFA_CACHE_ENTRY *p;
 	struct MYSOFA_EASY *res = NULL;
@@ -46,7 +47,7 @@ struct MYSOFA_EASY *mysofa_cache_lookup(const char *filename, float samplerate)
 	return res;
 }
 
-struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *filename, float samplerate)
+MYSOFA_EXPORT struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *filename, float samplerate)
 {
 	struct MYSOFA_CACHE_ENTRY *p;
 
@@ -82,7 +83,7 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *easy, const char *fil
 	return easy;
 }
 
-void mysofa_cache_release(struct MYSOFA_EASY *easy)
+MYSOFA_EXPORT void mysofa_cache_release(struct MYSOFA_EASY *easy)
 {
 	struct MYSOFA_CACHE_ENTRY **p;
 	int count;
@@ -111,7 +112,7 @@ void mysofa_cache_release(struct MYSOFA_EASY *easy)
 	}
 }
 
-void mysofa_cache_release_all()
+MYSOFA_EXPORT void mysofa_cache_release_all()
 {
 	struct MYSOFA_CACHE_ENTRY *p;
 

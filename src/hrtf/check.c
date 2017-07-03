@@ -1,5 +1,6 @@
 #include <string.h>
 #include <math.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
@@ -18,7 +19,7 @@ static float array000[] = { 0, 0, 0 };
 static float array001[] = { 0, 0, 1 };
 static float array100[] = { 1, 0, 0 };
 
-int mysofa_check(struct MYSOFA_HRTF *hrtf) {
+MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 
 	/* check for valid parameter ranges */
 	/*

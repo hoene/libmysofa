@@ -29,7 +29,7 @@ void test_minphase() {
 
 
 	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-			&err);
+			   &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
@@ -42,7 +42,7 @@ void test_minphase() {
 	mysofa_free(hrtf);
 
 	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-				&err);
+			   &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
@@ -57,7 +57,7 @@ void test_minphase() {
 
 
 	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-			&err);
+			   &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}

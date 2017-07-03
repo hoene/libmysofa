@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
@@ -13,7 +14,7 @@ static void convertArray(struct MYSOFA_ARRAY *array) {
 	convertCartesianToSpherical(array->values, array->elements);
 }
 
-void mysofa_tospherical(struct MYSOFA_HRTF *hrtf) {
+MYSOFA_EXPORT void mysofa_tospherical(struct MYSOFA_HRTF *hrtf) {
 	convertArray(&hrtf->ListenerView);
 	convertArray(&hrtf->ListenerUp);
 	convertArray(&hrtf->ListenerPosition);
@@ -31,7 +32,7 @@ static void convertArray2(struct MYSOFA_ARRAY *array) {
 	convertSphericalToCartesian(array->values, array->elements);
 }
 
-void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf) {
+MYSOFA_EXPORT void mysofa_tocartesian(struct MYSOFA_HRTF *hrtf) {
 	convertArray2(&hrtf->ListenerView);
 	convertArray2(&hrtf->ListenerUp);
 	convertArray2(&hrtf->ListenerPosition);

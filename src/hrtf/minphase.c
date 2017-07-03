@@ -11,6 +11,7 @@
 #include <float.h>
 #include <math.h>
 #include <assert.h>
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
@@ -44,7 +45,7 @@ static void trunk(float *in, int size, int *start, int *end, float threshold) {
 	*end = e + 1;
 }
 
-int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
+MYSOFA_EXPORT int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	int i;
 	int max = 0;
 	int filters;
@@ -65,14 +66,14 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	 */
 	for (i = 0; i < filters; i++) {
 		trunk(hrtf->DataIR.values + i * hrtf->N, hrtf->N, start + i, end + i,
-				threshold);
+		      threshold);
 		if (end[i] - start[i] > max)
 			max = end[i] - start[i];
 	}
 
 	if (max == hrtf->N) {
-	    free(start);
-	    free(end);
+		free(start);
+		free(end);
 		return max;
 	}
 
@@ -84,14 +85,14 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	d[1] = hrtf->DataDelay.values[1];
 	hrtf->DataDelay.elements = filters;
 	hrtf->DataDelay.values = realloc(hrtf->DataDelay.values,
-			sizeof(float) * filters);
+					 sizeof(float) * filters);
 	for (i = 0; i < filters; i++) {
 		if (start[i] + max > hrtf->N)
 			start[i] = hrtf->N - max;
 		hrtf->DataDelay.values[i] = d[i % 1] + (start[i] / samplerate);
 		memmove(hrtf->DataIR.values + i * max,
-				hrtf->DataIR.values + i * hrtf->N + start[i],
-				max * sizeof(float));
+			hrtf->DataIR.values + i * hrtf->N + start[i],
+			max * sizeof(float));
 	}
 
 	/*
@@ -100,10 +101,10 @@ int mysofa_minphase(struct MYSOFA_HRTF *hrtf, float threshold) {
 	hrtf->N = max;
 	hrtf->DataIR.elements = max * filters;
 	hrtf->DataIR.values = realloc(hrtf->DataIR.values,
-			sizeof(float) * hrtf->DataIR.elements);
+				      sizeof(float) * hrtf->DataIR.elements);
 
-    free(start);
-    free(end);
+	free(start);
+	free(end);
 	return max;
 }
 

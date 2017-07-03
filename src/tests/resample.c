@@ -32,11 +32,11 @@ void test_resample() {
 		if ((i % hrtf->N) == (hrtf->N - 1))
 			printf("\n");
 #endif
-			CU_ASSERT( !((hrtf->DataIR.values[i]>0.4 && backup[i/2]==0.) ||
-				(hrtf->DataIR.values[i]<=0.3 && backup[i/2]==1.) ) );
+		CU_ASSERT( !((hrtf->DataIR.values[i]>0.4 && backup[i/2]==0.) ||
+			     (hrtf->DataIR.values[i]<=0.3 && backup[i/2]==1.) ) );
 	}
 
-    free(backup);
+	free(backup);
 	mysofa_free(hrtf);
 }
 

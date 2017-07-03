@@ -13,15 +13,15 @@ use_c99()
 configure_file (config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
 
 if(NOT WIN32)
-    find_library(MATH m)
-    include(FindZLIB)
+  find_library(MATH m)
+  include(FindZLIB)
 else()
-    set(MATH "")
-    find_program(NUGET nuget)
-    if (NUGET)
-         execute_process(COMMAND ${NUGET} install zlib)
-    endif()
-    include_directories(${CMAKE_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
+  set(MATH "")
+  find_program(NUGET nuget)
+  if (NUGET)
+    execute_process(COMMAND ${NUGET} install zlib)
+  endif()
+  include_directories(${CMAKE_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
 endif()
 
 # include(FindZLIB)
@@ -50,7 +50,7 @@ add_library(mysofa-static STATIC ${libsrc})
 target_link_libraries (mysofa-static ${MATH} ${ZLIB_LIBRARIES})
 SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1 POSITION_INDEPENDENT_CODE ON)
 install(TARGETS mysofa-static
-    ARCHIVE DESTINATION lib)
+  ARCHIVE DESTINATION lib)
 
 if(BUILD_SHARED_LIBS)
   add_library(mysofa-shared SHARED ${libsrc})
@@ -70,18 +70,22 @@ endif()
 install(FILES hrtf/mysofa.h DESTINATION include)
 
 if(BUILD_TESTS)
-    add_executable(mysofa2json tests/sofa2json.c tests/json.c)
-    target_link_libraries (mysofa2json mysofa-static)
+  add_executable(mysofa2json tests/sofa2json.c tests/json.c)
+  target_link_libraries (mysofa2json mysofa-static)
 
-    add_executable(tests tests/tests.c tests/tools.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
-      tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
+  add_executable(external tests/external.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
+    tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
+  target_link_libraries (external mysofa-shared ${CUNIT_LIBRARIES})
+  add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
 
-    target_link_libraries (tests mysofa-static ${CUNIT_LIBRARIES})
-    add_test(NAME tests WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND tests)
+  add_executable(internal tests/internal.c tests/tools.c hrtf/tools.c)
+  target_link_libraries (internal m ${CUNIT_LIBRARIES})
+  add_test(NAME internal WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND internal)
+  
 
-    install(TARGETS mysofa2json
-        RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib)
+  install(TARGETS mysofa2json
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib)
 endif(BUILD_TESTS)
 

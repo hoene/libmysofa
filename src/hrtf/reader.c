@@ -1,8 +1,8 @@
 /*
 
- Copyright 2016 Christian Hoene, Symonics GmbH
+  Copyright 2016 Christian Hoene, Symonics GmbH
 
- */
+*/
 
 #include <errno.h>
 #include <stddef.h>
@@ -11,6 +11,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "mysofa_export.h"
 #include "mysofa.h"
 #include "../hdf/reader.h"
 #include "../config.h"
@@ -42,10 +43,10 @@ static int mystrcmp(char *s1, char *s2) {
 }
 
 static int checkAttribute(struct MYSOFA_ATTRIBUTE *attribute, char *name,
-		char *value) {
+			  char *value) {
 	while (attribute) {
 		if (!mystrcmp(attribute->name, name)
-				&& !mystrcmp(attribute->value, value))
+		    && !mystrcmp(attribute->value, value))
 			return MYSOFA_OK;
 		attribute = attribute->next;
 	}
@@ -58,16 +59,16 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 	struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
 
 	if (!!(err = checkAttribute(dataobject->attributes, "CLASS",
-			"DIMENSION_SCALE")))
+				    "DIMENSION_SCALE")))
 		return err;
 
 	while (attr) {
 		log(" %s=%s\n",attr->name,attr->value);
 
 		if (!strcmp(attr->name, "NAME")
-				&& !strncmp(attr->value,
-						"This is a netCDF dimension but not a netCDF variable.",
-						53)) {
+		    && !strncmp(attr->value,
+				"This is a netCDF dimension but not a netCDF variable.",
+				53)) {
 			char *p = attr->value + strlen(attr->value) - 1;
 			while (isdigit(*p)) {
 				p--;
@@ -134,7 +135,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	/* read dimensions */
 	while (dir) {
 		if (dir->dataobject.name && dir->dataobject.name[0]
-				&& dir->dataobject.name[1] == 0) {
+		    && dir->dataobject.name[1] == 0) {
 			switch (dir->dataobject.name[0]) {
 			case 'I':
 				*err = getDimension(&hrtf->I, &dir->dataobject);
@@ -207,13 +208,13 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 
 	return hrtf;
 
-	error: free(hrtf);
+ error: free(hrtf);
 	if (!*err)
 		*err = MYSOFA_INVALID_FORMAT;
 	return NULL;
 }
 
-struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
+MYSOFA_EXPORT struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 
@@ -221,9 +222,9 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 		filename = CMAKE_INSTALL_PREFIX "/share/libmysofa/default.sofa";
 
 	if(strcmp(filename,"-"))
-        reader.fhd = fopen(filename, "rb");
-    else
-        reader.fhd = stdin;
+		reader.fhd = fopen(filename, "rb");
+	else
+		reader.fhd = stdin;
 
 	if (!reader.fhd) {
 		log("cannot open file %s\n", filename);
@@ -242,7 +243,7 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	superblockFree(&reader, &reader.superblock);
 	gcolFree(reader.gcol);
 	if(strcmp(filename,"-"))
-    	fclose(reader.fhd);
+		fclose(reader.fhd);
 
 	return hrtf;
 }
@@ -258,7 +259,7 @@ static void arrayFree(struct MYSOFA_ARRAY *array) {
 	free(array->values);
 }
 
-void mysofa_free(struct MYSOFA_HRTF *hrtf) {
+MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 	if (!hrtf)
 		return;
 
@@ -282,10 +283,10 @@ void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 	free(hrtf);
 }
 
-void mysofa_getversion(int *major, int *minor, int *patch)
+MYSOFA_EXPORT void mysofa_getversion(int *major, int *minor, int *patch)
 {
-    *major = CPACK_PACKAGE_VERSION_MAJOR;
-    *minor = CPACK_PACKAGE_VERSION_MINOR;
-    *patch = CPACK_PACKAGE_VERSION_PATCH;
+	*major = CPACK_PACKAGE_VERSION_MAJOR;
+	*minor = CPACK_PACKAGE_VERSION_MINOR;
+	*patch = CPACK_PACKAGE_VERSION_PATCH;
 }
 

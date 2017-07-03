@@ -42,28 +42,28 @@ void test_easy() {
 	}
 	mysofa_minphase(easy->hrtf, 0.01);
 	
-    for(filters=0;filters<easy->hrtf->M;filters++) {
-        c[0]=easy->hrtf->SourcePosition.values[filters*3];
-        c[1]=easy->hrtf->SourcePosition.values[filters*3+1];
-        c[2]=easy->hrtf->SourcePosition.values[filters*3+2];
-        convertCartesianToSpherical(c,3);
+	for(filters=0;filters<easy->hrtf->M;filters++) {
+		c[0]=easy->hrtf->SourcePosition.values[filters*3];
+		c[1]=easy->hrtf->SourcePosition.values[filters*3+1];
+		c[2]=easy->hrtf->SourcePosition.values[filters*3+2];
+		mysofa_c2s(c);
         
 #ifdef VDEBUG        
    		printf("in %d %f %f %f # %f %f %f\n",filters,c[0],c[1],c[2],easy->hrtf->SourcePosition.values[filters*3],easy->hrtf->SourcePosition.values[filters*3+1],easy->hrtf->SourcePosition.values[filters*3+2]);
 #endif   		
-        c[0] = fmod(round(c[0]+360),360);
-        c[1] = fmod(round(c[1]+361),360);        
-        l1 = round(easy->hrtf->DataDelay.values[filters*2]*48000*2);
-        l2 = round(easy->hrtf->DataDelay.values[filters*2+1]*48000*2);
+		c[0] = fmod(round(c[0]+360),360);
+		c[1] = fmod(round(c[1]+361),360);        
+		l1 = round(easy->hrtf->DataDelay.values[filters*2]*48000*2);
+		l2 = round(easy->hrtf->DataDelay.values[filters*2+1]*48000*2);
 
 #ifdef VDEBUG        
 /*   		printf("compare %d %f %f %f %f %f\n",filters,c[0],c[1],c[2],l1,l2); */
 #endif   		
-        CU_ASSERT(!((fabs(c[0]-l1)>2 || fabs(c[1]-l2)>2) && !fequals(l2,90)));
-    }
+		CU_ASSERT(!((fabs(c[0]-l1)>2 || fabs(c[1]-l2)>2) && !fequals(l2,90)));
+	}
     
     
-    filters=0; 
+	filters=0; 
 	for(theta=-90.;theta<=90.;theta+=5.) {
 		r = round(cos(theta*M_PI/180.) * 120.);
 		if(r==0.) r=1;
@@ -77,8 +77,8 @@ void test_easy() {
 	ir = malloc(filters*easy->hrtf->N*sizeof(float)*2);
 	delays = malloc(filters*2*sizeof(float));
 
-    sdiff1 = sdiff2 = 0;
-    err = 0;
+	sdiff1 = sdiff2 = 0;
+	err = 0;
 	for(theta=-90.;theta<=90.;theta+=5.) {
 		int r = round(cos(theta*M_PI/180.) * 120.);
 		int phi;
@@ -87,25 +87,25 @@ void test_easy() {
 			coordinates[count*3+0] = phi * (360. / r);
 			coordinates[count*3+1] = theta;
 			coordinates[count*3+2] = 1;
-			convertSphericalToCartesian(coordinates+count*3,3);
+			mysofa_s2c(coordinates+count*3);
 #ifdef VDEBUG
 			printf("req %f %f %d %f %f %f\n",phi* (360. / r),theta,count,coordinates[count*3+0],coordinates[count*3+1],coordinates[count*3+2]);
 #endif
 			mysofa_getfilter_float(easy,
-					coordinates[count*3+0],
-					coordinates[count*3+1],
-					coordinates[count*3+2],
-					ir + 2*count * easy->hrtf->N,
-					ir + (2*count+1) * easy->hrtf->N,
-					&delays[2*count], &delays[2*count+1]);
-            diff1 = fabs(phi * (360. / r) - delays[2*count] * 48000 * 2);
-            diff2 = fabs(fmod(theta + 360,360) - delays[2*count+1] * 48000 * 2);
-            if(diff1 > 5 || diff2 > 5)
-                err++;
-            else {
-                sdiff1 += diff1;
-                sdiff2 += diff2;
-            }
+					       coordinates[count*3+0],
+					       coordinates[count*3+1],
+					       coordinates[count*3+2],
+					       ir + 2*count * easy->hrtf->N,
+					       ir + (2*count+1) * easy->hrtf->N,
+					       &delays[2*count], &delays[2*count+1]);
+			diff1 = fabs(phi * (360. / r) - delays[2*count] * 48000 * 2);
+			diff2 = fabs(fmod(theta + 360,360) - delays[2*count+1] * 48000 * 2);
+			if(diff1 > 5 || diff2 > 5)
+				err++;
+			else {
+				sdiff1 += diff1;
+				sdiff2 += diff2;
+			}
                 
 #ifdef VDEBUG
 			printf("diff %f %f\t", diff1, diff2);
@@ -122,9 +122,9 @@ void test_easy() {
 #ifdef VDEBUG
 	printf("errors %f%% diffs %f %f\n", err*100./count, sdiff1 / (count-err), sdiff2 / (count-err));
 #endif
-    CU_ASSERT(err < 31.7);
-    CU_ASSERT(sdiff1 < 1.67);
-    CU_ASSERT(sdiff2 < 1.43);
+	CU_ASSERT(err < 31.7);
+	CU_ASSERT(sdiff1 < 1.67);
+	CU_ASSERT(sdiff2 < 1.43);
 
 	free(easy->hrtf->DataDelay.values);
 	free(easy->hrtf->DataIR.values);

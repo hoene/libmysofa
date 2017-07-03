@@ -27,7 +27,7 @@ void test_loudness() {
 
 
 	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-			&err);
+			   &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
@@ -41,8 +41,8 @@ void test_loudness() {
 	factor = mysofa_loudness(hrtf);
 #ifdef VDEBUG
 	printf(
-			"loudness of MIT_KEMAR_normal_pinna.sofa after normalization %f\n",
-			factor);
+		"loudness of MIT_KEMAR_normal_pinna.sofa after normalization %f\n",
+		factor);
 #endif
 	CU_ASSERT(fequals(factor,1.));
 

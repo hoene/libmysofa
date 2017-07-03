@@ -28,12 +28,11 @@ void test_cache() {
 	mysofa_cache_release_all();							/* remove all */
 	CU_ASSERT(!mysofa_cache_lookup(filename1,sr1));		/* cache must be empty now */
 
-
 /*
-	 mysofa_cache_release(easy1);		
-	free(easy1) 
+  mysofa_cache_release(easy1);		
+  free(easy1) 
 	
-	must segfail
+  must segfail
 */
 
 	easy1 = malloc(sizeof(struct MYSOFA_EASY));

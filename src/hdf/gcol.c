@@ -1,8 +1,8 @@
 /*
 
- Copyright 2016 Christian Hoene, Symonics GmbH
+  Copyright 2016 Christian Hoene, Symonics GmbH
 
- */
+*/
 
 #include <stdlib.h>
 #include <string.h>
@@ -50,11 +50,11 @@ static int readGCOL(struct READER *reader) {
 		reference_count = readValue(reader, 2);
 		fseek(reader->fhd, 4, SEEK_CUR);
 		gcol->object_size = readValue(reader,
-				reader->superblock.size_of_lengths);
+					      reader->superblock.size_of_lengths);
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
 		log(" GCOL object %d size %ld value %08lX\n", gcol->heap_object_index,
-				gcol->object_size, gcol->value);
+		    gcol->object_size, gcol->value);
 
 		gcol->next = reader->gcol;
 		reader->gcol = gcol;
@@ -66,7 +66,7 @@ static int readGCOL(struct READER *reader) {
 }
 
 int gcolRead(struct READER *reader, uint64_t gcol, int reference,
-		uint64_t *dataobject) {
+	     uint64_t *dataobject) {
 	uint64_t pos;
 	struct GCOL *p = reader->gcol;
 
@@ -115,10 +115,10 @@ for (;;) {
 	gcol = gcol->next;
 #endif
 
-void gcolFree(struct GCOL *gcol) {
-	if (gcol) {
-		gcolFree(gcol->next);
-		free(gcol);
+	void gcolFree(struct GCOL *gcol) {
+		if (gcol) {
+			gcolFree(gcol->next);
+			free(gcol);
+		}
 	}
-}
 

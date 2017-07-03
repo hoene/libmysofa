@@ -10,14 +10,16 @@
 #include <stdio.h>
 #include <string.h>
 #include "tools.h"
+#include "mysofa_export.h"
+#include "mysofa.h"
 
 char *mysofa_strdup(const char *str)
 {
-    size_t size = strlen(str) + 1;
-    char *copy = malloc(size);
-    if(copy)
-        memcpy(copy, str, size);
-    return copy;
+	size_t size = strlen(str) + 1;
+	char *copy = malloc(size);
+	if(copy)
+		memcpy(copy, str, size);
+	return copy;
 }
 
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value) {
@@ -30,10 +32,10 @@ int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value) {
 }
 
 int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
-		char *newvalue) {
+		    char *newvalue) {
 	while (attr) {
 		if (!strcmp(name, attr->name)
-				&& (value == NULL || !strcmp(value, attr->value))) {
+		    && (value == NULL || !strcmp(value, attr->value))) {
 			free(attr->value);
 			attr->value = mysofa_strdup(newvalue);
 			return 1;
@@ -53,8 +55,7 @@ char* mysofa_getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name) {
 	return NULL;
 }
 
-
-void mysofa_c2s(float values[3])
+MYSOFA_EXPORT void mysofa_c2s(float values[3])
 {
 	float x,y,z,r,theta,phi;
 	x = values[0];
@@ -70,7 +71,7 @@ void mysofa_c2s(float values[3])
 	values[2] = r;
 }
 
-void mysofa_s2c(float values[3])
+MYSOFA_EXPORT void mysofa_s2c(float values[3])
 {
 	float x, r, theta, phi;
 	phi = values[0] * (M_PI / 180);
@@ -101,26 +102,8 @@ void convertSphericalToCartesian(float *values, int elements) {
 
 float radius(float *cartesian) {
 	return sqrtf(
-			powf(cartesian[0], 2.f) + powf(cartesian[1], 2.f)
-					+ powf(cartesian[2], 2.f));
-}
-
-float distance(float *cartesian1, float *cartesian2) {
-	return sqrtf(
-			powf(cartesian1[0] - cartesian2[0], 2.f)
-					+ powf(cartesian1[1] - cartesian2[1], 2.f)
-					+ powf(cartesian1[2] - cartesian2[2], 2.f));
-}
-
-/*
- static int fequalsf(float a, float b)
- {
- return fabsf(a-b)<0.000001;
- }
- */
-
-int fequals(float a, float b) {
-	return fabsf(a - b) < 0.00001;
+		powf(cartesian[0], 2.f) + powf(cartesian[1], 2.f)
+		+ powf(cartesian[2], 2.f));
 }
 
 /*
@@ -128,7 +111,7 @@ int fequals(float a, float b) {
  */
 
 void nsearch(const void *key, const char *base, size_t num, size_t size,
-		int (*cmp)(const void *key, const void *elt), int *lower, int *higher) {
+	     int (*cmp)(const void *key, const void *elt), int *lower, int *higher) {
 	size_t start = 0, end = num;
 	int result;
 

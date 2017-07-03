@@ -1,6 +1,6 @@
 /*
 
- Copyright 2016 Christian Hoene, Symonics GmbH
+  Copyright 2016 Christian Hoene, Symonics GmbH
  
 */
 
@@ -59,10 +59,10 @@
  00000690  15 00 00 00 d3 c7 19 a0  00 00 00 00 00 00 00 00  |................|
  000006a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
 
- */
+*/
 
 static int readBTLF(struct READER *reader, struct BTREE *btree,
-		int number_of_records, union RECORD *records) {
+		    int number_of_records, union RECORD *records) {
 
 	int i;
 
@@ -97,7 +97,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 			records->type5.hash_of_name = readValue(reader, 4);
 			records->type5.heap_id = readValue(reader, 7);
 			log(" type5 %08X %14lX\n", records->type5.hash_of_name,
-					records->type5.heap_id);
+			    records->type5.heap_id);
 			records++;
 			break;
 
@@ -132,13 +132,13 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 
 /*  III.A.2. Disk Format: Level 1A2 - Version 2 B-trees
 
- 000002d0  32 1d 42 54 48 44 00 08  00 02 00 00 11 00 00 00  |2.BTHD..........|
- 000002e0  64 28 70 03 00 00 00 00  00 00 16 00 16 00 00 00  |d(p.............|
- 000002f0  00 00 00 00 30 12 d9 6e  42 54 48 44 00 09 00 02  |....0..nBTHD....|
- 00000300  00 00 0d 00 00 00 64 28  70 05 00 00 00 00 00 00  |......d(p.......|
- 00000310  16 00 16 00 00 00 00 00  00 00 e2 0d 76 5c 46 53  |............v\FS|
+    000002d0  32 1d 42 54 48 44 00 08  00 02 00 00 11 00 00 00  |2.BTHD..........|
+    000002e0  64 28 70 03 00 00 00 00  00 00 16 00 16 00 00 00  |d(p.............|
+    000002f0  00 00 00 00 30 12 d9 6e  42 54 48 44 00 09 00 02  |....0..nBTHD....|
+    00000300  00 00 0d 00 00 00 64 28  70 05 00 00 00 00 00 00  |......d(p.......|
+    00000310  16 00 16 00 00 00 00 00  00 00 e2 0d 76 5c 46 53  |............v\FS|
 
- */
+*/
 
 int btreeRead(struct READER *reader, struct BTREE *btree) {
 	char buf[4];
@@ -162,7 +162,7 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
 	btree->split_percent = fgetc(reader->fhd);
 	btree->merge_percent = fgetc(reader->fhd);
 	btree->root_node_address = readValue(reader,
-			reader->superblock.size_of_offsets);
+					     reader->superblock.size_of_offsets);
 	btree->number_of_records = readValue(reader, 2);
 	btree->total_number = readValue(reader, reader->superblock.size_of_lengths);
 
@@ -189,7 +189,7 @@ void btreeFree(struct BTREE *btree) {
 int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
 	int i, j, err, olen, elements, size, x, y, z, b, e, dy, dz, sx, sy, sz, dzy,
-			szy;
+		szy;
 	char *input, *output;
 
 	uint8_t node_type, node_level;
@@ -197,7 +197,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	uint32_t size_of_chunk;
 	uint32_t filter_mask;
 	uint64_t address_of_left_sibling, address_of_right_sibling, start[4],
-			child_pointer, key, store;
+		child_pointer, key, store;
 
 	char buf[4];
 
@@ -221,9 +221,9 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	node_level = fgetc(reader->fhd);
 	entries_used = readValue(reader, 2);
 	address_of_left_sibling = readValue(reader,
-			reader->superblock.size_of_offsets);
+					    reader->superblock.size_of_offsets);
 	address_of_right_sibling = readValue(reader,
-			reader->superblock.size_of_offsets);
+					     reader->superblock.size_of_offsets);
 
 	elements = 1;
 	for (j = 0; j < data->ds.dimensionality; j++)
@@ -265,7 +265,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 			}
 
 			child_pointer = readValue(reader,
-					reader->superblock.size_of_offsets);
+						  reader->superblock.size_of_offsets);
 			log(" data at %lX len %u\n", child_pointer, size_of_chunk);
 
 			/* read data */

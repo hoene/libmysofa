@@ -50,7 +50,7 @@ static void printString(FILE *out, char *string) {
 }
 
 static void printAttributes(FILE *out, int spaces,
-		struct MYSOFA_ATTRIBUTE *attr) {
+			    struct MYSOFA_ATTRIBUTE *attr) {
 	int i;
 
 	for (i = 0; i < spaces; i++)
@@ -71,18 +71,18 @@ static void printAttributes(FILE *out, int spaces,
 }
 
 /*
- "Dimensions":[
- 1,
- 2
- ],
- "DimensionNames":[
- "I",
- "R"
- ],
- */
+  "Dimensions":[
+  1,
+  2
+  ],
+  "DimensionNames":[
+  "I",
+  "R"
+  ],
+*/
 
 static void printDimensions(FILE *out, struct MYSOFA_HRTF *hrtf,
-		struct MYSOFA_ATTRIBUTE **p) {
+			    struct MYSOFA_ATTRIBUTE **p) {
 	struct MYSOFA_ATTRIBUTE *found;
 	char *s;
 	int dimensions[4];
@@ -147,7 +147,7 @@ static void printDimensions(FILE *out, struct MYSOFA_HRTF *hrtf,
 }
 
 static int printArray(FILE *out, struct MYSOFA_HRTF *hrtf,
-		struct MYSOFA_ARRAY *array, char *name) {
+		      struct MYSOFA_ARRAY *array, char *name) {
 	int i = 0;
 
 	if (!array->elements)
@@ -169,7 +169,7 @@ static int printArray(FILE *out, struct MYSOFA_HRTF *hrtf,
 	fprintf(out, "   \"Values\": [");
 	for (i = 0; i < array->elements; i++) {
 		fprintf(out, "%c%s%.6f", i == 0 ? ' ' : ',',
-				i % 20 == 19 ? "\n    " : "", array->values[i]);
+			i % 20 == 19 ? "\n    " : "", array->values[i]);
 	}
 
 	fprintf(out, " ]\n  }");

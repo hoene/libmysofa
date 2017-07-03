@@ -1,8 +1,8 @@
 /*
 
- Copyright 2016 Christian Hoene, Symonics GmbH
+  Copyright 2016 Christian Hoene, Symonics GmbH
 
- */
+*/
 
 #include <stdlib.h>
 #include <string.h>
