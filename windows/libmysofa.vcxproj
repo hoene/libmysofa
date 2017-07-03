@@ -155,35 +155,35 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\hdf\btree.c" />
-    <ClCompile Include="src\hdf\dataobject.c" />
-    <ClCompile Include="src\hdf\fractalhead.c" />
-    <ClCompile Include="src\hdf\gcol.c" />
-    <ClCompile Include="src\hdf\gunzip.c" />
-    <ClCompile Include="src\hdf\superblock.c" />
-    <ClCompile Include="src\hrtf\cache.c" />
-    <ClCompile Include="src\hrtf\check.c" />
-    <ClCompile Include="src\hrtf\easy.c" />
-    <ClCompile Include="src\hrtf\interpolate.c" />
-    <ClCompile Include="src\hrtf\kdtree.c" />
-    <ClCompile Include="src\hrtf\lookup.c" />
-    <ClCompile Include="src\hrtf\loudness.c" />
-    <ClCompile Include="src\hrtf\minphase.c" />
-    <ClCompile Include="src\hrtf\neighbors.c" />
-    <ClCompile Include="src\hrtf\reader.c" />
-    <ClCompile Include="src\hrtf\resample.c" />
-    <ClCompile Include="src\hrtf\spherical.c" />
-    <ClCompile Include="src\hrtf\tools.c" />
-    <ClCompile Include="src\resampler\speex_resampler.c" />
+    <ClCompile Include="..\src\hdf\btree.c" />
+    <ClCompile Include="..\src\hdf\dataobject.c" />
+    <ClCompile Include="..\src\hdf\fractalhead.c" />
+    <ClCompile Include="..\src\hdf\gcol.c" />
+    <ClCompile Include="..\src\hdf\gunzip.c" />
+    <ClCompile Include="..\src\hdf\superblock.c" />
+    <ClCompile Include="..\src\hrtf\cache.c" />
+    <ClCompile Include="..\src\hrtf\check.c" />
+    <ClCompile Include="..\src\hrtf\easy.c" />
+    <ClCompile Include="..\src\hrtf\interpolate.c" />
+    <ClCompile Include="..\src\hrtf\kdtree.c" />
+    <ClCompile Include="..\src\hrtf\lookup.c" />
+    <ClCompile Include="..\src\hrtf\loudness.c" />
+    <ClCompile Include="..\src\hrtf\minphase.c" />
+    <ClCompile Include="..\src\hrtf\neighbors.c" />
+    <ClCompile Include="..\src\hrtf\reader.c" />
+    <ClCompile Include="..\src\hrtf\resample.c" />
+    <ClCompile Include="..\src\hrtf\spherical.c" />
+    <ClCompile Include="..\src\hrtf\tools.c" />
+    <ClCompile Include="..\src\resampler\speex_resampler.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\hdf\reader.h" />
-    <ClInclude Include="src\hrtf\kdtree.h" />
-    <ClInclude Include="src\hrtf\mysofa.h" />
-    <ClInclude Include="src\hrtf\tools.h" />
-    <ClInclude Include="src\resampler\arch.h" />
-    <ClInclude Include="src\resampler\speex_resampler.h" />
-    <ClInclude Include="src\resampler\stack_alloc.h" />
+    <ClInclude Include="..\src\hdf\reader.h" />
+    <ClInclude Include="..\src\hrtf\kdtree.h" />
+    <ClInclude Include="..\src\hrtf\mysofa.h" />
+    <ClInclude Include="..\src\hrtf\tools.h" />
+    <ClInclude Include="..\src\resampler\arch.h" />
+    <ClInclude Include="..\src\resampler\speex_resampler.h" />
+    <ClInclude Include="..\src\resampler\stack_alloc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
