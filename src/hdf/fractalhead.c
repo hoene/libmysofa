@@ -192,7 +192,7 @@ static int indirectblockRead(struct READER *reader,
 		uint64_t iblock_size) {
 	int size, nrows, max_dblock_rows, k, n, err;
 	uint32_t filter_mask;
-	uint64_t store, heap_header_address, block_offset, child_direct_block,
+	uint64_t store, heap_header_address, block_offset, child_direct_block=0,
 			size_filtered, child_indirect_block;
 
 	char buf[4];

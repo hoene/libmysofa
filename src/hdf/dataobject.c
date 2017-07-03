@@ -475,7 +475,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 		struct DATATYPE *dt, struct DATASPACE *ds) {
 
 	char *buffer, number[16];
-	uint64_t reference, gcol, dataobject;
+	uint64_t reference, gcol=0, dataobject;
 	int err;
 	struct DATAOBJECT *referenceData;
 
@@ -485,7 +485,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 			gcol = readValue(reader, 4);
 		} else {
 			gcol = readValue(reader, dt->list - dt->size);
-		} log("    GCOL %d %8lX %8lX\n",dt->list - dt->size,gcol,ftell(reader->fhd));
+		}
+		log("    GCOL %d %8lX %8lX\n",dt->list - dt->size,gcol,ftell(reader->fhd));
 /*		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); TODO: missing part in specification */
 	}
 
@@ -529,7 +530,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 		if (referenceData)
 			buffer = referenceData->name;
 		else {
-			sprintf(number, "REF%08lX", reference);
+			sprintf(number, "REF%08lX", (long unsigned int)reference);
 			buffer = number;
 		}
 		log("    REFERENCE %lu %lX %s\n", reference, dataobject, buffer);

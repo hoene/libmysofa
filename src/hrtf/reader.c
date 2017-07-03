@@ -221,7 +221,7 @@ struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 		filename = CMAKE_INSTALL_PREFIX "/share/libmysofa/default.sofa";
 
 	if(strcmp(filename,"-"))
-    	reader.fhd = fopen(filename, "rb");
+        reader.fhd = fopen(filename, "rb");
     else
         reader.fhd = stdin;
 
