@@ -32,6 +32,8 @@ if(BUILD_TESTS)
 
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
     include(FindCUnit)
+    include_directories(${CUNIT_INCLUDE_DIRS})
+
     find_package(CUnit REQUIRED cunit)
 
     enable_testing()

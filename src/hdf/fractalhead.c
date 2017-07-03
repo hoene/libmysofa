@@ -12,7 +12,7 @@
 #include "reader.h"
 
 static int log2i(int a) {
-	return roundf(log2f(a));
+	return round(log2(a));
 }
 
 static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
