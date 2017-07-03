@@ -13,7 +13,7 @@
 
 #include "mysofa.h"
 #include "../hdf/reader.h"
-#include "../../build/src/config.h"
+#include "../config.h"
 
 /* checks file address.
  * NULL is an invalid address indicating a invalid field

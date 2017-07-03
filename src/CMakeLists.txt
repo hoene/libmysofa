@@ -10,7 +10,7 @@ endmacro(use_c99)
 
 use_c99()
 
-configure_file (config.h.in config.h)
+configure_file (config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
 
 if(NOT WIN32)
     find_library(MATH m)

@@ -1,0 +1,16 @@
+version: 1.0.{build}
+configuration: Release
+platform: x64
+install:
+- cmd: >-
+    cp c:\projects\libmysofa-s142k\src\hrtf\mysofa_export.h.in c:\projects\libmysofa-s142k\src\hrtf\mysofa_export.h
+
+    cp c:\projects\libmysofa-s142k\windows/config.h.sln c:\projects\libmysofa-s142k\src\config.h
+nuget:
+  account_feed: true
+  project_feed: true
+build:
+  project: windows/libmysofa.sln
+  verbosity: normal
+artifacts:
+- path: windows\bin
