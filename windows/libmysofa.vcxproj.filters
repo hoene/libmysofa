@@ -21,88 +21,88 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\hrtf\cache.c">
+    <ClCompile Include="..\src\hdf\btree.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\check.c">
+    <ClCompile Include="..\src\hdf\dataobject.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\easy.c">
+    <ClCompile Include="..\src\hdf\fractalhead.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\interpolate.c">
+    <ClCompile Include="..\src\hdf\gcol.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\kdtree.c">
+    <ClCompile Include="..\src\hdf\gunzip.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\lookup.c">
+    <ClCompile Include="..\src\hdf\superblock.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\loudness.c">
+    <ClCompile Include="..\src\hrtf\cache.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\minphase.c">
+    <ClCompile Include="..\src\hrtf\check.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\neighbors.c">
+    <ClCompile Include="..\src\hrtf\easy.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\reader.c">
+    <ClCompile Include="..\src\hrtf\interpolate.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\resample.c">
+    <ClCompile Include="..\src\hrtf\kdtree.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\spherical.c">
+    <ClCompile Include="..\src\hrtf\lookup.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hrtf\tools.c">
+    <ClCompile Include="..\src\hrtf\loudness.c">
       <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hdf\superblock.c">
-      <Filter>hdf</Filter>
+    <ClCompile Include="..\src\hrtf\minphase.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hdf\gunzip.c">
-      <Filter>hdf</Filter>
+    <ClCompile Include="..\src\hrtf\neighbors.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hdf\gcol.c">
-      <Filter>hdf</Filter>
+    <ClCompile Include="..\src\hrtf\reader.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hdf\fractalhead.c">
-      <Filter>hdf</Filter>
+    <ClCompile Include="..\src\hrtf\resample.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hdf\dataobject.c">
-      <Filter>hdf</Filter>
+    <ClCompile Include="..\src\hrtf\spherical.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\hdf\btree.c">
-      <Filter>hdf</Filter>
+    <ClCompile Include="..\src\hrtf\tools.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
-    <ClCompile Include="src\resampler\speex_resampler.c">
-      <Filter>resampler</Filter>
+    <ClCompile Include="..\src\resampler\speex_resampler.c">
+      <Filter>hrtf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\hrtf\kdtree.h">
-      <Filter>hrtf</Filter>
-    </ClInclude>
-    <ClInclude Include="src\hrtf\mysofa.h">
-      <Filter>hrtf</Filter>
-    </ClInclude>
-    <ClInclude Include="src\hrtf\tools.h">
-      <Filter>hrtf</Filter>
-    </ClInclude>
-    <ClInclude Include="src\hdf\reader.h">
+    <ClInclude Include="..\src\hdf\reader.h">
       <Filter>hdf</Filter>
     </ClInclude>
-    <ClInclude Include="src\resampler\arch.h">
-      <Filter>resampler</Filter>
+    <ClInclude Include="..\src\hrtf\kdtree.h">
+      <Filter>hdf</Filter>
     </ClInclude>
-    <ClInclude Include="src\resampler\speex_resampler.h">
-      <Filter>resampler</Filter>
+    <ClInclude Include="..\src\hrtf\mysofa.h">
+      <Filter>hdf</Filter>
     </ClInclude>
-    <ClInclude Include="src\resampler\stack_alloc.h">
-      <Filter>resampler</Filter>
+    <ClInclude Include="..\src\hrtf\tools.h">
+      <Filter>hdf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\resampler\arch.h">
+      <Filter>hdf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\resampler\speex_resampler.h">
+      <Filter>hdf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\resampler\stack_alloc.h">
+      <Filter>hdf</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

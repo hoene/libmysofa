@@ -111,6 +111,10 @@
     <BuildLog>
       <Path>log\$(IntDir)$(MSBuildProjectName).log</Path>
     </BuildLog>
+    <PreBuildEvent>
+      <Command>copy "..\src\hrtf\mysofa_export.h.in" "..\src\hrtf\mysofa_export.h"
+copy "config.h.sln" "..\src\config.h"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -150,6 +154,10 @@
     <BuildLog>
       <Path>log\$(IntDir)$(MSBuildProjectName).log</Path>
     </BuildLog>
+    <PreBuildEvent>
+      <Command>copy "..\src\hrtf\mysofa_export.h.in" "..\src\hrtf\mysofa_export.h"
+copy "config.h.sln" "..\src\config.h"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
