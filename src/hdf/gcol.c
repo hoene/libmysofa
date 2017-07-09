@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "reader.h"
 
 /*  III.E. Disk Format: Level 1E - Global Heap
@@ -30,9 +31,8 @@ static int readGCOL(struct READER *reader) {
 		log("object GCOL must have version 1\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	fgetc(reader->fhd);
-	fgetc(reader->fhd);
-	fgetc(reader->fhd);
+	if(fgetc(reader->fhd)<0 ||  fgetc(reader->fhd)<0 || fgetc(reader->fhd)<0)
+		return MYSOFA_READ_ERROR;
 
 	address = ftell(reader->fhd);
 	end = address;
@@ -48,9 +48,16 @@ static int readGCOL(struct READER *reader) {
 			break;
 		}
 		reference_count = readValue(reader, 2);
-		fseek(reader->fhd, 4, SEEK_CUR);
+		if(fseek(reader->fhd, 4, SEEK_CUR)<0) {
+			free(gcol);
+			return errno;
+		}
 		gcol->object_size = readValue(reader,
 					      reader->superblock.size_of_lengths);
+		if(gcol->object_size>8) {
+			free(gcol);
+			return MYSOFA_UNSUPPORTED_FORMAT;
+		}
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
 		log(" GCOL object %d size %ld value %08lX\n", gcol->heap_object_index,
@@ -67,7 +74,7 @@ static int readGCOL(struct READER *reader) {
 
 int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 	     uint64_t *dataobject) {
-	uint64_t pos;
+	long pos;
 	struct GCOL *p = reader->gcol;
 
 	while (p && p->address != gcol && p->heap_object_index != reference) {
@@ -75,9 +82,13 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 	}
 	if (!p) {
 		pos = ftell(reader->fhd);
-		fseek(reader->fhd, gcol, SEEK_SET);
+		if(fseek(reader->fhd, gcol, SEEK_SET)<0)
+			return MYSOFA_READ_ERROR;
 		readGCOL(reader);
-		fseek(reader->fhd, pos, SEEK_SET);
+		if(pos<0)
+			return MYSOFA_READ_ERROR;
+		if(fseek(reader->fhd, pos, SEEK_SET)<0)
+			return MYSOFA_READ_ERROR;
 
 		p = reader->gcol;
 		while (p && p->address != gcol && p->heap_object_index != reference) {

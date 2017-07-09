@@ -13,8 +13,10 @@ static void check(char *filename)
 
 	hrtf = mysofa_load(filename, &err);
 
-	if (!hrtf)
+	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
+	}
 
 	err = mysofa_check(hrtf);
 	CU_ASSERT(err == MYSOFA_OK);

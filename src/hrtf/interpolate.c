@@ -34,8 +34,10 @@ MYSOFA_EXPORT float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordina
 		return hrtf->DataIR.values + nearest * size;
 	}
 
-	for (i = 0; i < 6; i++)
+	for (i = 0; i < 6; i++) {
 		use[i] = 0;
+		d6[i] = 1;
+	}
 
 	if (neighborhood[0] >= 0 && neighborhood[1] >= 0) {
 		d6[0] = distance(cordinate,

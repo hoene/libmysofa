@@ -21,6 +21,7 @@ void test_neighbors() {
 			   &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 
 	mysofa_tocartesian(hrtf);

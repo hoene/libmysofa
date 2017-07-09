@@ -15,6 +15,7 @@ void test_minphase() {
 	hrtf = mysofa_load("tests/Pulse.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 
 	len = mysofa_minphase(hrtf, 0.01);

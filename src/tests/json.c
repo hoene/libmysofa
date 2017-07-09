@@ -83,7 +83,7 @@ static void printAttributes(FILE *out, int spaces,
 
 static void printDimensions(FILE *out, struct MYSOFA_HRTF *hrtf,
 			    struct MYSOFA_ATTRIBUTE **p) {
-	struct MYSOFA_ATTRIBUTE *found;
+	struct MYSOFA_ATTRIBUTE *found = NULL;
 	char *s;
 	int dimensions[4];
 	int dims = 0, i;

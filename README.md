@@ -93,6 +93,21 @@ If your program is using several threads, you must use appropriate synchronisati
 
 Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system. 
 
+## Badges
+
+<a href="https://scan.coverity.com/projects/hoene-libmysofa">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/13030/badge.svg"/>
+</a>
+
+<a href="https://travis-ci.org/hoene/libmysofa">
+	<img alt="Travis CI Status" src="https://travis-ci.org/hoene/libmysofa.svg?branch=master"/>
+</a>
+
+<a href="https://https://ci.appveyor.com/project/hoene/libmysofa-s142k">
+<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
+</a>
+
 ## References
 
  * Christian Hoene and Piotr Majdak, "HDF5 under the SOFA – A 3D audio case in HDF5 on embedded and mobile devices", HDF Blog, https://www.hdfgroup.org/2017/04/hdf5-under-the-sofa-hdf5-on-embedded-and-mobile-devices/, April 26, 2017.

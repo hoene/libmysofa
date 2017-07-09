@@ -27,8 +27,10 @@ void test_lookup() {
 
 	hrtf = mysofa_load("tests/Pulse.sofa", &err);
 
-	if (!hrtf)
+	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
+	}
 
 	mysofa_tocartesian(hrtf);
 
