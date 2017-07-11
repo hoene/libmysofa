@@ -5,6 +5,21 @@
 This is a simple set of C functions to read AES SOFA files, if they contain HRTFs
 stored according to the AES69-2015 standard [http://www.aes.org/publications/standards/search.cfm?docID=99].
 
+## Badges
+
+<a href="https://travis-ci.org/hoene/libmysofa">
+	<img alt="Travis CI Status" src="https://travis-ci.org/hoene/libmysofa.svg?branch=master"/>
+</a>
+
+<a href="https://scan.coverity.com/projects/hoene-libmysofa">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/13030/badge.svg"/>
+</a>
+
+<a href="https://https://ci.appveyor.com/project/hoene/libmysofa-s142k">
+<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
+</a>
+
 ## Compile
 
 Enter following commands
@@ -93,20 +108,6 @@ If your program is using several threads, you must use appropriate synchronisati
 
 Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system. 
 
-## Badges
-
-<a href="https://scan.coverity.com/projects/hoene-libmysofa">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/13030/badge.svg"/>
-</a>
-
-<a href="https://travis-ci.org/hoene/libmysofa">
-	<img alt="Travis CI Status" src="https://travis-ci.org/hoene/libmysofa.svg?branch=master"/>
-</a>
-
-<a href="https://https://ci.appveyor.com/project/hoene/libmysofa-s142k">
-<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
-</a>
 
 ## References
 
