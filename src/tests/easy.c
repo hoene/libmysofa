@@ -32,6 +32,7 @@ void test_easy() {
 	easy = mysofa_open("share/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 
 	mysofa_close(easy);
@@ -39,6 +40,7 @@ void test_easy() {
 	easy = mysofa_open("tests/tester.sofa", 48000, &filterlength, &err);
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 	mysofa_minphase(easy->hrtf, 0.01);
 	

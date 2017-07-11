@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #include "mysofa_export.h"
 #include "mysofa.h"
 
@@ -97,6 +98,7 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, flo
 	c[1] = y;
 	c[2] = z;
 	nearest = mysofa_lookup(easy->lookup, c);
+	assert(nearest>=0);
 	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
     
 	mysofa_interpolate(easy->hrtf, c,
@@ -132,6 +134,7 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, flo
 	c[1] = y;
 	c[2] = z;
 	nearest = mysofa_lookup(easy->lookup, c);
+	assert(nearest>=0);
 	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
     
 	mysofa_interpolate(easy->hrtf, c,

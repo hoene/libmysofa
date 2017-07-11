@@ -33,9 +33,10 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
 		return MYSOFA_UNSUPPORTED_FORMAT;
 	}
 
-	superblock->size_of_offsets = fgetc(reader->fhd);
-	superblock->size_of_lengths = fgetc(reader->fhd);
-	fgetc(reader->fhd); /* File Consistency Flags */
+	superblock->size_of_offsets = (uint8_t)fgetc(reader->fhd);
+	superblock->size_of_lengths = (uint8_t)fgetc(reader->fhd);
+	if(fgetc(reader->fhd)<0) /* File Consistency Flags */
+		return MYSOFA_READ_ERROR;
 
 	if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8
 	    || superblock->size_of_lengths < 2

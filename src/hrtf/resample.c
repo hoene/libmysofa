@@ -41,8 +41,10 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 		return MYSOFA_NO_MEMORY;
 
 	resampler = speex_resampler_init(1, hrtf->DataSamplingRate.values[0], samplerate, 10, &err);
-	if(resampler == NULL)
+	if(resampler == NULL) {
+		free(values);
 		return err;
+	}
 
 	out = malloc(sizeof(float)*(newN+ speex_resampler_get_output_latency(resampler)));
 	for (i = 0; i < hrtf->R * hrtf->M; i++) {

@@ -88,13 +88,13 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 		return MYSOFA_INVALID_FORMAT;
 	}
 
-	type = fgetc(reader->fhd);
+	type = (uint8_t)fgetc(reader->fhd);
 
 	for (i = 0; i < number_of_records; i++) {
 
 		switch (type) {
 		case 5:
-			records->type5.hash_of_name = readValue(reader, 4);
+			records->type5.hash_of_name = (uint32_t)readValue(reader, 4);
 			records->type5.heap_id = readValue(reader, 7);
 			log(" type5 %08X %14lX\n", records->type5.hash_of_name,
 			    records->type5.heap_id);
@@ -102,21 +102,21 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 			break;
 
 		case 6:
-			creation_order = readValue(reader, 8);
-			heap_id = readValue(reader, 7);
+			/*creation_order = */readValue(reader, 8);
+			/*heap_id = */readValue(reader, 7);
 			break;
 
 		case 8:
-			heap_id = readValue(reader, 8);
-			message_flags = fgetc(reader->fhd);
-			creation_order = readValue(reader, 4);
-			hash_of_name = readValue(reader, 4);
+			/*heap_id = */readValue(reader, 8);
+			/*message_flags = */fgetc(reader->fhd);
+			/*creation_order = */readValue(reader, 4);
+			/*hash_of_name = */readValue(reader, 4);
 			break;
 
 		case 9:
-			heap_id = readValue(reader, 8);
-			message_flags = fgetc(reader->fhd);
-			creation_order = readValue(reader, 4);
+			/*heap_id = */readValue(reader, 8);
+			/*message_flags = */fgetc(reader->fhd);
+			/*creation_order = */readValue(reader, 4);
 			break;
 
 		default:
@@ -154,27 +154,32 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
 		return MYSOFA_INVALID_FORMAT;
 	}
 
-	btree->type = fgetc(reader->fhd);
-	btree->node_size = readValue(reader, 4);
-	btree->record_size = readValue(reader, 2);
-	btree->depth = readValue(reader, 2);
+	btree->type = (uint8_t)fgetc(reader->fhd);
+	btree->node_size = (uint32_t)readValue(reader, 4);
+	btree->record_size = (uint16_t)readValue(reader, 2);
+	btree->depth = (uint16_t)readValue(reader, 2);
 
-	btree->split_percent = fgetc(reader->fhd);
-	btree->merge_percent = fgetc(reader->fhd);
-	btree->root_node_address = readValue(reader,
+	btree->split_percent = (uint8_t)fgetc(reader->fhd);
+	btree->merge_percent = (uint8_t)fgetc(reader->fhd);
+	btree->root_node_address = (uint64_t)readValue(reader,
 					     reader->superblock.size_of_offsets);
-	btree->number_of_records = readValue(reader, 2);
-	btree->total_number = readValue(reader, reader->superblock.size_of_lengths);
+	btree->number_of_records = (uint16_t)readValue(reader, 2);
+	if(btree->number_of_records>0x1000)
+			return MYSOFA_UNSUPPORTED_FORMAT;
+	btree->total_number = (uint64_t)readValue(reader, reader->superblock.size_of_lengths);
 
 	/*	fseek(reader->fhd, 4, SEEK_CUR);  skip checksum */
 
+	if(btree->total_number > 0x10000000)
+		return MYSOFA_NO_MEMORY;
 	btree->records = malloc(sizeof(btree->records[0]) * btree->total_number);
 	if (!btree->records)
 		return MYSOFA_NO_MEMORY;
 	memset(btree->records, 0, sizeof(btree->records[0]) * btree->total_number);
 
 	/* read records */
-	fseek(reader->fhd, btree->root_node_address, SEEK_SET);
+	if(fseek(reader->fhd, btree->root_node_address, SEEK_SET)<0)
+		return errno;
 	return readBTLF(reader, btree, btree->number_of_records, btree->records);
 }
 
@@ -217,9 +222,11 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 		return MYSOFA_INVALID_FORMAT;
 	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
-	node_type = fgetc(reader->fhd);
-	node_level = fgetc(reader->fhd);
-	entries_used = readValue(reader, 2);
+	node_type = (uint8_t)fgetc(reader->fhd);
+	node_level = (uint8_t)fgetc(reader->fhd);
+	entries_used = (uint16_t)readValue(reader, 2);
+	if(entries_used>0x1000)
+		return MYSOFA_UNSUPPORTED_FORMAT;
 	address_of_left_sibling = readValue(reader,
 					    reader->superblock.size_of_offsets);
 	address_of_right_sibling = readValue(reader,
@@ -247,8 +254,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 		if (node_type == 0) {
 			key = readValue(reader, reader->superblock.size_of_lengths);
 		} else {
-			size_of_chunk = readValue(reader, 4);
-			filter_mask = readValue(reader, 4);
+			size_of_chunk = (uint32_t)readValue(reader, 4);
+			filter_mask = (uint32_t)readValue(reader, 4);
 			if (filter_mask) {
 				log("TREE all filters must be enabled\n");
 				free(output);
@@ -270,13 +277,15 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
 			/* read data */
 			store = ftell(reader->fhd);
-			if (fseek(reader->fhd, child_pointer, SEEK_SET)) {
+			if (fseek(reader->fhd, child_pointer, SEEK_SET)<0) {
 				free(output);
 				return errno;
 			}
 
-			if (!(input = malloc(size_of_chunk)))
+			if (!(input = malloc(size_of_chunk))) {
+				free(output);
 				return MYSOFA_NO_MEMORY;
+			}
 			if (fread(input, 1, size_of_chunk, reader->fhd) != size_of_chunk) {
 				free(output);
 				free(input);
@@ -334,12 +343,16 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 				return MYSOFA_INTERNAL_ERROR;
 			}
 
-			fseek(reader->fhd, store, SEEK_SET);
+			if(fseek(reader->fhd, store, SEEK_SET)<0) {
+				free(output);
+				return errno;
+			}
 		}
 	}
 
 	free(output);
-	fseek(reader->fhd, 4, SEEK_CUR); /* skip checksum */
+	if(fseek(reader->fhd, 4, SEEK_CUR)<0) /* skip checksum */
+		return errno;
 
 	return MYSOFA_OK;
 }

@@ -20,6 +20,7 @@ void test_interpolate() {
 
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 
 	mysofa_tocartesian(hrtf);
@@ -56,4 +57,5 @@ void test_interpolate() {
 	/* TODO add some tests... */
 
 	mysofa_free(hrtf);
+	free(fir);
 }

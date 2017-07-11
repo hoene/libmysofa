@@ -15,6 +15,7 @@ void test_loudness() {
 	hrtf = mysofa_load("tests/Pulse.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 
 	factor = mysofa_loudness(hrtf);

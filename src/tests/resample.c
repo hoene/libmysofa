@@ -15,9 +15,15 @@ void test_resample() {
 	hrtf = mysofa_load("tests/Pulse.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
+		return;
 	}
 
 	backup = malloc(sizeof(float)*hrtf->N * 3);
+	if(!backup) {
+		CU_FAIL_FATAL("No memory, N is too large.");
+		mysofa_free(hrtf);
+		return;
+	}
 
 	for (i = 0; i < hrtf->N * 3; i++) {
 		backup[i]=hrtf->DataIR.values[i];
