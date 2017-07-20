@@ -16,7 +16,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
        src="https://scan.coverity.com/projects/13030/badge.svg"/>
 </a>
 
-<a href="https://https://ci.appveyor.com/project/hoene/libmysofa-s142k">
+<a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
 <img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
 </a>
 
