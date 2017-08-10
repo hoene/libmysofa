@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /** attributes */
 	struct MYSOFA_ATTRIBUTE {
@@ -124,8 +125,8 @@ extern "C" {
 		struct MYSOFA_NEIGHBORHOOD *neighborhood;
 	};
 
-	struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
-	struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err);
+	struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, bool normalizeLoudness, int *err);
+	struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, bool normalizeLoudness, int *err);
 	void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 				    short *IRleft, short *IRright,
 				    int *delayLeft, int *delayRight);
