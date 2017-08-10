@@ -28,8 +28,9 @@ void test_easy() {
 	float c[3];
 	float l1,l2;
 	float sdiff1, sdiff2, diff1, diff2;
+	bool normalizeLoudness = true;
 
-	easy = mysofa_open("share/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, &err);
+	easy = mysofa_open("share/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength, normalizeLoudness, &err);
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");
 		return;
@@ -37,7 +38,7 @@ void test_easy() {
 
 	mysofa_close(easy);
 
-	easy = mysofa_open("tests/tester.sofa", 48000, &filterlength, &err);
+	easy = mysofa_open("tests/tester.sofa", 48000, &filterlength, normalizeLoudness, &err);
 	if (!easy) {
 		CU_FAIL_FATAL("Error reading file.");
 		return;

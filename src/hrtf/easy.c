@@ -15,7 +15,7 @@
  *
  */
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, bool normalizeLoudness, int *err)
 {
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
@@ -44,7 +44,9 @@ MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float sample
 		return NULL;
 	}
 
-	mysofa_loudness(easy->hrtf);
+	if (normalizeLoudness){
+		mysofa_loudness(easy->hrtf);
+	}
 
 /* does not sound well:
    mysofa_minphase(easy->hrtf,0.01);
@@ -67,14 +69,14 @@ MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float sample
 	return easy;
 }
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, bool normalizeLoudness, int *err)
 {
 	struct MYSOFA_EASY* res = mysofa_cache_lookup(filename, samplerate);
 	if(res) {
 		*filterlength = res->hrtf->N;
 		return res;
 	}
-	res = mysofa_open(filename,samplerate,filterlength,err);
+	res = mysofa_open(filename,samplerate,filterlength,normalizeLoudness,err);
 	if(res) {
 		res = mysofa_cache_store(res,filename,samplerate);
 	}
