@@ -849,7 +849,7 @@ static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
 		return MYSOFA_INVALID_FORMAT;
 	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
-	err = readOHDRmessages(reader, dataobject, end - 4); /* substract checksum */
+	err = readOHDRmessages(reader, dataobject, end - 4); /* subtract checksum */
 	if (err) {
 		return err;
 	}
