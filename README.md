@@ -1,10 +1,10 @@
+# libmysofa
+
 <div align="right">
 <a href="https://symonics.com/">
 	<img alt="Symonics MySofa" src="https://raw.githubusercontent.com/hoene/libmysofa/master/symonics-mysofa.png"/>
 </a>
 </div
-
-# libmysofa
 
 ## Introduction
 
