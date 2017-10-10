@@ -1,13 +1,14 @@
-# libmysofa
-
 <div align="right">
 <a href="https://symonics.com/">
-	<img alt="Symonics MySofa" src="https://raw.githubusercontent.com/hoene/libmysofa/master/symonics-mysofa.png"/>
+	<img alt="Symonics MySofa" width="320px" src="https://raw.githubusercontent.com/hoene/libmysofa/master/symonics-mysofa.png"/>
 </a>
 </div
 
-## Introduction
+#
 
+# libmysofa
+
+## Introduction
 This is a simple set of C functions to read AES SOFA files, if they contain HRTFs
 stored according to the AES69-2015 standard [http://www.aes.org/publications/standards/search.cfm?docID=99].
 
