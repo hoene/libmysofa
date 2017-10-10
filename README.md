@@ -1,5 +1,11 @@
 # libmysofa
 
+<div align="right">
+<a href="https://symonics.com/">
+	<img alt="Symonics MySofa" src="https://raw.githubusercontent.com/hoene/libmysofa/master/symonics-mysofa.png"/>
+</a>
+</div
+
 ## Introduction
 
 This is a simple set of C functions to read AES SOFA files, if they contain HRTFs
@@ -7,6 +13,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 
 ## Badges
 
+<div align="center">
 <a href="https://travis-ci.org/hoene/libmysofa">
 	<img alt="Travis CI Status" src="https://travis-ci.org/hoene/libmysofa.svg?branch=master"/>
 </a>
@@ -19,6 +26,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 <a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
 <img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
 </a>
+</div>
 
 ## Compile
 
@@ -117,6 +125,6 @@ Libmysofa compiles for Linux operating systems, OSX and Windows. By default, eac
  
 ## Disclaimer
 
-The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The resampler is by Jean-Marc Valin. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, Symonics GmbH, and available under BSD-3-Clause license. This work has been funded by German Federal Ministry of Education and Research, funding code 01IS14027A.
+The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The resampler is by Jean-Marc Valin. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, <a href="https://symonics.com/">Symonics GmbH</a>, and available under BSD-3-Clause license. This work has been funded by German <a href="https://www.bmbf.de">Federal Ministry of Education and Research</a>, funding code 01IS14027A.
 
 
