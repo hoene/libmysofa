@@ -89,7 +89,7 @@ If you have spherical coordinates but you need Cartesian coordinates, call
 ```
 void mysofa_s2c(float values[3])
 ```
-which phi (azimuth measure counterwise from the X axis), theta (elevation measured up from the x-y plane), and r (distance between listener and source) as parameters in the float array and x,y,z as response in the same array. Similar, call
+with phi (azimuth measured counterclockwise from the X axis), theta (elevation measured up from the x-y plane), and r (distance between listener and source) as parameters in the float array and x,y,z as response in the same array. Similar, call
 ```
 void mysofa_c2s(float values[3])
 ```
