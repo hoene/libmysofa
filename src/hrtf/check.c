@@ -116,7 +116,9 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 	 However, so far, I have not seen any sofa files with an format other and I,R */
 	if (hrtf->DataDelay.values) {
 		if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST",
-				"I,R"))
+				"I,R")
+		&& 	!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST",
+				"M,R"))
 			return MYSOFA_INVALID_FORMAT;
 	}
 
