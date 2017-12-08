@@ -125,6 +125,7 @@ extern "C" {
 	};
 
 	struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
+	struct MYSOFA_EASY* mysofa_open_no_norm(const char *filename, float samplerate, int *filterlength, int *err);
 	struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err);
 	void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 				    short *IRleft, short *IRright,
