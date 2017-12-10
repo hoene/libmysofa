@@ -43,11 +43,11 @@ If you need an Debian package, call
 
 > cd build && cpack
 
-## Usage 
+## Usage
 
-Libmysofa has a few main function calls.  
+Libmysofa has a few main function calls.
 
-To read a SOFA file call 
+To read a SOFA file call
 
 ```
 #include <mysofa.h>
@@ -57,8 +57,14 @@ int err;
 struct MYSOFA_EASY *hrtf;
 
 hrtf = mysofa_open("file.sofa", 48000, &filter_length, &err);
-if(hrtf==NULL) 
+if(hrtf==NULL)
 	return err;
+```
+
+This call will normalize your hrtf data upon opening. For non-normalized data, replace the call to mysofa_open by:
+
+```
+hrtf = mysofa_open_no_norm("file.sofa", 48000, &filter_length, &err);
 ```
 
 To free the HRTF structure, call:
@@ -109,13 +115,13 @@ mysofa_close_cached(hrtf4);
 ...
 mysofa_cache_release_all();
 ```
-Then, all HRTFs having the same filename and sampling rate are stored only once in memory. 
+Then, all HRTFs having the same filename and sampling rate are stored only once in memory.
 
 If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the library at a given time.
 
 ## OS support
 
-Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system. 
+Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system.
 
 
 ## References
@@ -123,7 +129,7 @@ Libmysofa compiles for Linux operating systems, OSX and Windows. By default, eac
  * Christian Hoene and Piotr Majdak, "HDF5 under the SOFA – A 3D audio case in HDF5 on embedded and mobile devices", HDF Blog, https://www.hdfgroup.org/2017/04/hdf5-under-the-sofa-hdf5-on-embedded-and-mobile-devices/, April 26, 2017.
  * Christian Hoene, Isabel C. Patiño Mejía, Alexandru Cacerovschi, "MySofa: Design Your Personal HRTF", Audio Engineering Society
  Convention Paper 9764, Presented at the 142nd Convention, May 2017, Berlin, Germany, http://www.aes.org/e-lib/browse.cfm?elib=18640
- 
+
 ## Disclaimer
 
 The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@majdak.com>. The K-D tree algorithm is by John Tsiombikas <nuclear@member.fsf.org>. The resampler is by Jean-Marc Valin. The remaining source code is by Christian Hoene <christian.hoene@symonics.com>, <a href="https://symonics.com/">Symonics GmbH</a>, and available under BSD-3-Clause license. This work has been funded by German <a href="https://www.bmbf.de">Federal Ministry of Education and Research</a>, funding code 01IS14027A.
