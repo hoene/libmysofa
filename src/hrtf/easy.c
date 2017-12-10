@@ -16,7 +16,7 @@
  *
  */
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_default(const char *filename, float samplerate, int *filterlength, int *err, bool applyNorm)
+static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float samplerate, int *filterlength, int *err, bool applyNorm)
 {
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
