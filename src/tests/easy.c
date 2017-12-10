@@ -146,5 +146,32 @@ void test_easy() {
 	/* TODO verify correctness of the easy.json file */
 
 	mysofa_close(easy);
+
+	/* Test raw opening (no norm) and MxR delay .sofa */
+	easy = mysofa_open_no_norm("tests/tester2.sofa", 48000., &filterlength, &err);
+	if (!easy) {
+		CU_FAIL_FATAL("Error reading file.");
+		return;
+	}
+
+	ir = malloc(filters*easy->hrtf->N*sizeof(float)*2);
+	delays = malloc(filters*2*sizeof(float));
+	err = 0;
+
+	for(filters=0;filters<easy->hrtf->M;filters++) {
+		// see tester2.sofa file creation in tester2.m file
+		diff1 = filters - easy->hrtf->DataDelay.values[easy->hrtf->R*filters];
+		diff2 = filters + easy->hrtf->DataDelay.values[easy->hrtf->R*filters+1];
+		if(diff1 > 0.1 || diff2 > 0.1)
+			err++;
+#ifdef VDEBUG
+		printf("delays: %f %f \t", easy->hrtf->DataDelay.values[easy->hrtf->R*filters], easy->hrtf->DataDelay.values[easy->hrtf->R*filters+1]);
+		printf("diff: %f %f %i\n", diff1, diff2, err);
+#endif
+	}
+	CU_ASSERT(err < 1);
+
+	mysofa_close(easy);
+
 }
 
