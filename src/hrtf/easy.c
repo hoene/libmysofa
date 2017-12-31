@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <assert.h>
 #include "mysofa_export.h"
 #include "mysofa.h"
@@ -15,7 +16,7 @@
  *
  */
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
+static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float samplerate, int *filterlength, int *err, bool applyNorm)
 {
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
@@ -44,7 +45,9 @@ MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float sample
 		return NULL;
 	}
 
-	mysofa_loudness(easy->hrtf);
+	if( applyNorm ) {
+		mysofa_loudness(easy->hrtf);
+	}
 
 /* does not sound well:
    mysofa_minphase(easy->hrtf,0.01);
@@ -65,6 +68,16 @@ MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float sample
 	*filterlength = easy->hrtf->N;
 
 	return easy;
+}
+
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
+{
+	return mysofa_open_default(filename,samplerate,filterlength,err,true);
+}
+
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_no_norm(const char *filename, float samplerate, int *filterlength, int *err)
+{
+	return mysofa_open_default(filename,samplerate,filterlength,err,false);
 }
 
 MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
