@@ -170,6 +170,8 @@ void test_easy() {
 #endif
 	}
 	CU_ASSERT(err < 1);
+	
+	free(delays);
 
 	mysofa_close(easy);
 
