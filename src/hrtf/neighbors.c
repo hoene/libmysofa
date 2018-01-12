@@ -17,8 +17,8 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 	int i, index;
 	float *origin, *test;
 	float radius, radius2;
-	float theta;
-	float phi;
+	float theta, theta2;
+	float phi, phi2;
 
 	struct MYSOFA_NEIGHBORHOOD *neighbor = malloc(
 		sizeof(struct MYSOFA_NEIGHBORHOOD));
@@ -43,7 +43,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 
 		phi = 0.5;
 		do {
-			test[0] = origin[0] + phi;
+			phi2 = test[0] = origin[0] + phi;
 			test[1] = origin[1];
 			test[2] = origin[2];
 			convertSphericalToCartesian(test, 3);
@@ -53,11 +53,11 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			phi += 0.5;
-		} while (phi <= 45);
+		} while (phi2 <= lookup->phi_max);
 
 		phi = -0.5;
 		do {
-			test[0] = origin[0] + phi;
+			phi2 = test[0] = origin[0] + phi;
 			test[1] = origin[1];
 			test[2] = origin[2];
 			convertSphericalToCartesian(test,3);
@@ -67,12 +67,12 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			phi -= 0.5;
-		} while (phi >= -45);
+		} while (phi2 >= lookup->phi_min);
 
 		theta = 0.5;
 		do {
 			test[0] = origin[0];
-			test[1] = origin[1] + theta;
+			theta2 = test[1] = origin[1] + theta;
 			test[2] = origin[2];
 			convertSphericalToCartesian(test, 3);
 			index = mysofa_lookup(lookup, test);
@@ -81,12 +81,12 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			theta += 0.5;
-		} while (theta <= 45);
+		} while (theta2 <= lookup->theta_max);
 
 		theta = -0.5;
 		do {
 			test[0] = origin[0];
-			test[1] = origin[1] + theta;
+			theta2 = test[1] = origin[1] + theta;
 			test[2] = origin[2];
 			convertSphericalToCartesian(test, 3);
 			index = mysofa_lookup(lookup, test);
@@ -95,7 +95,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			theta -= 0.5;
-		} while (theta >= -45);
+		} while (theta2 >= lookup->theta_min);
 
 		radius = 0.1;
 		do {
