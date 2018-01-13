@@ -97,7 +97,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 			theta -= 0.5;
 		} while (theta2 >= lookup->theta_min);
 
-		radius = 0.1;
+		radius = 0.01;
 		do {
 			test[0] = origin[0];
 			test[1] = origin[1];
@@ -108,21 +108,21 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				neighbor->index[i * 6 + 4] = index;
 				break;
 			}
-			radius *= 1.5;
+			radius += 0.01;
 		} while (radius2 <= lookup->radius_max);
 
-		radius = 0.1;
+		radius = -0.01;
 		do {
 			test[0] = origin[0];
 			test[1] = origin[1];
-			radius2 = test[2] = origin[2] - radius;
+			radius2 = test[2] = origin[2] + radius;
 			convertSphericalToCartesian(test, 3);
 			index = mysofa_lookup(lookup, test);
 			if (index != i) {
 				neighbor->index[i * 6 + 5] = index;
 				break;
 			}
-			radius *= 1.5;
+			radius -= 0.01;
 		} while (radius2 >= lookup->radius_min);
 	}
 	free(test);
