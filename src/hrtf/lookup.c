@@ -43,12 +43,12 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
 	for (i = 0; i < hrtf->M; i ++) {
 		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
 		convertCartesianToSpherical(origin, hrtf->C);
-		if (origin[0] < lookup->phi_min){ lookup->phi_min = origin[0]; }
-		if (origin[0] > lookup->phi_max){ lookup->phi_max = origin[0]; }
-		if (origin[1] < lookup->theta_min){ lookup->theta_min = origin[1]; }
-		if (origin[1] > lookup->theta_max){ lookup->theta_max = origin[1]; }
-		if (origin[2] < lookup->radius_min){ lookup->radius_min = origin[2]; }
-		if (origin[2] > lookup->radius_max){ lookup->radius_max = origin[2]; }
+		if (origin[0] < lookup->phi_min){ lookup->phi_min = origin[0]; }
+		if (origin[0] > lookup->phi_max){ lookup->phi_max = origin[0]; }
+		if (origin[1] < lookup->theta_min){ lookup->theta_min = origin[1]; }
+		if (origin[1] > lookup->theta_max){ lookup->theta_max = origin[1]; }
+		if (origin[2] < lookup->radius_min){ lookup->radius_min = origin[2]; }
+		if (origin[2] > lookup->radius_max){ lookup->radius_max = origin[2]; }
 	}
 
 	/*
