@@ -53,7 +53,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			phi += 0.5;
-		} while (phi2 <= lookup->phi_max);
+		} while (phi2 <= lookup->phi_max + 0.5);
 
 		phi = -0.5;
 		do {
@@ -67,7 +67,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			phi -= 0.5;
-		} while (phi2 >= lookup->phi_min);
+		} while (phi2 >= lookup->phi_min - 0.5);
 
 		theta = 0.5;
 		do {
@@ -81,7 +81,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			theta += 0.5;
-		} while (theta2 <= lookup->theta_max);
+		} while (theta2 <= lookup->theta_max + 0.5);
 
 		theta = -0.5;
 		do {
@@ -95,7 +95,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			theta -= 0.5;
-		} while (theta2 >= lookup->theta_min);
+		} while (theta2 >= lookup->theta_min - 0.5);
 
 		radius = 0.01;
 		do {
@@ -109,7 +109,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			radius += 0.01;
-		} while (radius2 <= lookup->radius_max);
+		} while (radius2 <= lookup->radius_max + 0.01);
 
 		radius = -0.01;
 		do {
@@ -123,7 +123,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				break;
 			}
 			radius -= 0.01;
-		} while (radius2 >= lookup->radius_min);
+		} while (radius2 >= lookup->radius_min - 0.01);
 	}
 	free(test);
 	free(origin);
