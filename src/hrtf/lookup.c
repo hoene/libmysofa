@@ -50,6 +50,7 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
 		if (origin[2] < lookup->radius_min){ lookup->radius_min = origin[2]; }
 		if (origin[2] > lookup->radius_max){ lookup->radius_max = origin[2]; }
 	}
+	free(origin);
 
 	/*
 	 * Allocate kd tree
