@@ -70,6 +70,8 @@ extern "C" {
 	struct MYSOFA_LOOKUP {
 		void *kdtree;
 		float radius_min, radius_max;
+		float theta_min, theta_max;
+		float phi_min, phi_max;
 	};
 
 	struct MYSOFA_NEIGHBORHOOD {

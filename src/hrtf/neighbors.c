@@ -17,8 +17,10 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 	int i, index;
 	float *origin, *test;
 	float radius, radius2;
-	float theta;
-	float phi;
+	float theta, theta2;
+	float phi, phi2;
+	float angleStep = 0.5;
+	float radiusStep = 0.01;
 
 	struct MYSOFA_NEIGHBORHOOD *neighbor = malloc(
 		sizeof(struct MYSOFA_NEIGHBORHOOD));
@@ -41,9 +43,9 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
 		convertCartesianToSpherical(origin, hrtf->C);
 
-		phi = 0.5;
+		phi = angleStep;
 		do {
-			test[0] = origin[0] + phi;
+			phi2 = test[0] = origin[0] + phi;
 			test[1] = origin[1];
 			test[2] = origin[2];
 			convertSphericalToCartesian(test, 3);
@@ -52,12 +54,12 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				neighbor->index[i * 6 + 0] = index;
 				break;
 			}
-			phi += 0.5;
-		} while (phi <= 45);
+			phi += angleStep;
+		} while (phi2 <= lookup->phi_max + angleStep);
 
-		phi = -0.5;
+		phi = -angleStep;
 		do {
-			test[0] = origin[0] + phi;
+			phi2 = test[0] = origin[0] + phi;
 			test[1] = origin[1];
 			test[2] = origin[2];
 			convertSphericalToCartesian(test,3);
@@ -66,13 +68,13 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				neighbor->index[i * 6 + 1] = index;
 				break;
 			}
-			phi -= 0.5;
-		} while (phi >= -45);
+			phi -= angleStep;
+		} while (phi2 >= lookup->phi_min - angleStep);
 
-		theta = 0.5;
+		theta = angleStep;
 		do {
 			test[0] = origin[0];
-			test[1] = origin[1] + theta;
+			theta2 = test[1] = origin[1] + theta;
 			test[2] = origin[2];
 			convertSphericalToCartesian(test, 3);
 			index = mysofa_lookup(lookup, test);
@@ -80,13 +82,13 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				neighbor->index[i * 6 + 2] = index;
 				break;
 			}
-			theta += 0.5;
-		} while (theta <= 45);
+			theta += angleStep;
+		} while (theta2 <= lookup->theta_max + angleStep);
 
-		theta = -0.5;
+		theta = -angleStep;
 		do {
 			test[0] = origin[0];
-			test[1] = origin[1] + theta;
+			theta2 = test[1] = origin[1] + theta;
 			test[2] = origin[2];
 			convertSphericalToCartesian(test, 3);
 			index = mysofa_lookup(lookup, test);
@@ -94,10 +96,10 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				neighbor->index[i * 6 + 3] = index;
 				break;
 			}
-			theta -= 0.5;
-		} while (theta >= -45);
+			theta -= angleStep;
+		} while (theta2 >= lookup->theta_min - angleStep);
 
-		radius = 0.1;
+		radius = radiusStep;
 		do {
 			test[0] = origin[0];
 			test[1] = origin[1];
@@ -108,22 +110,22 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA
 				neighbor->index[i * 6 + 4] = index;
 				break;
 			}
-			radius *= 1.5;
-		} while (radius2 <= lookup->radius_max);
+			radius += radiusStep;
+		} while (radius2 <= lookup->radius_max + radiusStep);
 
-		radius = 0.1;
+		radius = -radiusStep;
 		do {
 			test[0] = origin[0];
 			test[1] = origin[1];
-			radius2 = test[2] = origin[2] - radius;
+			radius2 = test[2] = origin[2] + radius;
 			convertSphericalToCartesian(test, 3);
 			index = mysofa_lookup(lookup, test);
 			if (index != i) {
 				neighbor->index[i * 6 + 5] = index;
 				break;
 			}
-			radius *= 1.5;
-		} while (radius2 >= lookup->radius_min);
+			radius -= radiusStep;
+		} while (radius2 >= lookup->radius_min - radiusStep);
 	}
 	free(test);
 	free(origin);

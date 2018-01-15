@@ -30,16 +30,25 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
 		return NULL;
 
 	/*
-	 * find smallest and largest radius
-	 */
+	* find smallest and largest phi, theta, and radius (to reduce neighbors table init)
+	*/
+	float* origin;
+	origin = malloc(sizeof(float)*hrtf->C);
+	lookup->phi_min = FLT_MAX;
+	lookup->phi_max = FLT_MIN;
+	lookup->theta_min = FLT_MAX;
+	lookup->theta_max = FLT_MIN;
 	lookup->radius_min = FLT_MAX;
 	lookup->radius_max = FLT_MIN;
 	for (i = 0; i < hrtf->M; i ++) {
-		float r = radius(hrtf->SourcePosition.values + i * hrtf->C);
-		if (r < lookup->radius_min)
-			lookup->radius_min = r;
-		if (r > lookup->radius_max)
-			lookup->radius_max = r;
+		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
+		convertCartesianToSpherical(origin, hrtf->C);
+		if (origin[0] < lookup->phi_min){ lookup->phi_min = origin[0]; }
+		if (origin[0] > lookup->phi_max){ lookup->phi_max = origin[0]; }
+		if (origin[1] < lookup->theta_min){ lookup->theta_min = origin[1]; }
+		if (origin[1] > lookup->theta_max){ lookup->theta_max = origin[1]; }
+		if (origin[2] < lookup->radius_min){ lookup->radius_min = origin[2]; }
+		if (origin[2] > lookup->radius_max){ lookup->radius_max = origin[2]; }
 	}
 
 	/*
