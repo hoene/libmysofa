@@ -12,7 +12,7 @@ use_c99()
 
 configure_file (config.h.in ${CMAKE_SOURCE_DIR}/src/config.h)
 
-if(NOT WIN32)
+if(NOT MSVC)
   find_library(MATH m)
   include(FindZLIB)
 else()
@@ -28,7 +28,7 @@ endif()
 # include_directories(${ZLIB_INCLUDE_DIRS})
 # MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
 
-if(NOT WIN32)
+if(NOT MSVC)
     find_library(MATH m)
     include(FindZLIB)
 else()
