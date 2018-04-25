@@ -3,6 +3,7 @@ project (libmysofa)
 
 INCLUDE(CheckCCompilerFlag)
 include(GenerateExportHeader)
+include(GNUInstallDirs)
 
 option(BUILD_TESTS "Build test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared library" ON)
@@ -27,8 +28,8 @@ ENDIF(C_HAS_WALL)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
-install(FILES share/default.sofa DESTINATION share/libmysofa)
-install(FILES share/MIT_KEMAR_normal_pinna.sofa DESTINATION share/libmysofa)
+install(FILES share/default.sofa DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
+install(FILES share/MIT_KEMAR_normal_pinna.sofa DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
 
 if(BUILD_TESTS)
 

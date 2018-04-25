@@ -50,7 +50,7 @@ add_library(mysofa-static STATIC ${libsrc})
 target_link_libraries (mysofa-static ${MATH} ${ZLIB_LIBRARIES})
 SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1 POSITION_INDEPENDENT_CODE ON)
 install(TARGETS mysofa-static
-  ARCHIVE DESTINATION lib)
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(BUILD_SHARED_LIBS)
   add_library(mysofa-shared SHARED ${libsrc})
@@ -61,13 +61,13 @@ if(BUILD_SHARED_LIBS)
   set_property(TARGET mysofa-shared PROPERTY C_VISIBILITY_PRESET hidden)
   GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa EXPORT_FILE_NAME ${CMAKE_SOURCE_DIR}/src/hrtf/mysofa_export.h)
   install(TARGETS mysofa-shared 
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 else()
   GENERATE_EXPORT_HEADER(mysofa-static BASE_NAME mysofa EXPORT_FILE_NAME ${CMAKE_SOURCE_DIR}/src/hrtf/mysofa_export.h)
 endif()
 
-install(FILES hrtf/mysofa.h DESTINATION include)
+install(FILES hrtf/mysofa.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(BUILD_TESTS)
   add_executable(mysofa2json tests/sofa2json.c tests/json.c)
@@ -84,8 +84,8 @@ if(BUILD_TESTS)
   
 
   install(TARGETS mysofa2json
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib)
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif(BUILD_TESTS)
 
