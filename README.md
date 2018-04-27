@@ -136,8 +136,6 @@ The SOFA files are from https://www.sofaconventions.org/, Piotr Majdak <piotr@ma
 
 ## Donate
 
-Support the development and maintained of libmysofa by donating:
-
 <div align="center">
 <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 <input type="hidden" name="cmd" value="_donations">
@@ -154,3 +152,4 @@ Support the development and maintained of libmysofa by donating:
 <img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
 </form>
 </div>
+
