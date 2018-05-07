@@ -8,5 +8,5 @@ libdir=${prefix}/lib
 Libs: -L${libdir} -lmysofa
 Cflags: -I${includedir}
 
-#Libs.private:
+Libs.private: @PKG_CONFIG_PRIVATELIBS@
 #Requires.private:
