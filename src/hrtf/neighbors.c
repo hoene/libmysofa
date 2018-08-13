@@ -49,89 +49,95 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
 		convertCartesianToSpherical(origin, hrtf->C);
 
-		phi = angleStep;
-		do {
-			phi2 = test[0] = origin[0] + phi;
-			test[1] = origin[1];
-			test[2] = origin[2];
-			convertSphericalToCartesian(test, 3);
-			index = mysofa_lookup(lookup, test);
-			if (index != i) {
-				neighbor->index[i * 6 + 0] = index;
-				break;
-			}
-			phi += angleStep;
-		} while (phi2 <= lookup->phi_max + angleStep);
+		if( (lookup->phi_max - lookup->phi_min) > FLT_MIN ){
+			phi = angleStep;
+			do {
+				phi2 = test[0] = origin[0] + phi;
+				test[1] = origin[1];
+				test[2] = origin[2];
+				convertSphericalToCartesian(test, 3);
+				index = mysofa_lookup(lookup, test);
+				if (index != i) {
+					neighbor->index[i * 6 + 0] = index;
+					break;
+				}
+				phi += angleStep;
+			} while (phi2 <= lookup->phi_max + angleStep);
 
-		phi = -angleStep;
-		do {
-			phi2 = test[0] = origin[0] + phi;
-			test[1] = origin[1];
-			test[2] = origin[2];
-			convertSphericalToCartesian(test,3);
-			index = mysofa_lookup(lookup, test);
-			if (index != i) {
-				neighbor->index[i * 6 + 1] = index;
-				break;
-			}
-			phi -= angleStep;
-		} while (phi2 >= lookup->phi_min - angleStep);
+			phi = -angleStep;
+			do {
+				phi2 = test[0] = origin[0] + phi;
+				test[1] = origin[1];
+				test[2] = origin[2];
+				convertSphericalToCartesian(test,3);
+				index = mysofa_lookup(lookup, test);
+				if (index != i) {
+					neighbor->index[i * 6 + 1] = index;
+					break;
+				}
+				phi -= angleStep;
+			} while (phi2 >= lookup->phi_min - angleStep);
+		}
 
-		theta = angleStep;
-		do {
-			test[0] = origin[0];
-			theta2 = test[1] = origin[1] + theta;
-			test[2] = origin[2];
-			convertSphericalToCartesian(test, 3);
-			index = mysofa_lookup(lookup, test);
-			if (index != i) {
-				neighbor->index[i * 6 + 2] = index;
-				break;
-			}
-			theta += angleStep;
-		} while (theta2 <= lookup->theta_max + angleStep);
+		if( (lookup->theta_max - lookup->theta_min) > FLT_MIN ){
+			theta = angleStep;
+			do {
+				test[0] = origin[0];
+				theta2 = test[1] = origin[1] + theta;
+				test[2] = origin[2];
+				convertSphericalToCartesian(test, 3);
+				index = mysofa_lookup(lookup, test);
+				if (index != i) {
+					neighbor->index[i * 6 + 2] = index;
+					break;
+				}
+				theta += angleStep;
+			} while (theta2 <= lookup->theta_max + angleStep);
 
-		theta = -angleStep;
-		do {
-			test[0] = origin[0];
-			theta2 = test[1] = origin[1] + theta;
-			test[2] = origin[2];
-			convertSphericalToCartesian(test, 3);
-			index = mysofa_lookup(lookup, test);
-			if (index != i) {
-				neighbor->index[i * 6 + 3] = index;
-				break;
-			}
-			theta -= angleStep;
-		} while (theta2 >= lookup->theta_min - angleStep);
+			theta = -angleStep;
+			do {
+				test[0] = origin[0];
+				theta2 = test[1] = origin[1] + theta;
+				test[2] = origin[2];
+				convertSphericalToCartesian(test, 3);
+				index = mysofa_lookup(lookup, test);
+				if (index != i) {
+					neighbor->index[i * 6 + 3] = index;
+					break;
+				}
+				theta -= angleStep;
+			} while (theta2 >= lookup->theta_min - angleStep);
+		}
 
-		radius = radiusStep;
-		do {
-			test[0] = origin[0];
-			test[1] = origin[1];
-			radius2 = test[2] = origin[2] + radius;
-			convertSphericalToCartesian(test, 3);
-			index = mysofa_lookup(lookup, test);
-			if (index != i) {
-				neighbor->index[i * 6 + 4] = index;
-				break;
-			}
-			radius += radiusStep;
-		} while (radius2 <= lookup->radius_max + radiusStep);
+		if( (lookup->radius_max - lookup->radius_min) > FLT_MIN ){
+			radius = radiusStep;
+			do {
+				test[0] = origin[0];
+				test[1] = origin[1];
+				radius2 = test[2] = origin[2] + radius;
+				convertSphericalToCartesian(test, 3);
+				index = mysofa_lookup(lookup, test);
+				if (index != i) {
+					neighbor->index[i * 6 + 4] = index;
+					break;
+				}
+				radius += radiusStep;
+			} while (radius2 <= lookup->radius_max + radiusStep);
 
-		radius = -radiusStep;
-		do {
-			test[0] = origin[0];
-			test[1] = origin[1];
-			radius2 = test[2] = origin[2] + radius;
-			convertSphericalToCartesian(test, 3);
-			index = mysofa_lookup(lookup, test);
-			if (index != i) {
-				neighbor->index[i * 6 + 5] = index;
-				break;
-			}
-			radius -= radiusStep;
-		} while (radius2 >= lookup->radius_min - radiusStep);
+			radius = -radiusStep;
+			do {
+				test[0] = origin[0];
+				test[1] = origin[1];
+				radius2 = test[2] = origin[2] + radius;
+				convertSphericalToCartesian(test, 3);
+				index = mysofa_lookup(lookup, test);
+				if (index != i) {
+					neighbor->index[i * 6 + 5] = index;
+					break;
+				}
+				radius -= radiusStep;
+			} while (radius2 >= lookup->radius_min - radiusStep);
+		}
 	}
 	free(test);
 	free(origin);
