@@ -67,6 +67,17 @@ This call will normalize your hrtf data upon opening. For non-normalized data, r
 hrtf = mysofa_open_no_norm("file.sofa", 48000, &filter_length, &err);
 ```
 
+Or for a complete control over neighbors search algorithm parameters:
+
+```
+bool norm = true; // bool, apply normalization upon import
+float neighbor_angle_step = 5; // in degree, neighbor search angle step (common to azimuth and elevation)
+float neighbor_radius_step = 0.01; // in meters, neighbor search radius step
+hrtf = mysofa_open_advanced("file.sofa", 48000, &filter_length, &err, norm, neighbor_angle_step, neighbor_radius_step);
+```
+
+(The greater the neighbor_*_step, the faster the neighbors search. The algorithm will end up skipping true nearest neighbors if these values are set too high. To be define based on the will-be-imported sofa files grid step. Default mysofa_open method is usually fast enough for classical hrtf grids not to bother with the advanced one.)
+
 To free the HRTF structure, call:
 ```
 mysofa_close(hrtf);
