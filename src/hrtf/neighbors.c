@@ -8,19 +8,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <float.h>
 #include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
 MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 								   struct MYSOFA_LOOKUP *lookup) {
+	return mysofa_neighborhood_init_withstepdefine(hrtf,lookup,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
+}
+
+MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(struct MYSOFA_HRTF *hrtf,
+								   struct MYSOFA_LOOKUP *lookup,
+								   float angleStep,
+								   float radiusStep) {
 	int i, index;
 	float *origin, *test;
 	float radius, radius2;
 	float theta, theta2;
 	float phi, phi2;
-	float angleStep = 0.5;
-	float radiusStep = 0.01;
 
 	struct MYSOFA_NEIGHBORHOOD *neighbor = malloc(
 		sizeof(struct MYSOFA_NEIGHBORHOOD));
