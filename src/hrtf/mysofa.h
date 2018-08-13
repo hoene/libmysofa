@@ -11,6 +11,10 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdbool.h>
+
+#define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5
+#define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01
 
 /** attributes */
 	struct MYSOFA_ATTRIBUTE {
@@ -102,6 +106,8 @@ extern "C" {
 
 	struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 							     struct MYSOFA_LOOKUP *lookup);
+	struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(struct MYSOFA_HRTF *hrtf,
+							     struct MYSOFA_LOOKUP *lookup,float neighbor_angle_step,float neighbor_radius_step);
 	int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos);
 	void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
 
@@ -128,6 +134,7 @@ extern "C" {
 
 	struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);
 	struct MYSOFA_EASY* mysofa_open_no_norm(const char *filename, float samplerate, int *filterlength, int *err);
+	struct MYSOFA_EASY* mysofa_open_advanced(const char *filename, float samplerate, int *filterlength, int *err, bool norm, float neighbor_angle_step, float neighbor_radius_step);
 	struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err);
 	void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 				    short *IRleft, short *IRright,

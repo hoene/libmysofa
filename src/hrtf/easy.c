@@ -16,7 +16,7 @@
  *
  */
 
-static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float samplerate, int *filterlength, int *err, bool applyNorm)
+static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float samplerate, int *filterlength, int *err, bool applyNorm, float neighbor_angle_step, float neighbor_radius_step)
 {
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 	if(!easy) {
@@ -62,8 +62,8 @@ static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float sampl
 		return NULL;
 	}
 
-	easy->neighborhood = mysofa_neighborhood_init(easy->hrtf,
-						      easy->lookup);
+	easy->neighborhood = mysofa_neighborhood_init_withstepdefine(easy->hrtf,
+						      easy->lookup,neighbor_angle_step,neighbor_radius_step);
 
 	*filterlength = easy->hrtf->N;
 
@@ -72,12 +72,17 @@ static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float sampl
 
 MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
 {
-	return mysofa_open_default(filename,samplerate,filterlength,err,true);
+	return mysofa_open_default(filename,samplerate,filterlength,err,true,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
 }
 
 MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_no_norm(const char *filename, float samplerate, int *filterlength, int *err)
 {
-	return mysofa_open_default(filename,samplerate,filterlength,err,false);
+	return mysofa_open_default(filename,samplerate,filterlength,err,false,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
+}
+
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_advanced(const char *filename, float samplerate, int *filterlength, int *err, bool norm, float neighbor_angle_step, float neighbor_radius_step)
+{
+	return mysofa_open_default(filename,samplerate,filterlength,err,norm,neighbor_angle_step,neighbor_radius_step);
 }
 
 MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
