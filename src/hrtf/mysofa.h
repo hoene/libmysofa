@@ -6,14 +6,15 @@
 
 #ifndef MYSOFA_H_INCLUDED
 #define MYSOFA_H_INCLUDED
-#define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5
-#define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5
+#define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01
 
 /** attributes */
 	struct MYSOFA_ATTRIBUTE {
