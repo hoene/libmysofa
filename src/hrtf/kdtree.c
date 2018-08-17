@@ -32,6 +32,9 @@
 #include <string.h>
 #include <math.h>
 
+/* avoid the use of malloc because we are in real-time critical processing routines: */
+#define USE_LIST_NODE_ALLOCATOR
+
 #if defined(WIN32) || defined(__WIN32__)
 #include <malloc.h>
 #endif
