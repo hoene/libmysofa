@@ -130,6 +130,7 @@ extern "C" {
 		struct MYSOFA_HRTF *hrtf;
 		struct MYSOFA_LOOKUP *lookup;
 		struct MYSOFA_NEIGHBORHOOD *neighborhood;
+		float *fir;
 	};
 
 	struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err);

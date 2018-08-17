@@ -67,6 +67,9 @@ static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float sampl
 
 	*filterlength = easy->hrtf->N;
 
+	easy->fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
+	assert(easy->fir);
+
 	return easy;
 }
 
@@ -104,7 +107,6 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, flo
 					  int *delayLeft, int *delayRight)
 {
 	float c[3];
-	float *fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
 	float delays[2];
 	float *fl;
 	float *fr;
@@ -121,18 +123,17 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, flo
     
 	mysofa_interpolate(easy->hrtf, c,
 			   nearest, neighbors,
-			   fir, delays);
+			   easy->fir, delays);
 
 	*delayLeft  = delays[0] * easy->hrtf->DataSamplingRate.values[0];
 	*delayRight = delays[1] * easy->hrtf->DataSamplingRate.values[0];
 
-	fl = fir;
-	fr = fir + easy->hrtf->N;
+	fl = easy->fir;
+	fr = easy->fir + easy->hrtf->N;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++ * 32767.;
 		*IRright++ = *fr++ * 32767.;
 	}
-	free(fir);
 }
 
 MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
@@ -140,7 +141,6 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, flo
 					  float *delayLeft, float *delayRight)
 {
 	float c[3];
-	float *fir = malloc(easy->hrtf->N * easy->hrtf->R * sizeof(float));
 	float delays[2];
 	float *fl;
 	float *fr;
@@ -157,23 +157,24 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, flo
     
 	mysofa_interpolate(easy->hrtf, c,
 			   nearest, neighbors,
-			   fir, delays);
+			   easy->fir, delays);
 
 	*delayLeft  = delays[0];
 	*delayRight = delays[1];
 
-	fl = fir;
-	fr = fir + easy->hrtf->N;
+	fl = easy->fir;
+	fr = easy->fir + easy->hrtf->N;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++;
 		*IRright++ = *fr++;
 	}
-	free(fir);
 }
 
 MYSOFA_EXPORT void mysofa_close(struct MYSOFA_EASY* easy)
 {
 	if(easy) {
+		if(easy->fir)
+			free(easy->fir);
 		if(easy->neighborhood)
 			mysofa_neighborhood_free(easy->neighborhood);
 		if(easy->lookup)
