@@ -19,7 +19,7 @@ MYSOFA_EXPORT float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordina
 	int i, use[6];
 	float d, d6[6];
 	float weight;
-	int size = hrtf->N * hrtf->R;
+	const int size = hrtf->N * hrtf->R;
 
 	d = distance(cordinate, hrtf->SourcePosition.values + nearest);
 	if (fequals(d, 0)) {

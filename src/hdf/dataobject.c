@@ -227,17 +227,23 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 					break;
 			}
 			buffer[j]=0;
+
+			for (j = 0, c = 0; (dt->size >> (8 * j)) > 0; j++) {
+				c |= fgetc(reader->fhd) << (8 * j);
+			}
+
+			log("   COMPONENT %s offset %d\n", buffer, c);
+
+			/* not needed until the data is stored somewhere permanently
 			p = realloc(buffer, j);
 			if (!p) {
 				free(buffer);
 				return errno;
 			}
 			buffer = p;
-
-			for (j = 0, c = 0; (dt->size >> (8 * j)) > 0; j++) {
-				c |= fgetc(reader->fhd) << (8 * j);
-			} log("   COMPONENT %s offset %d\n", buffer, c);
+			*/
 			free(buffer);
+
 			err = readOHDRHeaderMessageDatatype(reader, &dt2);
 			if (err)
 				return err;

@@ -155,15 +155,15 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, flo
 	assert(nearest>=0);
 	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
     
-	mysofa_interpolate(easy->hrtf, c,
+	float *res = mysofa_interpolate(easy->hrtf, c,
 			   nearest, neighbors,
 			   easy->fir, delays);
 
 	*delayLeft  = delays[0];
 	*delayRight = delays[1];
 
-	fl = easy->fir;
-	fr = easy->fir + easy->hrtf->N;
+	fl = res;
+	fr = res + easy->hrtf->N;
 	for(i=easy->hrtf->N;i>0;i--) {
 		*IRleft++  = *fl++;
 		*IRright++ = *fr++;
