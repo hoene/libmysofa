@@ -39,7 +39,7 @@ if(NOT MSVC)
     set(MATH "")
   endif()
   include(FindZLIB)
-
+  include_directories(${ZLIB_INCLUDE_DIRS})
   SET(PKG_CONFIG_PRIVATELIBS "-lm ${PKG_CONFIG_PRIVATELIBS}")
   SET(PKG_CONFIG_PRIVATELIBS "-lz ${PKG_CONFIG_PRIVATELIBS}")
 else()
