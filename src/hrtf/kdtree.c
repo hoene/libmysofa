@@ -34,6 +34,9 @@
 
 /* avoid the use of malloc because we are in real-time critical processing routines: */
 #define USE_LIST_NODE_ALLOCATOR
+/* libmysofa is by definition not thread safe */
+#define NO_PTHREADS
+#define I_WANT_THREAD_BUGS
 
 #if defined(WIN32) || defined(__WIN32__)
 #include <malloc.h>
