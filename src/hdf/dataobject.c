@@ -353,7 +353,23 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 	case 1:
 		data_address = readValue(reader, reader->superblock.size_of_offsets);
 		data_size = readValue(reader, reader->superblock.size_of_lengths);
-		log("TODO 1 SIZE %lu\n", data_size);
+
+		// TODO(will): verify layout class 1 implementation
+		if (validAddress(reader, data_address)) {
+			store = ftell(reader->fhd);
+			if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
+				return errno;
+			if (!data->data) {
+				data->data_len = data_size;
+				data->data = malloc(data_size);
+				if (!data->data)
+					return MYSOFA_NO_MEMORY;
+				if (fread(data->data, 1, data_size, reader->fhd) != data_size)
+					return MYSOFA_READ_ERROR;
+			}
+			if (fseek(reader->fhd, store, SEEK_SET) < 0)
+				return errno;
+		}
 		break;
 
 	case 2:
