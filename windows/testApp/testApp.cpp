@@ -19,6 +19,7 @@ int main()
 	struct MYSOFA_EASY *hrtf = (MYSOFA_EASY *)malloc(sizeof(struct MYSOFA_EASY));
 	if (!hrtf) return 1234;
 
+	hrtf->fir = NULL;
 	hrtf->lookup = NULL;
 	hrtf->neighborhood = NULL;
 
