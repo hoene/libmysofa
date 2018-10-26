@@ -25,6 +25,9 @@
 /* Begin PBXFileReference section */
 		E2381FC92183C35300228312 /* TestApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TestApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2381FCC2183C35300228312 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		E2381FD42183D29900228312 /* libmysofa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysofa.a; path = ../../build/src/libmysofa.a; sourceTree = "<group>"; };
+		E2381FD52183D29900228312 /* libmysofa.0.5.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysofa.0.5.1.dylib; path = ../../build/src/libmysofa.0.5.1.dylib; sourceTree = "<group>"; };
+		E2381FD82183D34200228312 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = ../../src; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,8 +44,10 @@
 		E2381FC02183C35300228312 = {
 			isa = PBXGroup;
 			children = (
+				E2381FD82183D34200228312 /* src */,
 				E2381FCB2183C35300228312 /* TestApp */,
 				E2381FCA2183C35300228312 /* Products */,
+				E2381FD32183D29900228312 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,6 +65,15 @@
 				E2381FCC2183C35300228312 /* main.cpp */,
 			);
 			path = TestApp;
+			sourceTree = "<group>";
+		};
+		E2381FD32183D29900228312 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E2381FD52183D29900228312 /* libmysofa.0.5.1.dylib */,
+				E2381FD42183D29900228312 /* libmysofa.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
