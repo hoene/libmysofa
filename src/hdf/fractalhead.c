@@ -104,7 +104,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 				return MYSOFA_READ_ERROR;
 			}
 
-			if (readValue(reader, 4) != 0x00000013) {
+			// NOTE(will): sometimes seeing 0x00001013, not documented but don't fail it
+			if((readValue(reader, 4) & 0xFF) != 0x00000013) {
 				log("FHDB type 3 unsupported values");
 				free(name);
 				return MYSOFA_UNSUPPORTED_FORMAT;

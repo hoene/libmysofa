@@ -524,6 +524,22 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 	}
 
 	switch (dt->class_and_version & 0xf) {
+	// NOTE(will): Anything that isn't a string (case 3) is likely wrong.
+	case 0:
+		log("WARN: datatype 0 Fixed-Point, probably shouldn't be here\n");
+		if (fseek(reader->fhd, dt->size, SEEK_CUR))
+			return errno;
+		break;
+	case 1:
+		log("WARN: datatype 1 Floating-Point, probably shouldn't be here\n");
+		if (fseek(reader->fhd, dt->size, SEEK_CUR))
+			return errno;
+		break;
+	case 2:
+		log("WARN: datatype 2 Time, probably shouldn't be here\n")
+		if (fseek(reader->fhd, dt->size, SEEK_CUR))
+			return errno;
+		break;
 	case 3:
 		buffer = malloc(dt->size + 1);
 		if (buffer == NULL) {
