@@ -134,7 +134,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 		return MYSOFA_INVALID_FORMAT;
 
 	if (!fequals(hrtf->ReceiverPosition.values[0], 0.)
-			|| hrtf->ReceiverPosition.values[1] > 0
+			/*|| hrtf->ReceiverPosition.values[1] > 0*/ // NOTE(will): why is this check needed?
 			|| !fequals(hrtf->ReceiverPosition.values[2], 0.)
 			|| !fequals(hrtf->ReceiverPosition.values[3], 0.)
 			|| !fequals(hrtf->ReceiverPosition.values[4],
