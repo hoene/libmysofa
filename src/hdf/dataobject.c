@@ -59,9 +59,10 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
 					  struct DATASPACE *ds) {
 
 	int i;
-
-	if (fgetc(reader->fhd) != 2) {
-		log("object OHDR dataspace message must have version 2\n");
+	// TODO(will): verify dataspace message v1 implementation
+	uint8_t version = (uint8_t)fgetc(reader->fhd);
+	if (version != 1 && version != 2) {
+		log("object OHDR dataspace message must have version 1 or 2\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
 
@@ -72,7 +73,12 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
 	}
 
 	ds->flags = (uint8_t)fgetc(reader->fhd);
-	ds->type = (uint8_t)fgetc(reader->fhd);
+	if (version == 2) {
+		ds->type = (uint8_t)fgetc(reader->fhd);
+	} else {
+		ds->type = 0;
+		fseek(reader->fhd, 5, SEEK_CUR);
+	}
 
 	for (i = 0; i < ds->dimensionality; i++) {
 		if (i < 4) {
@@ -284,17 +290,22 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 	uint8_t flags;
 	uint32_t size;
 
+	// TODO(will): verify fill value message v2 implementation
 	version = (uint8_t)fgetc(reader->fhd);
-	if (version != 3) {
+	if (version != 2 && version != 3) {
 		log(
-			"object OHDR data storage fill value message must have version 3 not %d\n",
+			"object OHDR data storage fill value message must have version 2 or 3 not %d\n",
 			version);
 		return MYSOFA_INVALID_FORMAT;
 	}
 
+	if(version == 2)
+		fseek(reader->fhd, 2, SEEK_CUR);
+
 	flags = (uint8_t)fgetc(reader->fhd);
 
-	if (flags & (1 << 5)) {
+	if (((version == 3) && (flags & (1 << 5))) || 
+		((version == 2) && flags)) {
 		size = (uint32_t)readValue(reader, 4);
 		if (fseek(reader->fhd, size, SEEK_CUR)<0)
 			return errno;
@@ -689,6 +700,7 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 
 	memset(&d, 0, sizeof(d));
 
+	// NOTE(will): handling v1 leads to unsolved mystery in datatype read
 	if (fgetc(reader->fhd) != 3) {
 		log("object OHDR attribute message must have version 3\n");
 		return MYSOFA_INVALID_FORMAT;
@@ -827,6 +839,11 @@ static int readOHDRmessages(struct READER *reader,
 		case 3: /* Datatype Message */
 			if (!!(err = readOHDRHeaderMessageDatatype(reader, &dataobject->dt)))
 				return err;
+			break;
+		case 4: // NOTE(will): OLD Data Fill Message, why are we even seeing this?
+			uint32_t size = (uint32_t)readValue(reader, 4);
+			if((size > 0) && (fseek(reader->fhd, size, SEEK_CUR)<0))
+				return errno;
 			break;
 		case 5: /* Data Fill Message */
 			if (!!(err = readOHDRHeaderMessageDataFill(reader)))
