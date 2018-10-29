@@ -14,7 +14,7 @@
 
 static int readGCOL(struct READER *reader) {
 
-	uint16_t reference_count, address;
+	uint16_t reference_count, address, curr_address;
 	uint64_t collection_size, end;
 	struct GCOL *gcol;
 	char buf[4];
@@ -38,8 +38,9 @@ static int readGCOL(struct READER *reader) {
 	end = address;
 	collection_size = readValue(reader, reader->superblock.size_of_lengths);
 	end += collection_size - 8;
+	curr_address = ftell(reader->fhd);
 
-	while (ftell(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
+	while (curr_address <= (end - 8 - reader->superblock.size_of_lengths)) {
 
 		gcol = malloc(sizeof(*gcol));
 		gcol->heap_object_index = readValue(reader, 2);
@@ -65,9 +66,11 @@ static int readGCOL(struct READER *reader) {
 
 		gcol->next = reader->gcol;
 		reader->gcol = gcol;
+
+		curr_address = ftell(reader->fhd);
 	}
 
-	log(" END %08lX vs. %08lX\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
+	log(" END %08lX vs. %08lX\n", curr_address, end); /* bug in the normal hdf5 specification */
 /*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
