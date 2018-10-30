@@ -43,6 +43,8 @@ static int readGCOL(struct READER *reader) {
 	while (curr_address <= (end - 8 - reader->superblock.size_of_lengths)) {
 
 		gcol = malloc(sizeof(*gcol));
+		memset(gcol, 0, sizeof(*gcol));
+
 		gcol->heap_object_index = readValue(reader, 2);
 		if (gcol->heap_object_index == 0) {
 			free(gcol);
@@ -55,10 +57,13 @@ static int readGCOL(struct READER *reader) {
 		}
 		gcol->object_size = readValue(reader,
 					      reader->superblock.size_of_lengths);
-		if(gcol->object_size>8) {
-			free(gcol);
-			return MYSOFA_UNSUPPORTED_FORMAT;
+
+		// NOTE(will): the object size is rounded up to the nearest multiple of 8
+		int mod_8 = gcol->object_size % 8;
+		if(mod_8>0) {
+			gcol->object_size += 8 - mod_8;
 		}
+
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
 		log(" GCOL object %d size %ld value %08lX\n", gcol->heap_object_index,
