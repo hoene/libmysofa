@@ -823,6 +823,8 @@ static int readOHDRmessages(struct READER *reader,
 
 		end = ftell(fhd) + header_message_size;
 
+		uint32_t size;
+
 		switch (header_message_type) {
 		case 0: /* NIL Message */
 			if (!!(err = readOHDRHeaderMessageNIL(reader, header_message_size)))
@@ -841,7 +843,7 @@ static int readOHDRmessages(struct READER *reader,
 				return err;
 			break;
 		case 4: // NOTE(will): OLD Data Fill Message, why are we even seeing this?
-			uint32_t size = (uint32_t)readValue(reader, 4);
+			size = (uint32_t)readValue(reader, 4);
 			if((size > 0) && (fseek(reader->fhd, size, SEEK_CUR)<0))
 				return errno;
 			break;
