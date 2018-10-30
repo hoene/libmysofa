@@ -12,6 +12,33 @@
 #include <fstream>
 using namespace std;
 
+// HACK(will): helper function to manually set HDF5 attributes
+void HACK_set_if_null(MYSOFA_ATTRIBUTE *attrib, char *name, char *value) {
+	MYSOFA_ATTRIBUTE *curr = attrib;
+	while (curr != NULL) {
+		if (strcmp(curr->name, name) == 0 && curr->value == NULL) {
+			curr->value = _strdup(value);
+			break;
+		}
+		curr = curr->next;
+	}
+}
+
+// HACK(will): manually supply the missing values in netcdf 4.3.1.1 files
+void HACK_fix_attrib(MYSOFA_EASY* hrtf) {
+	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, "Units", "metre");
+	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, "Type", "cartesian");
+	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, "Units", "metre");
+	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, "Type", "cartesian");
+	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, "Units", "degree, degree, metre");
+	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, "Type", "spherical");
+	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, "Units", "metre");
+	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, "Type", "cartesian");
+	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, "Units", "metre");
+	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, "Type", "cartesian");
+	HACK_set_if_null(hrtf->hrtf->DataSamplingRate.attributes, "Units", "hertz");
+}
+
 int main()
 {
 	int err;
@@ -23,11 +50,22 @@ int main()
 	hrtf->lookup = NULL;
 	hrtf->neighborhood = NULL;
 
-	hrtf->hrtf = mysofa_load("../../tests/FHK_HRIR_L2354.sofa", &err);
+	// TODO(will): make command line argument
+	char *filename = "../../tests/FHK_HRIR_L2354.sofa";
+
+	if (filename == NULL || filename == "") {
+		printf("Please specify a filename\n");
+		return 0;
+	}
+
+	hrtf->hrtf = mysofa_load(filename, &err);
 	if (!hrtf->hrtf) {
 		mysofa_close(hrtf);
 		return err;
 	}
+
+	// TODO(will): fix reading of attributes for netcdf 4.3.1.1 files
+	HACK_fix_attrib(hrtf);
 
 	err = mysofa_check(hrtf->hrtf);
 	if (err != MYSOFA_OK) {
