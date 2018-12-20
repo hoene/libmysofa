@@ -21,7 +21,7 @@ MYSOFA_EXPORT float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordina
 	float weight;
 	int size = hrtf->N * hrtf->R;
 
-	d = distance(cordinate, hrtf->SourcePosition.values + nearest);
+	d = distance(cordinate, hrtf->SourcePosition.values + nearest * hrtf->C);
 	if (fequals(d, 0)) {
 		if (hrtf->DataDelay.elements > hrtf->R) {
 			delays[0] = hrtf->DataDelay.values[nearest * hrtf->R];
