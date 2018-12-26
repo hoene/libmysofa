@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "tools.h"
-#include "mysofa_export.h"
 #include "mysofa.h"
 
 char *mysofa_strdup(const char *str)
@@ -45,7 +44,6 @@ int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
 	return 0;
 }
 
-MYSOFA_EXPORT
 char* mysofa_getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name) {
 	while (attr) {
 		if (!strcmp(name, attr->name)) {
@@ -56,7 +54,7 @@ char* mysofa_getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name) {
 	return NULL;
 }
 
-MYSOFA_EXPORT void mysofa_c2s(float values[3])
+void mysofa_c2s(float values[3])
 {
 	float x,y,z,r,theta,phi;
 	x = values[0];
@@ -72,7 +70,7 @@ MYSOFA_EXPORT void mysofa_c2s(float values[3])
 	values[2] = r;
 }
 
-MYSOFA_EXPORT void mysofa_s2c(float values[3])
+void mysofa_s2c(float values[3])
 {
 	float x, r, theta, phi;
 	phi = values[0] * (M_PI / 180);
