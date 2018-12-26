@@ -11,11 +11,10 @@
 #include <string.h>
 
 #include "kdtree.h"
-#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
-MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
+struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf) {
 	int i;
 	struct MYSOFA_LOOKUP *lookup;
 
@@ -76,7 +75,7 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
  * looks for a filter that is similar to the given Cartesian coordinate
  * BE AWARE: The coordinate vector will be normalized if required
  */
-MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
+int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
 
 	int index;
 	struct kdres *res;
@@ -105,7 +104,7 @@ MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate)
 	return index;
 }
 
-MYSOFA_EXPORT void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup) {
+void mysofa_lookup_free(struct MYSOFA_LOOKUP *lookup) {
 	if(lookup) {
 		kd_free((struct kdtree *) lookup->kdtree);
 		free(lookup);

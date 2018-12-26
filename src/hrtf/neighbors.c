@@ -9,16 +9,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <float.h>
-#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
-MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
+struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
 								   struct MYSOFA_LOOKUP *lookup) {
 	return mysofa_neighborhood_init_withstepdefine(hrtf,lookup,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
 }
 
-MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(struct MYSOFA_HRTF *hrtf,
+struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(struct MYSOFA_HRTF *hrtf,
 								   struct MYSOFA_LOOKUP *lookup,
 								   float angleStep,
 								   float radiusStep) {
@@ -144,13 +143,13 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 	return neighbor;
 }
 
-MYSOFA_EXPORT int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int index) {
+int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int index) {
 	if (index < 0 || index >= neighborhood->elements)
 		return NULL ;
 	return neighborhood->index + index * 6;
 }
 
-MYSOFA_EXPORT void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood) {
+void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood) {
 	if(neighborhood) {
 		free(neighborhood->index);
 		free(neighborhood);

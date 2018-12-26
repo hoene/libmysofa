@@ -8,13 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
 /* #define VDEBUG */
 
-MYSOFA_EXPORT float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
+float* mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
 					int nearest, int *neighborhood, float *fir, float *delays) {
 	int i, use[6];
 	float d, d6[6];

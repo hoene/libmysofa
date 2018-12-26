@@ -11,7 +11,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "mysofa_export.h"
 #include "mysofa.h"
 #include "../hdf/reader.h"
 #include "../config.h"
@@ -222,7 +221,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	return NULL;
 }
 
-MYSOFA_EXPORT struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
+struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 
@@ -267,7 +266,7 @@ static void arrayFree(struct MYSOFA_ARRAY *array) {
 	free(array->values);
 }
 
-MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
+void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 	if (!hrtf)
 		return;
 
@@ -291,7 +290,7 @@ MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 	free(hrtf);
 }
 
-MYSOFA_EXPORT void mysofa_getversion(int *major, int *minor, int *patch)
+void mysofa_getversion(int *major, int *minor, int *patch)
 {
 	*major = CPACK_PACKAGE_VERSION_MAJOR;
 	*minor = CPACK_PACKAGE_VERSION_MINOR;

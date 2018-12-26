@@ -12,11 +12,10 @@
 #include <float.h>
 #include <math.h>
 #include <assert.h>
-#include "mysofa_export.h"
 #include "mysofa.h"
 #include "tools.h"
 
-MYSOFA_EXPORT float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
+float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
 	float c[3], factor;
 	float min = FLT_MAX;
 	int radius = 0;
