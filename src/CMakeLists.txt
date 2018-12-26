@@ -33,9 +33,9 @@ else()
     include_directories(${PROJECT_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
 endif()
 
-# include(FindZLIB)
-# include_directories(${ZLIB_INCLUDE_DIRS})
-# MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
+include(FindZLIB REQUIRED)
+include_directories(${ZLIB_INCLUDE_DIRS})
+MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
 
 set(libsrc hrtf/reader.c hdf/superblock.c hdf/dataobject.c hdf/btree.c hdf/fractalhead.c hdf/gunzip.c hdf/gcol.c hrtf/check.c hrtf/spherical.c 
   hrtf/lookup.c hrtf/tools.c hrtf/kdtree.c hrtf/neighbors.c hrtf/interpolate.c hrtf/resample.c hrtf/loudness.c hrtf/minphase.c hrtf/easy.c hrtf/cache.c 
