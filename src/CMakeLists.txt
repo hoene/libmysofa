@@ -41,18 +41,22 @@ set(libsrc hrtf/reader.c hdf/superblock.c hdf/dataobject.c hdf/btree.c hdf/fract
   hrtf/lookup.c hrtf/tools.c hrtf/kdtree.c hrtf/neighbors.c hrtf/interpolate.c hrtf/resample.c hrtf/loudness.c hrtf/minphase.c hrtf/easy.c hrtf/cache.c 
   resampler/speex_resampler.c)
 add_library(mysofa-static STATIC ${libsrc})
-target_link_libraries (mysofa-static ${MATH} ${ZLIB_LIBRARIES})
+target_link_libraries (mysofa-static PRIVATE ${MATH} ${ZLIB_LIBRARIES})
 SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1 POSITION_INDEPENDENT_CODE ON)
+target_compile_definitions( mysofa-static PUBLIC MYSOFA_STATIC_DEFINE=1 )
 install(TARGETS mysofa-static
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(BUILD_SHARED_LIBS)
   add_library(mysofa-shared SHARED ${libsrc})
-  target_link_libraries (mysofa-shared ${MATH} ${ZLIB_LIBRARIES})
+  target_link_libraries (mysofa-shared PRIVATE ${MATH} ${ZLIB_LIBRARIES})
   SET_TARGET_PROPERTIES(mysofa-shared PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1)
+  # Windows: ensure that the import library file (also named "*.lib") of the DLL has a distinct name.
+  set_target_properties(mysofa-shared PROPERTIES ARCHIVE_OUTPUT_NAME mysofa-shared )
   set_property(TARGET mysofa-shared PROPERTY VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
   set_property(TARGET mysofa-shared PROPERTY SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR} )
   set_property(TARGET mysofa-shared PROPERTY C_VISIBILITY_PRESET hidden)
+  target_compile_definitions( mysofa-shared PRIVATE mysofa_shared_EXPORTS=1 )
   GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa EXPORT_FILE_NAME ${PROJECT_SOURCE_DIR}/src/hrtf/mysofa_export.h)
   install(TARGETS mysofa-shared 
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
