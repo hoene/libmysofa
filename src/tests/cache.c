@@ -15,8 +15,8 @@ void test_cache() {
 
 	struct MYSOFA_EASY *easy1 = malloc(sizeof(struct MYSOFA_EASY));
 	struct MYSOFA_EASY *easy2 = malloc(sizeof(struct MYSOFA_EASY));
-	bzero(easy1,sizeof(struct MYSOFA_EASY));
-	bzero(easy2,sizeof(struct MYSOFA_EASY));
+	memset(easy1, 0x00, sizeof(struct MYSOFA_EASY));
+	memset(easy2, 0x00, sizeof(struct MYSOFA_EASY));
 
 	mysofa_close(easy2);			/* must pass without segfail */
 
@@ -36,17 +36,17 @@ void test_cache() {
 */
 
 	easy1 = malloc(sizeof(struct MYSOFA_EASY));
-	bzero(easy1,sizeof(struct MYSOFA_EASY));
+	memset(easy1, 0x00, sizeof(struct MYSOFA_EASY));
 
 	CU_ASSERT(mysofa_cache_store(easy1, filename1, sr1) == easy1);		/* add again */
 
 	easy2 = malloc(sizeof(struct MYSOFA_EASY));							/* easy2 has been freed automatically */
-	bzero(easy2,sizeof(struct MYSOFA_EASY));
+	memset(easy2, 0x00, sizeof(struct MYSOFA_EASY));
 
 	CU_ASSERT(mysofa_cache_store(easy2, filename1, sr1) == easy1);		/* second add must be possible too, return cached */
 
 	easy2 = malloc(sizeof(struct MYSOFA_EASY));							/* easy2 has been freed automatically */
-	bzero(easy2,sizeof(struct MYSOFA_EASY));
+	memset(easy2, 0x00, sizeof(struct MYSOFA_EASY));
 
 	CU_ASSERT(mysofa_cache_store(easy2, filename1, sr2) == easy2);		/* now third add with different sample rate */
 
@@ -56,7 +56,7 @@ void test_cache() {
 	CU_ASSERT(!mysofa_cache_lookup(filename1,sr2));
 
 	easy2 = malloc(sizeof(struct MYSOFA_EASY));
-	bzero(easy2,sizeof(struct MYSOFA_EASY));
+	memset(easy2, 0x00, sizeof(struct MYSOFA_EASY));
 
 	CU_ASSERT(mysofa_cache_store(easy2, filename2, sr2) == easy2);		/* now third add with different file name */
 	CU_ASSERT(mysofa_cache_lookup(filename2,sr2) == easy2);

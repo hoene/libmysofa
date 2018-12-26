@@ -71,16 +71,27 @@ if(BUILD_TESTS)
   add_executable(mysofa2json tests/sofa2json.c tests/json.c)
   target_link_libraries (mysofa2json mysofa-static)
 
-  add_executable(external tests/external.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
-    tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
-  target_link_libraries (external mysofa-shared ${CUNIT_LIBRARIES})
+  set( TEST_SOURCE_FILES
+    tests/check.c
+    tests/lookup.c
+    tests/neighbors.c
+    tests/interpolate.c
+    tests/resample.c
+    tests/loudness.c
+    tests/minphase.c
+    tests/easy.c
+    tests/cache.c
+    tests/json.c
+	tests/tools.c
+  )
+  add_executable(external tests/external.c ${TEST_SOURCE_FILES} )
+  target_link_libraries (external PUBLIC mysofa-shared ${CUNIT_LIBRARIES})
   add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
 
-  add_executable(internal tests/internal.c tests/tools.c hrtf/tools.c)
-  target_link_libraries (internal m ${CUNIT_LIBRARIES})
+  add_executable(internal tests/internal.c ${TEST_SOURCE_FILES} tests/tools.c hrtf/tools.c)
+  target_link_libraries(internal PRIVATE mysofa-static ${CUNIT_LIBRARIES} ${MATH} )
   add_test(NAME internal WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND internal)
   
-
   install(TARGETS mysofa2json
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
