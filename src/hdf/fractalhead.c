@@ -180,6 +180,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			log("\nfractal head type 1 length %4lX name %s address %lX\n", length, name, heap_header_address);
 
 			dir = malloc(sizeof(struct DIR));
+			if(!dir)
+			    return errno;
+			memset(dir,0,sizeof(*dir));
+
 			dir->next = dataobject->directory;
 			dataobject->directory = dir;
 

@@ -877,7 +877,8 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OHDR", 4)) {
 		log("cannot read signature of data object\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", dataobject->address, buf);
+	}
+	log("%08lX %.4s\n", dataobject->address, buf);
 
 	if (fgetc(reader->fhd) != 2) {
 		log("object OHDR must have version 2\n");
@@ -927,7 +928,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			return err;
 	}
 
-	/* no needed 
+	/* not needed
 	   if (validAddress(reader, dataobject->li.address_btree_index)) {
 	   fseek(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
 	   btreeRead(reader, &dataobject->objects);
