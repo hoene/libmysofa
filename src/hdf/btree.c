@@ -307,8 +307,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 				for (i = 0; i < olen; i++) {
 					b = i / elements;
 					x = i % elements + start[0];
-					if (x < sx) {
-						j = x * size + b;
+					j = x * size + b;
+					if (j>=0 && j < elements * size) {
 						((char*)data->data)[j] = output[i];
 					}
 				}
@@ -319,8 +319,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 					x = i % elements;
 					y = x % dy + start[1];
 					x = x / dy + start[0];
-					if (y < sy && x < sx) {
-						j = ((x * sy + y) * size) + b;
+					j = ((x * sy + y) * size) + b;
+					if (j>=0 && j < elements * size) {
 						((char*)data->data)[j] = output[i];
 					}
 				}
@@ -332,8 +332,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 					z = x % dz + start[2];
 					y = (x / dz) % dy + start[1];
 					x = (x / dzy) + start[0];
-					if (z < sz && y < sy && x < sx) {
-						j = (x * szy + y * sz + z) * size + b;
+					j = (x * szy + y * sz + z) * size + b;
+					if (j>=0 && j < elements * size) {
 						((char*)data->data)[j] = output[i];
 					}
 				}
