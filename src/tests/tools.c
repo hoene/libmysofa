@@ -86,34 +86,34 @@ void test_nsearch() {
 	CU_ASSERT(cmp(array + 1, array) > 0);
 
 	key = 10;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 0 && h == 0);
 
 	key = 20;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 1 && h == 1);
 
 	key = 50;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 4 && h == 4);
 
 	key = 0;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l < 0 && h == 0);
 
 	key = 60;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 4 && h < 0);
 
 	key = 11;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 0 && h == 1);
 
 	key = 41;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 3 && h == 4);
 
 	key = 19;
-	nsearch(&key, (char*)array, 5, sizeof(int), cmp, &l, &h);
+	nsearch(&key, (char*) array, 5, sizeof(int), cmp, &l, &h);
 	CU_ASSERT(l == 0 && h == 1);
 }

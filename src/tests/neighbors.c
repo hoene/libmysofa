@@ -12,13 +12,12 @@ void test_neighbors() {
 	struct MYSOFA_LOOKUP *lookup;
 	struct MYSOFA_NEIGHBORHOOD *neighborhood;
 	int i, j, *res;
-	float c[3],C[3];
+	float c[3], C[3];
 #ifdef VDEBUG
 	const char *dir = "RLUDFB";
 #endif
 
-	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-			   &err);
+	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 		return;
@@ -33,8 +32,7 @@ void test_neighbors() {
 		return;
 	}
 
-	neighborhood = mysofa_neighborhood_init(hrtf,
-						lookup);
+	neighborhood = mysofa_neighborhood_init(hrtf, lookup);
 
 	if (neighborhood == NULL) {
 		CU_FAIL("Error getting neighborhood.");
@@ -43,33 +41,36 @@ void test_neighbors() {
 		return;
 	}
 
-	for (i = 0; i < hrtf->M; i ++) {
-		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
+	for (i = 0; i < hrtf->M; i++) {
+		memcpy(c, hrtf->SourcePosition.values + i * hrtf->C,
+				sizeof(float) * hrtf->C);
 		mysofa_c2s(c);
 #ifdef VDEBUG
 		printf("%4.0f %4.0f %5.2f\t", c[0], c[1], c[2]);
 #endif
 		res = mysofa_neighborhood(neighborhood, i);
-		CU_ASSERT(res!=NULL);
+		CU_ASSERT(res != NULL);
 		for (j = 0; j < 6; j++) {
 			if (res[j] >= 0) {
 				memcpy(C, hrtf->SourcePosition.values + res[j] * hrtf->C,
-				       sizeof(float) * hrtf->C);
+						sizeof(float) * hrtf->C);
 				mysofa_c2s(C);
 #ifdef VDEBUG
 				printf("\t%c %4.0f %4.0f %5.2f", dir[j], C[0], C[1], C[2]);
 #endif
-				switch(j) {
+				switch (j) {
 				case 0:
-					if(C[0]<c[0]) C[0]+=360;
-					CU_ASSERT_FATAL(c[0] < C[0] && c[0]+45 > C[0]);
+					if (C[0] < c[0])
+						C[0] += 360;
+					CU_ASSERT_FATAL(c[0] < C[0] && c[0] + 45 > C[0]);
 					break;
 				case 1:
-					if(C[0]>c[0]) C[0]-=360;
-					CU_ASSERT_FATAL(c[0] > C[0] && c[0]-45 < C[0]);
+					if (C[0] > c[0])
+						C[0] -= 360;
+					CU_ASSERT_FATAL(c[0] > C[0] && c[0] - 45 < C[0]);
 					break;
 				case 2:
-					CU_ASSERT_FATAL(c[1] < C[1] || fequals(c[1],90.f));
+					CU_ASSERT_FATAL(c[1] < C[1] || fequals(c[1], 90.f));
 					break;
 				case 3:
 					CU_ASSERT_FATAL(c[1] > C[1]);

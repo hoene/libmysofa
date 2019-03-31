@@ -338,8 +338,7 @@ static int find_nearest_n(struct kdnode *node, const float *pos, float range, in
 #endif
 
 static void kd_nearest_i(struct kdnode *node, const float *pos,
-		struct kdnode **result, float *result_dist_sq,
-		struct kdhyperrect* rect) {
+		struct kdnode **result, float *result_dist_sq, struct kdhyperrect* rect) {
 	int dir = node->dir;
 	int i;
 	float dummy, dist_sq;
@@ -528,8 +527,7 @@ struct kdres *kd_nearest3f(struct kdtree *tree, float x, float y, float z) {
  return rset;
  }*/
 
-struct kdres *kd_nearest_range(struct kdtree *kd, const float *pos,
-		float range) {
+struct kdres *kd_nearest_range(struct kdtree *kd, const float *pos, float range) {
 	int ret;
 	struct kdres *rset;
 
@@ -587,8 +585,8 @@ struct kdres *kd_nearest_rangef(struct kdtree *kd, const float *pos,
 	return res;
 }
 
-struct kdres *kd_nearest_range3(struct kdtree *tree, float x, float y,
-		float z, float range) {
+struct kdres *kd_nearest_range3(struct kdtree *tree, float x, float y, float z,
+		float range) {
 	float buf[3];
 	buf[0] = x;
 	buf[1] = y;
@@ -753,15 +751,14 @@ static struct res_node *free_nodes;
 static pthread_mutex_t alloc_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-static struct res_node *alloc_resnode(void)
-{
+static struct res_node *alloc_resnode(void) {
 	struct res_node *node;
 
 #ifndef NO_PTHREADS
 	pthread_mutex_lock(&alloc_mutex);
 #endif
 
-	if(!free_nodes) {
+	if (!free_nodes) {
 		node = malloc(sizeof *node);
 	} else {
 		node = free_nodes;
@@ -776,8 +773,7 @@ static struct res_node *alloc_resnode(void)
 	return node;
 }
 
-static void free_resnode(struct res_node *node)
-{
+static void free_resnode(struct res_node *node) {
 #ifndef NO_PTHREADS
 	pthread_mutex_lock(&alloc_mutex);
 #endif

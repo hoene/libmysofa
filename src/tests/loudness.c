@@ -22,13 +22,10 @@ void test_loudness() {
 #ifdef VDEBUG
 	printf("loudness of Pulse.sofa %f\n", factor);
 #endif
-	CU_ASSERT(fequals(factor,1));
+	CU_ASSERT(fequals(factor, 1));
 	mysofa_free(hrtf);
 
-
-
-	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa",
-			   &err);
+	hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 	}
@@ -37,15 +34,15 @@ void test_loudness() {
 #ifdef VDEBUG
 	printf("loudness of MIT_KEMAR_normal_pinna.sofa %f\n", factor);
 #endif
-	CU_ASSERT(fequals(factor,1.116589));
+	CU_ASSERT(fequals(factor, 1.116589));
 
 	factor = mysofa_loudness(hrtf);
 #ifdef VDEBUG
 	printf(
-		"loudness of MIT_KEMAR_normal_pinna.sofa after normalization %f\n",
-		factor);
+			"loudness of MIT_KEMAR_normal_pinna.sofa after normalization %f\n",
+			factor);
 #endif
-	CU_ASSERT(fequals(factor,1.));
+	CU_ASSERT(fequals(factor, 1.));
 
 	mysofa_free(hrtf);
 }

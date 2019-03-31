@@ -13,15 +13,15 @@
 #include "mysofa.h"
 #include "tools.h"
 
-MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(struct MYSOFA_HRTF *hrtf,
-								   struct MYSOFA_LOOKUP *lookup) {
-	return mysofa_neighborhood_init_withstepdefine(hrtf,lookup,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
+MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init(
+		struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup) {
+	return mysofa_neighborhood_init_withstepdefine(hrtf, lookup,
+			MYSOFA_DEFAULT_NEIGH_STEP_ANGLE, MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
 }
 
-MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(struct MYSOFA_HRTF *hrtf,
-								   struct MYSOFA_LOOKUP *lookup,
-								   float angleStep,
-								   float radiusStep) {
+MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(
+		struct MYSOFA_HRTF *hrtf, struct MYSOFA_LOOKUP *lookup, float angleStep,
+		float radiusStep) {
 	int i, index;
 	float *origin, *test;
 	float radius, radius2;
@@ -29,7 +29,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 	float phi, phi2;
 
 	struct MYSOFA_NEIGHBORHOOD *neighbor = malloc(
-		sizeof(struct MYSOFA_NEIGHBORHOOD));
+			sizeof(struct MYSOFA_NEIGHBORHOOD));
 	if (!neighbor)
 		return NULL;
 
@@ -42,14 +42,15 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 	for (i = 0; i < neighbor->elements * 6; i++)
 		neighbor->index[i] = -1;
 
-	origin = malloc(sizeof(float)*hrtf->C);
-	test = malloc(sizeof(float)*hrtf->C);
+	origin = malloc(sizeof(float) * hrtf->C);
+	test = malloc(sizeof(float) * hrtf->C);
 
-	for (i = 0; i < hrtf->M; i ++) {
-		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C, sizeof(float) * hrtf->C);
+	for (i = 0; i < hrtf->M; i++) {
+		memcpy(origin, hrtf->SourcePosition.values + i * hrtf->C,
+				sizeof(float) * hrtf->C);
 		convertCartesianToSpherical(origin, hrtf->C);
 
-		if( (lookup->phi_max - lookup->phi_min) > FLT_MIN ){
+		if ((lookup->phi_max - lookup->phi_min) > FLT_MIN) {
 			phi = angleStep;
 			do {
 				phi2 = test[0] = origin[0] + phi;
@@ -69,7 +70,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 				phi2 = test[0] = origin[0] + phi;
 				test[1] = origin[1];
 				test[2] = origin[2];
-				convertSphericalToCartesian(test,3);
+				convertSphericalToCartesian(test, 3);
 				index = mysofa_lookup(lookup, test);
 				if (index != i) {
 					neighbor->index[i * 6 + 1] = index;
@@ -79,7 +80,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 			} while (phi2 >= lookup->phi_min - angleStep);
 		}
 
-		if( (lookup->theta_max - lookup->theta_min) > FLT_MIN ){
+		if ((lookup->theta_max - lookup->theta_min) > FLT_MIN) {
 			theta = angleStep;
 			do {
 				test[0] = origin[0];
@@ -109,7 +110,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 			} while (theta2 >= lookup->theta_min - angleStep);
 		}
 
-		if( (lookup->radius_max - lookup->radius_min) > FLT_MIN ){
+		if ((lookup->radius_max - lookup->radius_min) > FLT_MIN) {
 			radius = radiusStep;
 			do {
 				test[0] = origin[0];
@@ -144,14 +145,16 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 	return neighbor;
 }
 
-MYSOFA_EXPORT int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int index) {
+MYSOFA_EXPORT int* mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood,
+		int index) {
 	if (index < 0 || index >= neighborhood->elements)
-		return NULL ;
+		return NULL;
 	return neighborhood->index + index * 6;
 }
 
-MYSOFA_EXPORT void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood) {
-	if(neighborhood) {
+MYSOFA_EXPORT void mysofa_neighborhood_free(
+		struct MYSOFA_NEIGHBORHOOD *neighborhood) {
+	if (neighborhood) {
 		free(neighborhood->index);
 		free(neighborhood);
 	}

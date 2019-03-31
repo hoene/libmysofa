@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-*/
+ */
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -25,11 +25,11 @@ int main(int argc, char **argv) {
 
 	if (!hrtf) {
 		fprintf(stderr, "Error reading file %s. Error code: %d\n", argv[1],
-			err);
+				err);
 		return err;
 	}
 
-	printJson(stdout,hrtf);
+	printJson(stdout, hrtf);
 
 	mysofa_free(hrtf);
 

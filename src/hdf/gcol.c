@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-*/
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +31,8 @@ static int readGCOL(struct READER *reader) {
 		log("object GCOL must have version 1\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	if(fgetc(reader->fhd)<0 ||  fgetc(reader->fhd)<0 || fgetc(reader->fhd)<0)
+	if (fgetc(reader->fhd) < 0 || fgetc(reader->fhd) < 0
+			|| fgetc(reader->fhd) < 0)
 		return MYSOFA_READ_ERROR;
 
 	address = ftell(reader->fhd);
@@ -48,32 +49,32 @@ static int readGCOL(struct READER *reader) {
 			break;
 		}
 		reference_count = readValue(reader, 2);
-		if(fseek(reader->fhd, 4, SEEK_CUR)<0) {
+		if (fseek(reader->fhd, 4, SEEK_CUR) < 0) {
 			free(gcol);
 			return errno;
 		}
 		gcol->object_size = readValue(reader,
-					      reader->superblock.size_of_lengths);
-		if(gcol->object_size>8) {
+				reader->superblock.size_of_lengths);
+		if (gcol->object_size > 8) {
 			free(gcol);
 			return MYSOFA_UNSUPPORTED_FORMAT;
 		}
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
 		log(" GCOL object %d size %ld value %08lX\n", gcol->heap_object_index,
-		    gcol->object_size, gcol->value);
+				gcol->object_size, gcol->value);
 
 		gcol->next = reader->gcol;
 		reader->gcol = gcol;
 	}
 
 	log(" END %08lX vs. %08lX\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
-/*	fseek(reader->fhd, end, SEEK_SET); */
+	/*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
 
 int gcolRead(struct READER *reader, uint64_t gcol, int reference,
-	     uint64_t *dataobject) {
+		uint64_t *dataobject) {
 	long pos;
 	struct GCOL *p = reader->gcol;
 
@@ -82,12 +83,12 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 	}
 	if (!p) {
 		pos = ftell(reader->fhd);
-		if(fseek(reader->fhd, gcol, SEEK_SET)<0)
+		if (fseek(reader->fhd, gcol, SEEK_SET) < 0)
 			return MYSOFA_READ_ERROR;
 		readGCOL(reader);
-		if(pos<0)
+		if (pos < 0)
 			return MYSOFA_READ_ERROR;
-		if(fseek(reader->fhd, pos, SEEK_SET)<0)
+		if (fseek(reader->fhd, pos, SEEK_SET) < 0)
 			return MYSOFA_READ_ERROR;
 
 		p = reader->gcol;
@@ -126,10 +127,10 @@ for (;;) {
 	gcol = gcol->next;
 #endif
 
-	void gcolFree(struct GCOL *gcol) {
-		if (gcol) {
-			gcolFree(gcol->next);
-			free(gcol);
-		}
+void gcolFree(struct GCOL *gcol) {
+	if (gcol) {
+		gcolFree(gcol->next);
+		free(gcol);
 	}
+}
 

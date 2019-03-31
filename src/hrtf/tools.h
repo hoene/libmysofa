@@ -13,7 +13,7 @@
 #include "mysofa.h"
 
 int changeAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value,
-		    char *newvalue);
+		char *newvalue);
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value);
 char* getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name);
 
@@ -26,7 +26,7 @@ float radius(float *cartesian);
 
 #define distance(cartesian1, cartesian2) (sqrtf(powf((cartesian1)[0] - (cartesian2)[0], 2.f) + powf((cartesian1)[1] - (cartesian2)[1], 2.f) + powf((cartesian1)[2] - (cartesian2)[2], 2.f)))
 
-void copyToFloat(float *out, float *in, int size);  
+void copyToFloat(float *out, float *in, int size);
 void copyFromFloat(float *out, float *in, int size);
 
 void copyArrayWeighted(float *dst, float *src, int size, float w);
@@ -35,6 +35,6 @@ void scaleArray(float *dst, int size, float w);
 float loudness(float *in, int size);
 
 void nsearch(const void *key, const char *base, size_t num, size_t size,
-	     int (*cmp)(const void *key, const void *elt), int *lower, int *higher);
+		int (*cmp)(const void *key, const void *elt), int *lower, int *higher);
 
 #endif /* SRC_TOOLS_H_ */

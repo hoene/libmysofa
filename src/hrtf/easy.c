@@ -16,10 +16,11 @@
  *
  */
 
-static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float samplerate, int *filterlength, int *err, bool applyNorm, float neighbor_angle_step, float neighbor_radius_step)
-{
+static struct MYSOFA_EASY* mysofa_open_default(const char *filename,
+		float samplerate, int *filterlength, int *err, bool applyNorm,
+		float neighbor_angle_step, float neighbor_radius_step) {
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
-	if(!easy) {
+	if (!easy) {
 		*err = MYSOFA_NO_MEMORY;
 		return NULL;
 	}
@@ -45,13 +46,13 @@ static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float sampl
 		return NULL;
 	}
 
-	if( applyNorm ) {
+	if (applyNorm) {
 		mysofa_loudness(easy->hrtf);
 	}
 
-/* does not sound well:
-   mysofa_minphase(easy->hrtf,0.01);
-*/
+	/* does not sound well:
+	 mysofa_minphase(easy->hrtf,0.01);
+	 */
 
 	mysofa_tocartesian(easy->hrtf);
 
@@ -63,7 +64,7 @@ static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float sampl
 	}
 
 	easy->neighborhood = mysofa_neighborhood_init_withstepdefine(easy->hrtf,
-						      easy->lookup,neighbor_angle_step,neighbor_radius_step);
+			easy->lookup, neighbor_angle_step, neighbor_radius_step);
 
 	*filterlength = easy->hrtf->N;
 
@@ -73,39 +74,42 @@ static struct MYSOFA_EASY* mysofa_open_default(const char *filename, float sampl
 	return easy;
 }
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename, float samplerate, int *filterlength, int *err)
-{
-	return mysofa_open_default(filename,samplerate,filterlength,err,true,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open(const char *filename,
+		float samplerate, int *filterlength, int *err) {
+	return mysofa_open_default(filename, samplerate, filterlength, err, true,
+			MYSOFA_DEFAULT_NEIGH_STEP_ANGLE, MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
 }
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_no_norm(const char *filename, float samplerate, int *filterlength, int *err)
-{
-	return mysofa_open_default(filename,samplerate,filterlength,err,false,MYSOFA_DEFAULT_NEIGH_STEP_ANGLE,MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_no_norm(const char *filename,
+		float samplerate, int *filterlength, int *err) {
+	return mysofa_open_default(filename, samplerate, filterlength, err, false,
+			MYSOFA_DEFAULT_NEIGH_STEP_ANGLE, MYSOFA_DEFAULT_NEIGH_STEP_RADIUS);
 }
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_advanced(const char *filename, float samplerate, int *filterlength, int *err, bool norm, float neighbor_angle_step, float neighbor_radius_step)
-{
-	return mysofa_open_default(filename,samplerate,filterlength,err,norm,neighbor_angle_step,neighbor_radius_step);
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_advanced(const char *filename,
+		float samplerate, int *filterlength, int *err, bool norm,
+		float neighbor_angle_step, float neighbor_radius_step) {
+	return mysofa_open_default(filename, samplerate, filterlength, err, norm,
+			neighbor_angle_step, neighbor_radius_step);
 }
 
-MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename, float samplerate, int *filterlength, int *err)
-{
+MYSOFA_EXPORT struct MYSOFA_EASY* mysofa_open_cached(const char *filename,
+		float samplerate, int *filterlength, int *err) {
 	struct MYSOFA_EASY* res = mysofa_cache_lookup(filename, samplerate);
-	if(res) {
+	if (res) {
 		*filterlength = res->hrtf->N;
 		return res;
 	}
-	res = mysofa_open(filename,samplerate,filterlength,err);
-	if(res) {
-		res = mysofa_cache_store(res,filename,samplerate);
+	res = mysofa_open(filename, samplerate, filterlength, err);
+	if (res) {
+		res = mysofa_cache_store(res, filename, samplerate);
 	}
 	return res;
 }
 
-MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
-					  short *IRleft, short *IRright,
-					  int *delayLeft, int *delayRight)
-{
+MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x,
+		float y, float z, short *IRleft, short *IRright, int *delayLeft,
+		int *delayRight) {
 	float c[3];
 	float delays[2];
 	float *fl;
@@ -118,28 +122,25 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, flo
 	c[1] = y;
 	c[2] = z;
 	nearest = mysofa_lookup(easy->lookup, c);
-	assert(nearest>=0);
+	assert(nearest >= 0);
 	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
-    
-	mysofa_interpolate(easy->hrtf, c,
-			   nearest, neighbors,
-			   easy->fir, delays);
 
-	*delayLeft  = delays[0] * easy->hrtf->DataSamplingRate.values[0];
+	mysofa_interpolate(easy->hrtf, c, nearest, neighbors, easy->fir, delays);
+
+	*delayLeft = delays[0] * easy->hrtf->DataSamplingRate.values[0];
 	*delayRight = delays[1] * easy->hrtf->DataSamplingRate.values[0];
 
 	fl = easy->fir;
 	fr = easy->fir + easy->hrtf->N;
-	for(i=easy->hrtf->N;i>0;i--) {
-		*IRleft++  = *fl++ * 32767.;
+	for (i = easy->hrtf->N; i > 0; i--) {
+		*IRleft++ = *fl++ * 32767.;
 		*IRright++ = *fr++ * 32767.;
 	}
 }
 
-MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
-					  float *IRleft, float *IRright,
-					  float *delayLeft, float *delayRight)
-{
+MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x,
+		float y, float z, float *IRleft, float *IRright, float *delayLeft,
+		float *delayRight) {
 	float c[3];
 	float delays[2];
 	float *fl;
@@ -152,40 +153,37 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, flo
 	c[1] = y;
 	c[2] = z;
 	nearest = mysofa_lookup(easy->lookup, c);
-	assert(nearest>=0);
+	assert(nearest >= 0);
 	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
-    
-	float *res = mysofa_interpolate(easy->hrtf, c,
-			   nearest, neighbors,
-			   easy->fir, delays);
 
-	*delayLeft  = delays[0];
+	float *res = mysofa_interpolate(easy->hrtf, c, nearest, neighbors,
+			easy->fir, delays);
+
+	*delayLeft = delays[0];
 	*delayRight = delays[1];
 
 	fl = res;
 	fr = res + easy->hrtf->N;
-	for(i=easy->hrtf->N;i>0;i--) {
-		*IRleft++  = *fl++;
+	for (i = easy->hrtf->N; i > 0; i--) {
+		*IRleft++ = *fl++;
 		*IRright++ = *fr++;
 	}
 }
 
-MYSOFA_EXPORT void mysofa_close(struct MYSOFA_EASY* easy)
-{
-	if(easy) {
-		if(easy->fir)
+MYSOFA_EXPORT void mysofa_close(struct MYSOFA_EASY* easy) {
+	if (easy) {
+		if (easy->fir)
 			free(easy->fir);
-		if(easy->neighborhood)
+		if (easy->neighborhood)
 			mysofa_neighborhood_free(easy->neighborhood);
-		if(easy->lookup)
+		if (easy->lookup)
 			mysofa_lookup_free(easy->lookup);
-		if(easy->hrtf)
+		if (easy->hrtf)
 			mysofa_free(easy->hrtf);
 		free(easy);
 	}
 }
 
-MYSOFA_EXPORT void mysofa_close_cached(struct MYSOFA_EASY* easy)
-{
+MYSOFA_EXPORT void mysofa_close_cached(struct MYSOFA_EASY* easy) {
 	mysofa_cache_release(easy);
 }

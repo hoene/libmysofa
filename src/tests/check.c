@@ -6,8 +6,7 @@
 #include "../hrtf/tools.h"
 #include "tests.h"
 
-static void check(char *filename)
-{
+static void check(char *filename) {
 	struct MYSOFA_HRTF *hrtf;
 	int err;
 
