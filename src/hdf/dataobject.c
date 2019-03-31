@@ -144,7 +144,7 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 					 struct DATATYPE *dt) {
 
 	int i, j, c, err;
-	char *buffer, *p;
+	char *buffer;
 	struct DATATYPE dt2;
 
 	dt->class_and_version = (uint8_t)fgetc(reader->fhd);
@@ -671,13 +671,14 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 
 	if(name_size>0x1000)
 		return MYSOFA_NO_MEMORY;
-	name = malloc(name_size);
+	name = malloc(name_size+1);
 	if(!name)
 		return MYSOFA_NO_MEMORY;
 	if(fread(name, 1, name_size, reader->fhd)!=name_size) {
 		free(name);
 		return errno;
 	}
+	name[name_size] = 0;
 	log("  attribute name %s\n", name);
 
 	if (flags & 3) {
