@@ -2,9 +2,8 @@ Name: @PROJECT_NAME@
 Description: @CPACK_PACKAGE_DESCRIPTION@
 Version: @PROJECT_VERSION@
 Requires: @PKG_CONFIG_REQUIRES@
-prefix=@CMAKE_INSTALL_PREFIX@
-includedir=${prefix}/include
-libdir=${prefix}/lib
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
 Libs: -L${libdir} -lmysofa
 Cflags: -I${includedir}
 
