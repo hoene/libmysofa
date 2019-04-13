@@ -26,17 +26,17 @@ void HACK_set_if_null(MYSOFA_ATTRIBUTE *attrib, char *name, char *value) {
 
 // HACK(will): manually supply the missing values in netcdf 4.3.1.1 files
 void HACK_fix_attrib(MYSOFA_EASY* hrtf) {
-	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, "Units", "metre");
-	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, "Type", "cartesian");
-	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, "Units", "metre");
-	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, "Type", "cartesian");
-	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, "Units", "degree, degree, metre");
-	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, "Type", "spherical");
-	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, "Units", "metre");
-	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, "Type", "cartesian");
-	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, "Units", "metre");
-	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, "Type", "cartesian");
-	HACK_set_if_null(hrtf->hrtf->DataSamplingRate.attributes, "Units", "hertz");
+	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, (char*)"Units", (char*)"metre");
+	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, (char*)"Type", (char*)"cartesian");
+	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, (char*)"Units", (char*)"metre");
+	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, (char*)"Type", (char*)"cartesian");
+	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, (char*)"Units", (char*)"degree, degree, metre");
+	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, (char*)"Type", (char*)"spherical");
+	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, (char*)"Units", (char*)"metre");
+	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, (char*)"Type", (char*)"cartesian");
+	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, (char*)"Units", (char*)"metre");
+	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, (char*)"Type", (char*)"cartesian");
+	HACK_set_if_null(hrtf->hrtf->DataSamplingRate.attributes, (char*)"Units", (char*)"hertz");
 }
 
 int main()

@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
     hrtf->lookup = NULL;
     hrtf->neighborhood = NULL;
     
-    hrtf->hrtf = mysofa_load("FHK_HRIR_L2354.sofa", &err);
+    hrtf->hrtf = mysofa_load("hrtf_nc_4p3p3p1_1p2p2_200_normonHATs_api_80_kieran.sofa", &err);
     if (!hrtf->hrtf) {
         mysofa_close(hrtf);
         return err;
