@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-*/
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +14,7 @@
 
 static int readGCOL(struct READER *reader) {
 
-	uint16_t reference_count, address, curr_address;
+	uint16_t reference_count, address;
 	uint64_t collection_size, end;
 	struct GCOL *gcol;
 	char buf[4];
@@ -31,57 +31,50 @@ static int readGCOL(struct READER *reader) {
 		log("object GCOL must have version 1\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	if(fgetc(reader->fhd)<0 ||  fgetc(reader->fhd)<0 || fgetc(reader->fhd)<0)
+	if (fgetc(reader->fhd) < 0 || fgetc(reader->fhd) < 0
+			|| fgetc(reader->fhd) < 0)
 		return MYSOFA_READ_ERROR;
 
 	address = ftell(reader->fhd);
 	end = address;
 	collection_size = readValue(reader, reader->superblock.size_of_lengths);
 	end += collection_size - 8;
-	curr_address = ftell(reader->fhd);
 
-	while (curr_address <= (end - 8 - reader->superblock.size_of_lengths)) {
+	while (ftell(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
 
 		gcol = malloc(sizeof(*gcol));
-		memset(gcol, 0, sizeof(*gcol));
-
 		gcol->heap_object_index = readValue(reader, 2);
 		if (gcol->heap_object_index == 0) {
 			free(gcol);
 			break;
 		}
 		reference_count = readValue(reader, 2);
-		if(fseek(reader->fhd, 4, SEEK_CUR)<0) {
+		if (fseek(reader->fhd, 4, SEEK_CUR) < 0) {
 			free(gcol);
 			return errno;
 		}
 		gcol->object_size = readValue(reader,
-					      reader->superblock.size_of_lengths);
-
-		// NOTE(will): the object size is rounded up to the nearest multiple of 8
-		int mod_8 = gcol->object_size % 8;
-		if(mod_8>0) {
-			gcol->object_size += 8 - mod_8;
+				reader->superblock.size_of_lengths);
+		if (gcol->object_size > 8) {
+			free(gcol);
+			return MYSOFA_UNSUPPORTED_FORMAT;
 		}
-
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
 		log(" GCOL object %d size %ld value %08lX\n", gcol->heap_object_index,
-		    gcol->object_size, gcol->value);
+				gcol->object_size, gcol->value);
 
 		gcol->next = reader->gcol;
 		reader->gcol = gcol;
-
-		curr_address = ftell(reader->fhd);
 	}
 
-	log(" END %08lX vs. %08lX\n", curr_address, end); /* bug in the normal hdf5 specification */
-/*	fseek(reader->fhd, end, SEEK_SET); */
+	log(" END %08lX vs. %08lX\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
+	/*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
 
 int gcolRead(struct READER *reader, uint64_t gcol, int reference,
-	     uint64_t *dataobject) {
+		uint64_t *dataobject) {
 	long pos;
 	struct GCOL *p = reader->gcol;
 
@@ -90,12 +83,12 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 	}
 	if (!p) {
 		pos = ftell(reader->fhd);
-		if(fseek(reader->fhd, gcol, SEEK_SET)<0)
+		if (fseek(reader->fhd, gcol, SEEK_SET) < 0)
 			return MYSOFA_READ_ERROR;
 		readGCOL(reader);
-		if(pos<0)
+		if (pos < 0)
 			return MYSOFA_READ_ERROR;
-		if(fseek(reader->fhd, pos, SEEK_SET)<0)
+		if (fseek(reader->fhd, pos, SEEK_SET) < 0)
 			return MYSOFA_READ_ERROR;
 
 		p = reader->gcol;
@@ -134,10 +127,10 @@ for (;;) {
 	gcol = gcol->next;
 #endif
 
-	void gcolFree(struct GCOL *gcol) {
-		if (gcol) {
-			gcolFree(gcol->next);
-			free(gcol);
-		}
+void gcolFree(struct GCOL *gcol) {
+	if (gcol) {
+		gcolFree(gcol->next);
+		free(gcol);
 	}
+}
 

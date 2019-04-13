@@ -1,8 +1,8 @@
 /*
 
-Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-	*/
+ */
 
 #ifndef READER_H_
 #define READER_H_
@@ -56,37 +56,37 @@ struct GCOL {
 struct FRACTALHEAP {
 	uint8_t flags;
 	uint16_t heap_id_length, encoded_length, table_width, maximum_heap_size,
-		starting_row, current_row;
+			starting_row, current_row;
 	uint32_t maximum_size, fitler_mask;
 	uint64_t next_huge_object_id, btree_address_of_huge_objects, free_space,
-		address_free_space, amount_managed_space, amount_allocated_space,
-		offset_managed_space, number_managed_objects, size_huge_objects,
-		number_huge_objects, size_tiny_objects, number_tiny_objects,
-		starting_block_size, maximum_direct_block_size,
-		address_of_root_block, size_of_filtered_block;
+			address_free_space, amount_managed_space, amount_allocated_space,
+			offset_managed_space, number_managed_objects, size_huge_objects,
+			number_huge_objects, size_tiny_objects, number_tiny_objects,
+			starting_block_size, maximum_direct_block_size,
+			address_of_root_block, size_of_filtered_block;
 	uint8_t *filter_information;
 };
 
 int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
-		    struct FRACTALHEAP *fractalheap);
+		struct FRACTALHEAP *fractalheap);
 void fractalheapFree(struct FRACTALHEAP *fractalheap);
 
 struct LINKINFO {
 	uint8_t flags;
 	uint64_t maximum_creation_index, fractal_heap_address, address_btree_index,
-		address_btree_order;
+			address_btree_order;
 };
 
 struct GROUPINFO {
 	uint8_t flags;
 	uint64_t maximum_compact_value, minimum_dense_value, number_of_entries,
-		length_of_entries;
+			length_of_entries;
 };
 
 struct ATTRIBUTEINFO {
 	uint8_t flags;
 	uint64_t maximum_creation_index, fractal_heap_address, attribute_name_btree,
-		attribute_creation_order_btree;
+			attribute_creation_order_btree;
 };
 
 struct DATASPACE {
@@ -105,7 +105,7 @@ struct DATATYPE {
 		struct {
 			uint16_t bit_offset, bit_precision;
 			uint8_t exponent_location, exponent_size, mantissa_location,
-				mantissa_size;
+					mantissa_size;
 			uint32_t exponent_bias;
 		} f;
 	} u;
@@ -146,7 +146,7 @@ struct DATAOBJECT {
 };
 
 int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
-		   char *name);
+		char *name);
 void dataobjectFree(struct READER *reader, struct DATAOBJECT *dataobject);
 
 struct DIR {
@@ -160,7 +160,7 @@ struct SUPERBLOCK {
 	uint8_t size_of_lengths;
 
 	uint64_t base_address, superblock_extension_address, end_of_file_address,
-		root_group_object_header_address;
+			root_group_object_header_address;
 
 	struct DATAOBJECT dataobject;
 };
@@ -169,7 +169,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock);
 void superblockFree(struct READER *reader, struct SUPERBLOCK *superblock);
 
 int gcolRead(struct READER *reader, uint64_t gcol, int reference,
-	     uint64_t *dataobject);
+		uint64_t *dataobject);
 void gcolFree(struct GCOL *gcol);
 
 int treeRead(struct READER *reader, struct DATAOBJECT *data);
@@ -190,6 +190,5 @@ uint64_t readValue(struct READER *reader, int size);
 int gunzip(int inlen, char *in, int *outlen, char *out);
 
 char *mysofa_strdup(const char *s);
-
 
 #endif /* READER_H_ */

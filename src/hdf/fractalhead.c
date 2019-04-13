@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-*/
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,13 +17,13 @@ static int log2i(int a) {
 }
 
 static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
-			   struct FRACTALHEAP *fractalheap) {
+		struct FRACTALHEAP *fractalheap) {
 
 	char buf[4], *name, *value;
 	int size, offset_size, length_size, err, len;
 	uint8_t typeandversion;
 	uint64_t unknown, heap_header_address, block_offset, block_size, offset,
-		length;
+			length;
 	long store;
 	struct DIR *dir;
 	struct MYSOFA_ATTRIBUTE *attr;
@@ -36,7 +36,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHDB", 4)) {
 		log("cannot read signature of fractal heap indirect block\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object FHDB must have version 0\n");
@@ -44,7 +44,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	}
 
 	/* ignore heap_header_address */
-	if(fseek(reader->fhd, reader->superblock.size_of_offsets, SEEK_CUR)<0)
+	if (fseek(reader->fhd, reader->superblock.size_of_offsets, SEEK_CUR) < 0)
 		return errno;
 
 	size = (fractalheap->maximum_heap_size + 7) / 8;
@@ -78,10 +78,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	 *
 	 */
 	do {
-		typeandversion = (uint8_t)fgetc(reader->fhd);
+		typeandversion = (uint8_t) fgetc(reader->fhd);
 		offset = readValue(reader, offset_size);
 		length = readValue(reader, length_size);
-		if(offset>0x10000000 || length>0x10000000)
+		if (offset > 0x10000000 || length > 0x10000000)
 			return MYSOFA_UNSUPPORTED_FORMAT;
 
 		log(" %d %4lX %ld %8lX\n",typeandversion,offset,length,ftell(reader->fhd));
@@ -99,7 +99,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
 			if (!(name = malloc(length)))
 				return MYSOFA_NO_MEMORY;
-			if(fread(name, 1, length, reader->fhd)!=length) {
+			if (fread(name, 1, length, reader->fhd) != length) {
 				free(name);
 				return MYSOFA_READ_ERROR;
 			}
@@ -111,8 +111,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 				return MYSOFA_UNSUPPORTED_FORMAT;
 			}
 
-			len = (int)readValue(reader, 2);
-			if(len > 0x1000 || len<0) {
+			len = (int) readValue(reader, 2);
+			if (len > 0x1000 || len < 0) {
 				free(name);
 				return MYSOFA_UNSUPPORTED_FORMAT;
 			}
@@ -126,7 +126,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 					free(name);
 					return MYSOFA_NO_MEMORY;
 				}
-				if(fread(value, 1, len, reader->fhd)!=len) {
+				if (fread(value, 1, len, reader->fhd) != len) {
 					free(value);
 					free(name);
 					return MYSOFA_READ_ERROR;
@@ -141,10 +141,9 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			} else {
 				log("FHDB type 3 unsupported values: %12lX\n",unknown);
 				free(name);
-/* TODO:			return MYSOFA_UNSUPPORTED_FORMAT; */
+				/* TODO:			return MYSOFA_UNSUPPORTED_FORMAT; */
 				return MYSOFA_OK;
-			}
-			log(" %s = %s\n", name, value);
+			} log(" %s = %s\n", name, value);
 
 			attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
 			attr->name = name;
@@ -163,24 +162,30 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			}
 
 			len = fgetc(reader->fhd);
-			if(len < 0)
+			if (len < 0)
 				return MYSOFA_READ_ERROR;
 			assert(len < 0x100);
 
 			if (!(name = malloc(len + 1)))
 				return MYSOFA_NO_MEMORY;
-			if(fread(name, 1, len, reader->fhd) != len) {
+			if (fread(name, 1, len, reader->fhd) != len) {
 				free(name);
 				return MYSOFA_READ_ERROR;
 			}
 			name[len] = 0;
 
 			heap_header_address = readValue(reader,
-							reader->superblock.size_of_offsets);
+					reader->superblock.size_of_offsets);
 
 			log("\nfractal head type 1 length %4lX name %s address %lX\n", length, name, heap_header_address);
 
 			dir = malloc(sizeof(struct DIR));
+			if (!dir) {
+				free(name);
+				return MYSOFA_NO_MEMORY;
+			}
+			memset(dir, 0, sizeof(*dir));
+
 			dir->next = dataobject->directory;
 			dataobject->directory = dir;
 
@@ -195,16 +200,16 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 				return err;
 			}
 
-			if(store < 0) {
+			if (store < 0) {
 				return errno;
 			}
-			if(fseek(reader->fhd, store, SEEK_SET)<0)
+			if (fseek(reader->fhd, store, SEEK_SET) < 0)
 				return errno;
 
 		} else if (typeandversion != 0) {
 			/* TODO is must be avoided somehow */
 			log("fractal head unknown type %d\n", typeandversion);
-/*			return MYSOFA_UNSUPPORTED_FORMAT; */
+			/*			return MYSOFA_UNSUPPORTED_FORMAT; */
 			return MYSOFA_OK;
 		}
 
@@ -218,12 +223,12 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
  */
 
 static int indirectblockRead(struct READER *reader,
-			     struct DATAOBJECT *dataobject, struct FRACTALHEAP *fractalheap,
-			     uint64_t iblock_size) {
+		struct DATAOBJECT *dataobject, struct FRACTALHEAP *fractalheap,
+		uint64_t iblock_size) {
 	int size, nrows, max_dblock_rows, k, n, err;
 	uint32_t filter_mask;
-	uint64_t heap_header_address, block_offset, child_direct_block=0,
-		size_filtered, child_indirect_block;
+	uint64_t heap_header_address, block_offset, child_direct_block = 0,
+			size_filtered, child_indirect_block;
 	long store;
 
 	char buf[4];
@@ -236,7 +241,7 @@ static int indirectblockRead(struct READER *reader,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHIB", 4)) {
 		log("cannot read signature of fractal heap indirect block\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object FHIB must have version 0\n");
@@ -259,7 +264,7 @@ static int indirectblockRead(struct READER *reader,
 
 	/* The maximum number of rows of direct blocks, max_dblock_rows, in any indirect block of a fractal heap is given by the following expression: */
 	max_dblock_rows = (log2i(fractalheap->maximum_direct_block_size)
-			   - log2i(fractalheap->starting_block_size)) + 2;
+			- log2i(fractalheap->starting_block_size)) + 2;
 
 	/* Using the computed values for nrows and max_dblock_rows, along with the Width of the doubling table, the number of direct and indirect block entries (K and N in the indirect block description, below) in an indirect block can be computed: */
 	if (nrows < max_dblock_rows)
@@ -272,22 +277,22 @@ static int indirectblockRead(struct READER *reader,
 
 	while (k > 0) {
 		child_direct_block = readValue(reader,
-					       reader->superblock.size_of_offsets);
+				reader->superblock.size_of_offsets);
 		if (fractalheap->encoded_length > 0) {
 			size_filtered = readValue(reader,
-						  reader->superblock.size_of_lengths);
+					reader->superblock.size_of_lengths);
 			filter_mask = readValue(reader, 4);
-		} log(">> %d %lX %d\n",k,child_direct_block,size);
+		}log(">> %d %lX %d\n",k,child_direct_block,size);
 		if (validAddress(reader, child_direct_block)) {
 			store = ftell(reader->fhd);
-			if(fseek(reader->fhd, child_direct_block, SEEK_SET)<0)
+			if (fseek(reader->fhd, child_direct_block, SEEK_SET) < 0)
 				return errno;
 			err = directblockRead(reader, dataobject, fractalheap);
 			if (err)
 				return err;
-			if(store<0)
+			if (store < 0)
 				return MYSOFA_READ_ERROR;
-			if(fseek(reader->fhd, store, SEEK_SET)<0)
+			if (fseek(reader->fhd, store, SEEK_SET) < 0)
 				return errno;
 		}
 
@@ -296,19 +301,19 @@ static int indirectblockRead(struct READER *reader,
 
 	while (n > 0) {
 		child_indirect_block = readValue(reader,
-						 reader->superblock.size_of_offsets);
+				reader->superblock.size_of_offsets);
 
 		if (validAddress(reader, child_direct_block)) {
 			store = ftell(reader->fhd);
-			if(fseek(reader->fhd, child_indirect_block, SEEK_SET)<0)
+			if (fseek(reader->fhd, child_indirect_block, SEEK_SET) < 0)
 				return errno;
 			err = indirectblockRead(reader, dataobject, fractalheap,
-						iblock_size * 2);
+					iblock_size * 2);
 			if (err)
 				return err;
-			if(store < 0)
+			if (store < 0)
 				return MYSOFA_READ_ERROR;
-			if(fseek(reader->fhd, store, SEEK_SET)<0)
+			if (fseek(reader->fhd, store, SEEK_SET) < 0)
 				return errno;
 		}
 
@@ -320,21 +325,21 @@ static int indirectblockRead(struct READER *reader,
 
 /*  III.G. Disk Format: Level 1G - Fractal Heap
 
-    00000240  46 52 48 50 00 08 00 00  00 02 00 10 00 00 00 00  |FRHP............|
-    00000250  00 00 00 00 00 00 ff ff  ff ff ff ff ff ff a3 0b  |................|
-    00000260  00 00 00 00 00 00 1e 03  00 00 00 00 00 00 00 10  |................|
-    00000270  00 00 00 00 00 00 00 08  00 00 00 00 00 00 00 08  |................|
-    00000280  00 00 00 00 00 00 16 00  00 00 00 00 00 00 00 00  |................|
-    00000290  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-    000002a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 04 00  |................|
-    000002b0  00 04 00 00 00 00 00 00  00 00 01 00 00 00 00 00  |................|
-    000002c0  28 00 01 00 29 32 00 00  00 00 00 00 01 00 60 49  |(...)2........`I|
-    000002d0  32 1d 42 54 48 44 00 08  00 02 00 00 11 00 00 00  |2.BTHD..........|
+ 00000240  46 52 48 50 00 08 00 00  00 02 00 10 00 00 00 00  |FRHP............|
+ 00000250  00 00 00 00 00 00 ff ff  ff ff ff ff ff ff a3 0b  |................|
+ 00000260  00 00 00 00 00 00 1e 03  00 00 00 00 00 00 00 10  |................|
+ 00000270  00 00 00 00 00 00 00 08  00 00 00 00 00 00 00 08  |................|
+ 00000280  00 00 00 00 00 00 16 00  00 00 00 00 00 00 00 00  |................|
+ 00000290  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+ 000002a0  00 00 00 00 00 00 00 00  00 00 00 00 00 00 04 00  |................|
+ 000002b0  00 04 00 00 00 00 00 00  00 00 01 00 00 00 00 00  |................|
+ 000002c0  28 00 01 00 29 32 00 00  00 00 00 00 01 00 60 49  |(...)2........`I|
+ 000002d0  32 1d 42 54 48 44 00 08  00 02 00 00 11 00 00 00  |2.BTHD..........|
 
-*/
+ */
 
 int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
-		    struct FRACTALHEAP *fractalheap) {
+		struct FRACTALHEAP *fractalheap) {
 	int err;
 	char buf[4];
 
@@ -342,78 +347,79 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FRHP", 4)) {
 		log("cannot read signature of fractal heap\n");
 		return MYSOFA_UNSUPPORTED_FORMAT;
-	} log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object fractal heap must have version 0\n");
 		return MYSOFA_UNSUPPORTED_FORMAT;
 	}
 
-	fractalheap->heap_id_length = (uint16_t)readValue(reader, 2);
-	fractalheap->encoded_length = (uint16_t)readValue(reader, 2);
-	if(fractalheap->encoded_length>0x8000)
+	fractalheap->heap_id_length = (uint16_t) readValue(reader, 2);
+	fractalheap->encoded_length = (uint16_t) readValue(reader, 2);
+	if (fractalheap->encoded_length > 0x8000)
 		return MYSOFA_UNSUPPORTED_FORMAT;
-	fractalheap->flags = (uint8_t)fgetc(reader->fhd);
-	fractalheap->maximum_size = (uint32_t)readValue(reader, 4);
+	fractalheap->flags = (uint8_t) fgetc(reader->fhd);
+	fractalheap->maximum_size = (uint32_t) readValue(reader, 4);
 
 	fractalheap->next_huge_object_id = readValue(reader,
-						     reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->btree_address_of_huge_objects = readValue(reader,
-							       reader->superblock.size_of_offsets);
+			reader->superblock.size_of_offsets);
 	fractalheap->free_space = readValue(reader,
-					    reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->address_free_space = readValue(reader,
-						    reader->superblock.size_of_offsets);
+			reader->superblock.size_of_offsets);
 	fractalheap->amount_managed_space = readValue(reader,
-						      reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->amount_allocated_space = readValue(reader,
-							reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->offset_managed_space = readValue(reader,
-						      reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->number_managed_objects = readValue(reader,
-							reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->size_huge_objects = readValue(reader,
-						   reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->number_huge_objects = readValue(reader,
-						     reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->size_tiny_objects = readValue(reader,
-						   reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->number_tiny_objects = readValue(reader,
-						     reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 
-	fractalheap->table_width = (uint16_t)readValue(reader, 2);
+	fractalheap->table_width = (uint16_t) readValue(reader, 2);
 
 	fractalheap->starting_block_size = readValue(reader,
-						     reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 	fractalheap->maximum_direct_block_size = readValue(reader,
-							   reader->superblock.size_of_lengths);
+			reader->superblock.size_of_lengths);
 
-	fractalheap->maximum_heap_size = (uint16_t)readValue(reader, 2);
-	fractalheap->starting_row = (uint16_t)readValue(reader, 2);
+	fractalheap->maximum_heap_size = (uint16_t) readValue(reader, 2);
+	fractalheap->starting_row = (uint16_t) readValue(reader, 2);
 
 	fractalheap->address_of_root_block = readValue(reader,
-						       reader->superblock.size_of_offsets);
+			reader->superblock.size_of_offsets);
 
-	fractalheap->current_row = (uint16_t)readValue(reader, 2);
+	fractalheap->current_row = (uint16_t) readValue(reader, 2);
 
 	if (fractalheap->encoded_length > 0) {
 
 		fractalheap->size_of_filtered_block = readValue(reader,
-								reader->superblock.size_of_lengths);
-		fractalheap->fitler_mask = (uint32_t)readValue(reader, 4);
+				reader->superblock.size_of_lengths);
+		fractalheap->fitler_mask = (uint32_t) readValue(reader, 4);
 
 		fractalheap->filter_information = malloc(fractalheap->encoded_length);
 		if (!fractalheap->filter_information)
 			return MYSOFA_NO_MEMORY;
 
-		if(fread(fractalheap->filter_information, 1, fractalheap->encoded_length,
-		      reader->fhd) != fractalheap->encoded_length) {
+		if (fread(fractalheap->filter_information, 1,
+				fractalheap->encoded_length, reader->fhd)
+				!= fractalheap->encoded_length) {
 			free(fractalheap->filter_information);
 			return MYSOFA_READ_ERROR;
 		}
 	}
 
-	if(fseek(reader->fhd, 4, SEEK_CUR)<0) { /* skip checksum */
+	if (fseek(reader->fhd, 4, SEEK_CUR) < 0) { /* skip checksum */
 		return MYSOFA_READ_ERROR;
 	}
 
@@ -429,11 +435,12 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
 	if (validAddress(reader, fractalheap->address_of_root_block)) {
 
-		if(fseek(reader->fhd, fractalheap->address_of_root_block, SEEK_SET)<0)
+		if (fseek(reader->fhd, fractalheap->address_of_root_block, SEEK_SET)
+				< 0)
 			return errno;
 		if (fractalheap->current_row)
 			err = indirectblockRead(reader, dataobject, fractalheap,
-						fractalheap->starting_block_size);
+					fractalheap->starting_block_size);
 		else {
 			err = directblockRead(reader, dataobject, fractalheap);
 

@@ -91,8 +91,8 @@ struct kdres *kd_nearest_range(struct kdtree *tree, const float *pos,
 		float range);
 struct kdres *kd_nearest_rangef(struct kdtree *tree, const float *pos,
 		float range);
-struct kdres *kd_nearest_range3(struct kdtree *tree, float x, float y,
-		float z, float range);
+struct kdres *kd_nearest_range3(struct kdtree *tree, float x, float y, float z,
+		float range);
 struct kdres *kd_nearest_range3f(struct kdtree *tree, float x, float y, float z,
 		float range);
 

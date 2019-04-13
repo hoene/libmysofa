@@ -18,15 +18,15 @@ void test_resample() {
 		return;
 	}
 
-	backup = malloc(sizeof(float)*hrtf->N * 3);
-	if(!backup) {
+	backup = malloc(sizeof(float) * hrtf->N * 3);
+	if (!backup) {
 		CU_FAIL_FATAL("No memory, N is too large.");
 		mysofa_free(hrtf);
 		return;
 	}
 
 	for (i = 0; i < hrtf->N * 3; i++) {
-		backup[i]=hrtf->DataIR.values[i];
+		backup[i] = hrtf->DataIR.values[i];
 	}
 
 	err = mysofa_resample(hrtf, 96000.);
@@ -36,10 +36,11 @@ void test_resample() {
 #ifdef VDEBUG
 		printf("%6.3f~%6.3f ", hrtf->DataIR.values[i], backup[i/2]);
 		if ((i % hrtf->N) == (hrtf->N - 1))
-			printf("\n");
+		printf("\n");
 #endif
-		CU_ASSERT( !((hrtf->DataIR.values[i]>0.4 && backup[i/2]==0.) ||
-			     (hrtf->DataIR.values[i]<=0.3 && backup[i/2]==1.) ) );
+		CU_ASSERT(
+				!((hrtf->DataIR.values[i] > 0.4 && backup[i / 2] == 0.)
+						|| (hrtf->DataIR.values[i] <= 0.3 && backup[i / 2] == 1.)));
 	}
 
 	free(backup);

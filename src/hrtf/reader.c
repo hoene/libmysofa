@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2016 Christian Hoene, Symonics GmbH
+ Copyright 2016 Christian Hoene, Symonics GmbH
 
-*/
+ */
 
 #include <errno.h>
 #include <stddef.h>
@@ -25,17 +25,17 @@ int validAddress(struct READER *reader, uint64_t address) {
 
 /* little endian */
 uint64_t readValue(struct READER *reader, int size) {
-	int i,c;
+	int i, c;
 	uint64_t value;
 	c = fgetc(reader->fhd);
-	if(c<0)
+	if (c < 0)
 		return 0xffffffffffffffffLL;
-	value = (uint8_t)c;
+	value = (uint8_t) c;
 	for (i = 1; i < size; i++) {
 		c = fgetc(reader->fhd);
-		if(c<0)
+		if (c < 0)
 			return 0xffffffffffffffffLL;
-		value |= ((uint64_t)c) << (i * 8);
+		value |= ((uint64_t) c) << (i * 8);
 	}
 	return value;
 }
@@ -51,10 +51,10 @@ static int mystrcmp(char *s1, char *s2) {
 }
 
 static int checkAttribute(struct MYSOFA_ATTRIBUTE *attribute, char *name,
-			  char *value) {
+		char *value) {
 	while (attribute) {
 		if (!mystrcmp(attribute->name, name)
-		    && !mystrcmp(attribute->value, value))
+				&& !mystrcmp(attribute->value, value))
 			return MYSOFA_OK;
 		attribute = attribute->next;
 	}
@@ -67,16 +67,16 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 	struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
 
 	if (!!(err = checkAttribute(dataobject->attributes, "CLASS",
-				    "DIMENSION_SCALE")))
+			"DIMENSION_SCALE")))
 		return err;
 
 	while (attr) {
 		log(" %s=%s\n",attr->name,attr->value);
 
 		if (!strcmp(attr->name, "NAME")
-		    && !strncmp(attr->value,
-				"This is a netCDF dimension but not a netCDF variable.",
-				53)) {
+				&& !strncmp(attr->value,
+						"This is a netCDF dimension but not a netCDF variable.",
+						53)) {
 			char *p = attr->value + strlen(attr->value) - 1;
 			while (isdigit(*p)) {
 				p--;
@@ -112,9 +112,9 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 
 	p1 = dataobject->data;
 	p2 = dataobject->data;
-	for(i=0;i<array->elements;i++)
-		*p1++=*p2++;
-	array->values=realloc(dataobject->data,array->elements*sizeof(float));
+	for (i = 0; i < array->elements; i++)
+		*p1++ = *p2++;
+	array->values = realloc(dataobject->data, array->elements * sizeof(float));
 
 	dataobject->data = NULL;
 
@@ -143,7 +143,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	/* read dimensions */
 	while (dir) {
 		if (dir->dataobject.name && dir->dataobject.name[0]
-		    && dir->dataobject.name[1] == 0) {
+				&& dir->dataobject.name[1] == 0) {
 			switch (dir->dataobject.name[0]) {
 			case 'I':
 				*err = getDimension(&hrtf->I, &dir->dataobject);
@@ -170,7 +170,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 				dimensionflags |= 0x20;
 				break;
 			case 'S':
-				break;  /* be graceful, some issues with API version 0.4.4 */
+				break; /* be graceful, some issues with API version 0.4.4 */
 			default:
 				log("UNKNOWN SOFA VARIABLE %s", dir->dataobject.name);
 				goto error;
@@ -216,7 +216,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 
 	return hrtf;
 
- error: free(hrtf);
+	error: free(hrtf);
 	if (!*err)
 		*err = MYSOFA_INVALID_FORMAT;
 	return NULL;
@@ -226,10 +226,10 @@ MYSOFA_EXPORT struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	struct READER reader;
 	struct MYSOFA_HRTF *hrtf = NULL;
 
-	if(filename == NULL)
+	if (filename == NULL)
 		filename = CMAKE_INSTALL_PREFIX "/share/libmysofa/default.sofa";
 
-	if(strcmp(filename,"-"))
+	if (strcmp(filename, "-"))
 		reader.fhd = fopen(filename, "rb");
 	else
 		reader.fhd = stdin;
@@ -250,7 +250,7 @@ MYSOFA_EXPORT struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 
 	superblockFree(&reader, &reader.superblock);
 	gcolFree(reader.gcol);
-	if(strcmp(filename,"-"))
+	if (strcmp(filename, "-"))
 		fclose(reader.fhd);
 
 	return hrtf;
@@ -291,8 +291,7 @@ MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 	free(hrtf);
 }
 
-MYSOFA_EXPORT void mysofa_getversion(int *major, int *minor, int *patch)
-{
+MYSOFA_EXPORT void mysofa_getversion(int *major, int *minor, int *patch) {
 	*major = CPACK_PACKAGE_VERSION_MAJOR;
 	*minor = CPACK_PACKAGE_VERSION_MINOR;
 	*patch = CPACK_PACKAGE_VERSION_PATCH;

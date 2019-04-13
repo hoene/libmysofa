@@ -28,7 +28,7 @@ IF(C_HAS_WALL)
   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 ENDIF(C_HAS_WALL)
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG -DVDEBUG")
 
 install(FILES share/default.sofa DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
 install(FILES share/MIT_KEMAR_normal_pinna.sofa DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
@@ -42,6 +42,9 @@ if(BUILD_TESTS)
   find_package(CUnit REQUIRED cunit)
 
   enable_testing()
+
+ # add_test(security_1 ./src/mysofa2json ../tests/security/1.sofa)
+ # add_test(security_2 /bin/sh -c "./src/mysofa2json ../tests/security/2.sofa || test \$? = 22")
 
   add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh ../tests/CIPIC_subject_003_hrir_final)
   add_test(FHK_HRIR_L2354.sofa ../tests/compare.sh ../tests/FHK_HRIR_L2354)
@@ -64,5 +67,5 @@ CONFIGURE_FILE(
 )
 install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
-  DESTINATION "lib/pkgconfig"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )

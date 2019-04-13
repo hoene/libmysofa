@@ -50,8 +50,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 	 */
 	if (!verifyAttribute(hrtf->attributes, "Conventions", "SOFA")
 			|| !verifyAttribute(hrtf->attributes, "SOFAConventions",
-					"SimpleFreeFieldHRIR")
-			||
+					"SimpleFreeFieldHRIR") ||
 
 			/* TODO: Support FT too */
 			!verifyAttribute(hrtf->attributes, "DataType", "FIR")
@@ -61,7 +60,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 
 	/*==============================================================================
 	 dimensions
-	============================================================================== */
+	 ============================================================================== */
 
 	if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2)
 		return MYSOFA_INVALID_FORMAT;
@@ -115,8 +114,8 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 	if (hrtf->DataDelay.values) {
 		if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST",
 				"I,R")
-		&& 	!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST",
-				"M,R"))
+				&& !verifyAttribute(hrtf->DataDelay.attributes,
+						"DIMENSION_LIST", "M,R"))
 			return MYSOFA_INVALID_FORMAT;
 	}
 
@@ -133,8 +132,8 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 			"cartesian"))
 		return MYSOFA_INVALID_FORMAT;
 
-	if (!fequals(hrtf->ReceiverPosition.values[0], 0.)
-			/*|| hrtf->ReceiverPosition.values[1] > 0*/ // NOTE(will): why is this check needed?
+	if (!fequals(hrtf->ReceiverPosition.values[0],
+			0.) || hrtf->ReceiverPosition.values[1] > 0
 			|| !fequals(hrtf->ReceiverPosition.values[2], 0.)
 			|| !fequals(hrtf->ReceiverPosition.values[3], 0.)
 			|| !fequals(hrtf->ReceiverPosition.values[4],

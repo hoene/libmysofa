@@ -7,7 +7,7 @@
 int main() {
 
 	int err;
-    
+
 	CU_pSuite pSuite = NULL;
 
 	/* initialize the CUnit test registry */
@@ -24,15 +24,25 @@ int main() {
 	/* add the tests to the suite */
 	/* NOTE - ORDER IS IMPORTANT - MUST TEST fread() AFTER fprintf() */
 	if ((NULL == CU_add_test(pSuite, "test of mysofa_check", test_check))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_lookup", test_lookup))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_neighbors", test_neighbors))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_interpolate", test_interpolate))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_resample", test_resample))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_loudness", test_loudness))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_minphase", test_minphase))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_cache", test_cache))
-	    || (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy))
-		) {
+			|| (NULL
+					== CU_add_test(pSuite, "test of mysofa_lookup", test_lookup))
+			|| (NULL
+					== CU_add_test(pSuite, "test of mysofa_neighbors",
+							test_neighbors))
+			|| (NULL
+					== CU_add_test(pSuite, "test of mysofa_interpolate",
+							test_interpolate))
+			|| (NULL
+					== CU_add_test(pSuite, "test of mysofa_resample",
+							test_resample))
+			|| (NULL
+					== CU_add_test(pSuite, "test of mysofa_loudness",
+							test_loudness))
+			|| (NULL
+					== CU_add_test(pSuite, "test of mysofa_minphase",
+							test_minphase))
+			|| (NULL == CU_add_test(pSuite, "test of mysofa_cache", test_cache))
+			|| (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy))) {
 		CU_cleanup_registry();
 		return CU_get_error();
 	}
