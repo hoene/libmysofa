@@ -12,33 +12,6 @@
 #include <fstream>
 using namespace std;
 
-// HACK(will): helper function to manually set HDF5 attributes
-void HACK_set_if_null(MYSOFA_ATTRIBUTE *attrib, char *name, char *value) {
-	MYSOFA_ATTRIBUTE *curr = attrib;
-	while (curr != NULL) {
-		if (strcmp(curr->name, name) == 0 && curr->value == NULL) {
-			curr->value = _strdup(value);
-			break;
-		}
-		curr = curr->next;
-	}
-}
-
-// HACK(will): manually supply the missing values in netcdf 4.3.1.1 files
-void HACK_fix_attrib(MYSOFA_EASY* hrtf) {
-	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, (char*)"Units", (char*)"metre");
-	HACK_set_if_null(hrtf->hrtf->ListenerPosition.attributes, (char*)"Type", (char*)"cartesian");
-	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, (char*)"Units", (char*)"metre");
-	HACK_set_if_null(hrtf->hrtf->ReceiverPosition.attributes, (char*)"Type", (char*)"cartesian");
-	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, (char*)"Units", (char*)"degree, degree, metre");
-	HACK_set_if_null(hrtf->hrtf->SourcePosition.attributes, (char*)"Type", (char*)"spherical");
-	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, (char*)"Units", (char*)"metre");
-	HACK_set_if_null(hrtf->hrtf->EmitterPosition.attributes, (char*)"Type", (char*)"cartesian");
-	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, (char*)"Units", (char*)"metre");
-	HACK_set_if_null(hrtf->hrtf->ListenerView.attributes, (char*)"Type", (char*)"cartesian");
-	HACK_set_if_null(hrtf->hrtf->DataSamplingRate.attributes, (char*)"Units", (char*)"hertz");
-}
-
 int main()
 {
 	int err;
@@ -63,9 +36,6 @@ int main()
 		mysofa_close(hrtf);
 		return err;
 	}
-
-	// TODO(will): fix reading of attributes for netcdf 4.3.1.1 files
-	HACK_fix_attrib(hrtf);
 
 	err = mysofa_check(hrtf->hrtf);
 	if (err != MYSOFA_OK) {
