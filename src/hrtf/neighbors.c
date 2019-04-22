@@ -25,8 +25,11 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 	int i, index;
 	float *origin, *test;
 	float radius, radius2;
-	float theta, theta2;
-	float phi, phi2;
+	float theta;
+	float phi;
+
+	// distance (degree) beyond which neighbor search is abandonned
+	float maxNeighborSearchAngle = 45;
 
 	struct MYSOFA_NEIGHBORHOOD *neighbor = malloc(
 			sizeof(struct MYSOFA_NEIGHBORHOOD));
@@ -53,7 +56,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 		if ((lookup->phi_max - lookup->phi_min) > FLT_MIN) {
 			phi = angleStep;
 			do {
-				phi2 = test[0] = origin[0] + phi;
+				test[0] = origin[0] + phi;
 				test[1] = origin[1];
 				test[2] = origin[2];
 				convertSphericalToCartesian(test, 3);
@@ -63,11 +66,11 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 					break;
 				}
 				phi += angleStep;
-			} while (phi2 <= lookup->phi_max + angleStep);
+			} while (phi <= maxNeighborSearchAngle);
 
 			phi = -angleStep;
 			do {
-				phi2 = test[0] = origin[0] + phi;
+				test[0] = origin[0] + phi;
 				test[1] = origin[1];
 				test[2] = origin[2];
 				convertSphericalToCartesian(test, 3);
@@ -77,14 +80,14 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 					break;
 				}
 				phi -= angleStep;
-			} while (phi2 >= lookup->phi_min - angleStep);
+			} while (phi >= -maxNeighborSearchAngle);
 		}
 
 		if ((lookup->theta_max - lookup->theta_min) > FLT_MIN) {
 			theta = angleStep;
 			do {
 				test[0] = origin[0];
-				theta2 = test[1] = origin[1] + theta;
+				test[1] = origin[1] + theta;
 				test[2] = origin[2];
 				convertSphericalToCartesian(test, 3);
 				index = mysofa_lookup(lookup, test);
@@ -93,12 +96,12 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 					break;
 				}
 				theta += angleStep;
-			} while (theta2 <= lookup->theta_max + angleStep);
+			} while (theta <= maxNeighborSearchAngle);
 
 			theta = -angleStep;
 			do {
 				test[0] = origin[0];
-				theta2 = test[1] = origin[1] + theta;
+				test[1] = origin[1] + theta;
 				test[2] = origin[2];
 				convertSphericalToCartesian(test, 3);
 				index = mysofa_lookup(lookup, test);
@@ -107,7 +110,7 @@ MYSOFA_EXPORT struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefin
 					break;
 				}
 				theta -= angleStep;
-			} while (theta2 >= lookup->theta_min - angleStep);
+			} while (theta >= -maxNeighborSearchAngle);
 		}
 
 		if ((lookup->radius_max - lookup->radius_min) > FLT_MIN) {
