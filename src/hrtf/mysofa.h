@@ -148,6 +148,8 @@ void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x, float y, float z,
 		short *IRleft, short *IRright, int *delayLeft, int *delayRight);
 void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x, float y, float z,
 		float *IRleft, float *IRright, float *delayLeft, float *delayRight);
+void mysofa_getfilter_float_nointerp(struct MYSOFA_EASY* easy, float x, float y, float z,
+		float *IRleft, float *IRright, float *delayLeft, float *delayRight);
 void mysofa_close(struct MYSOFA_EASY* easy);
 void mysofa_close_cached(struct MYSOFA_EASY* easy);
 

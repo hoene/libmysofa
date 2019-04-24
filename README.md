@@ -106,6 +106,8 @@ float rightDelay;         // unit is sec.
 mysofa_getfilter_float(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
 
+using ``mysofa_getfilter_float_nointerp`` instead of ``mysofa_getfilter_float`` (same arguments), you can bypass the linear interpolation applied by ``mysofa_getfilter_float`` (weighted sum of nearest neighbors filters coefficients), and get the exact filter stored in the sofa file nearest to the [x,y,z] position requested.
+
 If you have spherical coordinates but you need Cartesian coordinates, call
 ```
 void mysofa_s2c(float values[3])

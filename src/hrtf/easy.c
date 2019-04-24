@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <string.h>
+
 #include "mysofa_export.h"
 #include "mysofa.h"
 
@@ -138,9 +140,9 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY* easy, float x,
 	}
 }
 
-MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x,
+MYSOFA_EXPORT void mysofa_getfilter_float_advanced(struct MYSOFA_EASY* easy, float x,
 		float y, float z, float *IRleft, float *IRright, float *delayLeft,
-		float *delayRight) {
+		float *delayRight, bool interpolate) {
 	float c[3];
 	float delays[2];
 	float *fl;
@@ -156,6 +158,11 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x,
 	assert(nearest >= 0);
 	neighbors = mysofa_neighborhood(easy->neighborhood, nearest);
 
+	// bypass interpolate by forcing current cooordinates to nearest's
+	if (!interpolate) {
+   		memcpy(c, easy->hrtf->SourcePosition.values + nearest * easy->hrtf->C, sizeof(float) * easy->hrtf->C);
+	}
+
 	float *res = mysofa_interpolate(easy->hrtf, c, nearest, neighbors,
 			easy->fir, delays);
 
@@ -168,6 +175,18 @@ MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x,
 		*IRleft++ = *fl++;
 		*IRright++ = *fr++;
 	}
+}
+
+MYSOFA_EXPORT void mysofa_getfilter_float(struct MYSOFA_EASY* easy, float x,
+		float y, float z, float *IRleft, float *IRright, float *delayLeft,
+		float *delayRight) {
+	mysofa_getfilter_float_advanced(easy, x, y, z, IRleft, IRright, delayLeft, delayRight, true);
+}
+
+MYSOFA_EXPORT void mysofa_getfilter_float_nointerp(struct MYSOFA_EASY* easy, float x,
+		float y, float z, float *IRleft, float *IRright, float *delayLeft,
+		float *delayRight) {
+	mysofa_getfilter_float_advanced(easy, x, y, z, IRleft, IRright, delayLeft, delayRight, false);
 }
 
 MYSOFA_EXPORT void mysofa_close(struct MYSOFA_EASY* easy) {
