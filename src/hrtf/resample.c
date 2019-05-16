@@ -77,8 +77,8 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
 	/*
 	 * update delay values
 	 */
-	for (i = 0; i < hrtf->DataIR.elements; i++)
-		hrtf->DataIR.values[i] /= factor;
+	for (i = 0; i < hrtf->DataDelay.elements; i++)
+		hrtf->DataDelay.values[i] *= factor;
 
 	/*
 	 * update sample rate
