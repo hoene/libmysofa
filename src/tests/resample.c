@@ -17,7 +17,7 @@ void test_resample() {
 	float irPeakValue = 0.0;
 
 	// hrtf = mysofa_load("tests/Pulse.sofa", &err);
-	hrtf = mysofa_load("tests/CIPIC_subject_003_hrir_final.sofa", &err);
+	hrtf = mysofa_load("tests/CIPIC_subject_003_hrir_final_itdInDelayField.sofa", &err);
 	if (!hrtf) {
 		CU_FAIL_FATAL("Error reading file.");
 		return;
