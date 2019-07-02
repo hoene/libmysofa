@@ -33,6 +33,7 @@ else()
     include_directories(${PROJECT_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
 endif()
 
+
 include(FindZLIB REQUIRED)
 include_directories(${ZLIB_INCLUDE_DIRS})
 MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
@@ -82,10 +83,11 @@ if(BUILD_TESTS)
     tests/easy.c
     tests/cache.c
     tests/json.c
-	tests/tools.c
+    tests/tools.c
   )
   add_executable(external tests/external.c ${TEST_SOURCE_FILES} )
-  target_link_libraries (external PUBLIC mysofa-shared ${CUNIT_LIBRARIES})
+  target_link_libraries (external PRIVATE mysofa-shared ${CUNIT_LIBRARIES} )
+  target_link_libraries (external PRIVATE mysofa-shared ${MATH} )
   add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
 
   add_executable(internal tests/internal.c ${TEST_SOURCE_FILES} tests/tools.c hrtf/tools.c)
