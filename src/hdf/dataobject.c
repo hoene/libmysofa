@@ -181,21 +181,15 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 				dt->u.f.exponent_size, dt->u.f.mantissa_location,
 				dt->u.f.mantissa_size, dt->u.f.exponent_bias);
 
-		/* FLOAT bit 0 32 exponent 23 8 MANTISSA 0 23 OFFSET 127    				
-		 FLOAT bit 0 64 exponent 52 11 MANTISSA 0 52 OFFSET 1023 */
+		/* FLOAT bit 0 32 exponent 23 8 MANTISSA 0 23 OFFSET 127 is supported
+		 FLOAT bit 0 64 exponent 52 11 MANTISSA 0 52 OFFSET 1023 is not supported */
 
 		if (dt->u.f.bit_offset != 0 || dt->u.f.mantissa_location != 0
-				|| (dt->u.f.bit_precision != 32 && dt->u.f.bit_precision != 64)
-				|| (dt->u.f.bit_precision == 32
-						&& (dt->u.f.exponent_location != 23
-								|| dt->u.f.exponent_size != 8
-								|| dt->u.f.mantissa_size != 23
-								|| dt->u.f.exponent_bias != 127))
-				|| (dt->u.f.bit_precision == 64
-						&& (dt->u.f.exponent_location != 52
-								|| dt->u.f.exponent_size != 11
-								|| dt->u.f.mantissa_size != 52
-								|| dt->u.f.exponent_bias != 1023)))
+				|| dt->u.f.bit_precision != 32
+				|| dt->u.f.exponent_location != 23
+				|| dt->u.f.exponent_size != 8
+				|| dt->u.f.mantissa_size != 23
+				|| dt->u.f.exponent_bias != 127)
 			return MYSOFA_UNSUPPORTED_FORMAT;
 		break;
 
