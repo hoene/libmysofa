@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <inttypes.h>
 #include "reader.h"
 
 /*  III.E. Disk Format: Level 1E - Global Heap
@@ -61,14 +62,14 @@ static int readGCOL(struct READER *reader) {
 		}
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
-		log(" GCOL object %d size %ld value %08lX\n", gcol->heap_object_index,
+		log(" GCOL object %d size %" PRIu64 " value %08" PRIX64 "\n", gcol->heap_object_index,
 				gcol->object_size, gcol->value);
 
 		gcol->next = reader->gcol;
 		reader->gcol = gcol;
 	}
 
-	log(" END %08lX vs. %08lX\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
+	log(" END %08" PRIX64 " vs. %08" PRIX64 "\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
 	/*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
@@ -96,7 +97,7 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 			p = p->next;
 		}
 		if (!p) {
-			log("unknown gcol %lX %d\n",gcol,reference);
+			log("unknown gcol %" PRIX64 " %d\n",gcol,reference);
 			return MYSOFA_INVALID_FORMAT;
 		}
 	}

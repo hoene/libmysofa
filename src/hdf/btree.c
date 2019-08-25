@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <inttypes.h>
 #include "reader.h"
 
 /*
@@ -81,7 +82,8 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTLF", 4)) {
 		log("cannot read signature of BTLF\n");
 		return MYSOFA_INVALID_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object BTLF must have version 0\n");
@@ -96,7 +98,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 		case 5:
 			records->type5.hash_of_name = (uint32_t) readValue(reader, 4);
 			records->type5.heap_id = readValue(reader, 7);
-			log(" type5 %08X %14lX\n", records->type5.hash_of_name,
+			log(" type5 %08X %14" PRIX64 "\n", records->type5.hash_of_name,
 					records->type5.heap_id);
 			records++;
 			break;
@@ -156,7 +158,8 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTHD", 4)) {
 		log("cannot read signature of BTHD\n");
 		return MYSOFA_INVALID_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object BTHD must have version 0\n");
@@ -230,7 +233,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "TREE", 4)) {
 		log("cannot read signature of TREE\n");
 		return MYSOFA_INVALID_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	node_type = (uint8_t) fgetc(reader->fhd);
 	node_level = (uint8_t) fgetc(reader->fhd);
@@ -274,7 +278,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
 			for (j = 0; j < data->ds.dimensionality; j++) {
 				start[j] = readValue(reader, 8);
-				log("start %d %lu\n",j,start[j]);
+				log("start %d %" PRIu64 "\n",j,start[j]);
 			}
 
 			if (readValue(reader, 8)) {
@@ -283,7 +287,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
 			child_pointer = readValue(reader,
 					reader->superblock.size_of_offsets);
-			log(" data at %lX len %u\n", child_pointer, size_of_chunk);
+			log(" data at %" PRIX64 " len %u\n", child_pointer, size_of_chunk);
 
 			/* read data */
 			store = ftell(reader->fhd);

@@ -18,6 +18,7 @@
 #include <string.h> 
 #include <ctype.h>
 #include <errno.h>
+#include <inttypes.h>
 #include "reader.h"
 
 static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
@@ -78,7 +79,7 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
 		if (i < 4) {
 			ds->dimension_size[i] = readValue(reader,
 					reader->superblock.size_of_lengths);
-			log("   dimension %d %lu\n", i, ds->dimension_size[i]);
+			log("   dimension %d %" PRIu64 "\n", i, ds->dimension_size[i]);
 		} else
 			readValue(reader, reader->superblock.size_of_lengths);
 	}
@@ -358,7 +359,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 	case 2:
 		dimensionality = (uint8_t) fgetc(reader->fhd);
 		data_address = readValue(reader, reader->superblock.size_of_offsets);
-		log(" CHUNK %lX\n", data_address);
+		log(" CHUNK %" PRIX64 "\n", data_address);
 		for (i = 0; i < dimensionality; i++) {
 			data->datalayout_chunk[i] = readValue(reader, 4);
 			log(" %d\n", data->datalayout_chunk[i]);
@@ -472,7 +473,8 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
 					"object OHDR filter pipeline message contains unsupported filter: %d\n",
 					filter_identification_value);
 			return MYSOFA_INVALID_FORMAT;
-		}log("  filter %d\n", filter_identification_value);
+		}
+		log("  filter %d\n", filter_identification_value);
 		flags = (uint16_t) readValue(reader, 2);
 		number_client_data_values = (uint16_t) readValue(reader, 2);
 		if (number_client_data_values > 0x1000)
@@ -501,7 +503,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 			gcol = readValue(reader, 4);
 		} else {
 			gcol = readValue(reader, dt->list - dt->size);
-		} log("    GCOL %d %8lX %8lX\n",dt->list - dt->size,gcol,ftell(reader->fhd));
+		} 
+		log("    GCOL %d %8" PRIX64 " %8" PRIX64 "\n",dt->list - dt->size,gcol,ftell(reader->fhd));
 		/*		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); TODO: missing part in specification */
 	}
 
@@ -536,7 +539,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 	case 7:
 		readValue(reader, 4); /* TODO unclear reference */
 		reference = readValue(reader, dt->size - 4);
-		log(" REFERENCE size %d %lX\n",dt->size, reference);
+		log(" REFERENCE size %d %" PRIX64 "\n",dt->size, reference);
 		if (!!(err = gcolRead(reader, gcol, reference, &dataobject))) {
 			return MYSOFA_OK; /* ignore error
 			 return err; */
@@ -548,7 +551,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 			sprintf(number, "REF%08lX", (long unsigned int) reference);
 			buffer = number;
 		}
-		log("    REFERENCE %lu %lX %s\n", reference, dataobject, buffer);
+		log("    REFERENCE %lu %" PRIX64 " %s\n", reference, dataobject, buffer);
 		/*		if(!referenceData) {
 		 return MYSOFA_UNSUPPORTED_FORMAT;
 		 } */
@@ -614,7 +617,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
 	if (offset > 0x1000000 || length > 0x10000000)
 		return MYSOFA_UNSUPPORTED_FORMAT;
 
-	log(" continue %08lX %08lX\n", offset, length);
+	log(" continue %08" PRIX64 " %08" PRIX64 "\n", offset, length);
 
 	store = ftell(reader->fhd);
 
@@ -852,7 +855,8 @@ static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OCHK", 4)) {
 		log("cannot read signature of OCHK\n");
 		return MYSOFA_INVALID_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	err = readOHDRmessages(reader, dataobject, end - 4); /* subtract checksum */
 	if (err) {
@@ -876,7 +880,8 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OHDR", 4)) {
 		log("cannot read signature of data object\n");
 		return MYSOFA_INVALID_FORMAT;
-	} log("%08lX %.4s\n", dataobject->address, buf);
+	} 
+	log("%08" PRIX64 " %.4s\n", dataobject->address, buf);
 
 	if (fgetc(reader->fhd) != 2) {
 		log("object OHDR must have version 2\n");
@@ -896,6 +901,9 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	}
 
 	size_of_chunk = readValue(reader, 1 << (dataobject->flags & 3));
+	if(size_of_chunk < 0 || size_of_chunk > 0x1000000)
+		return MYSOFA_UNSUPPORTED_FORMAT;
+
 	end_of_messages = ftell(reader->fhd) + size_of_chunk;
 
 	err = readOHDRmessages(reader, dataobject, end_of_messages);

@@ -10,6 +10,7 @@
 #include <math.h>
 #include <errno.h>
 #include <assert.h>
+#include <inttypes.h>
 #include "reader.h"
 
 static int log2i(int a) {
@@ -36,7 +37,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHDB", 4)) {
 		log("cannot read signature of fractal heap indirect block\n");
 		return MYSOFA_INVALID_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object FHDB must have version 0\n");
@@ -60,7 +62,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	else
 		length_size = ceilf(log2f(fractalheap->maximum_size) / 8);
 
-	log(" %d %ld %d\n",size,block_offset,offset_size);
+	log(" %d %" PRIu64 " %d\n",size,block_offset,offset_size);
 
 	/*
 	 * 00003e00  00 46 48 44 42 00 40 02  00 00 00 00 00 00 00 00  |.FHDB.@.........|
@@ -84,7 +86,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 		if (offset > 0x10000000 || length > 0x10000000)
 			return MYSOFA_UNSUPPORTED_FORMAT;
 
-		log(" %d %4lX %ld %8lX\n",typeandversion,offset,length,ftell(reader->fhd));
+		log(" %d %4" PRIX64 " %ld %8lX\n",typeandversion,offset,length,ftell(reader->fhd));
 
 		/* TODO: for the following part, the specification is incomplete */
 		if (typeandversion == 3) {
@@ -138,11 +140,12 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 				}
 				strcpy(value, "");
 			} else {
-				log("FHDB type 3 unsupported values: %12lX\n",unknown);
+				log("FHDB type 3 unsupported values: %12" PRIX64 "\n",unknown);
 				free(name);
 				/* TODO:			return MYSOFA_UNSUPPORTED_FORMAT; */
 				return MYSOFA_OK;
-			} log(" %s = %s\n", name, value);
+			} 
+			log(" %s = %s\n", name, value);
 
 			attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
 			attr->name = name;
@@ -176,7 +179,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 			heap_header_address = readValue(reader,
 					reader->superblock.size_of_offsets);
 
-			log("\nfractal head type 1 length %4lX name %s address %lX\n", length, name, heap_header_address);
+			log("\nfractal head type 1 length %4" PRIX64 " name %s address %" PRIX64 "\n", length, name, heap_header_address);
 
 			dir = malloc(sizeof(struct DIR));
 			if (!dir) {
@@ -240,7 +243,8 @@ static int indirectblockRead(struct READER *reader,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHIB", 4)) {
 		log("cannot read signature of fractal heap indirect block\n");
 		return MYSOFA_INVALID_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object FHIB must have version 0\n");
@@ -281,7 +285,8 @@ static int indirectblockRead(struct READER *reader,
 			size_filtered = readValue(reader,
 					reader->superblock.size_of_lengths);
 			filter_mask = readValue(reader, 4);
-		}log(">> %d %lX %d\n",k,child_direct_block,size);
+		}
+		log(">> %d %" PRIX64 " %d\n",k,child_direct_block,size);
 		if (validAddress(reader, child_direct_block)) {
 			store = ftell(reader->fhd);
 			if (fseek(reader->fhd, child_direct_block, SEEK_SET) < 0)
@@ -346,7 +351,8 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FRHP", 4)) {
 		log("cannot read signature of fractal heap\n");
 		return MYSOFA_UNSUPPORTED_FORMAT;
-	}log("%08lX %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	}
+	log("%" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object fractal heap must have version 0\n");
