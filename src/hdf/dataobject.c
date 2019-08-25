@@ -375,7 +375,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 				return errno;
 			if (!data->data) {
 				data->data_len = size;
-				data->data = malloc(size);
+				data->data = calloc(size,1);
 				if (!data->data)
 					return MYSOFA_NO_MEMORY;
 			}
