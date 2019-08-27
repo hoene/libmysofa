@@ -69,7 +69,7 @@ static int readGCOL(struct READER *reader) {
 		reader->gcol = gcol;
 	}
 
-	log(" END %08" PRIX64 " vs. %08" PRIX64 "\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
+	log(" END %08" PRIX64 " vs. %08lX\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
 	/*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
