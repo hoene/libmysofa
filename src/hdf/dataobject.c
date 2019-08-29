@@ -353,7 +353,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 	case 1:
 		data_address = readValue(reader, reader->superblock.size_of_offsets);
 		data_size = readValue(reader, reader->superblock.size_of_lengths);
-		log("TODO 1 SIZE %lu\n", data_size);
+		log("TODO 1 SIZE %" PRIu64 "\n", data_size);
 		break;
 
 	case 2:
@@ -504,7 +504,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 		} else {
 			gcol = readValue(reader, dt->list - dt->size);
 		} 
-		log("    GCOL %d %8" PRIX64 " %8" PRIX64 "\n",dt->list - dt->size,gcol,ftell(reader->fhd));
+		log("    GCOL %d %8" PRIX64 " %8lX\n",dt->list - dt->size,gcol,ftell(reader->fhd));
 		/*		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); TODO: missing part in specification */
 	}
 
@@ -551,7 +551,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
 			sprintf(number, "REF%08lX", (long unsigned int) reference);
 			buffer = number;
 		}
-		log("    REFERENCE %lu %" PRIX64 " %s\n", reference, dataobject, buffer);
+		log("    REFERENCE %" PRIX64 " %" PRIX64 " %s\n", reference, dataobject, buffer);
 		/*		if(!referenceData) {
 		 return MYSOFA_UNSUPPORTED_FORMAT;
 		 } */
@@ -901,7 +901,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	}
 
 	size_of_chunk = readValue(reader, 1 << (dataobject->flags & 3));
-	if(size_of_chunk < 0 || size_of_chunk > 0x1000000)
+	if(size_of_chunk > 0x1000000)
 		return MYSOFA_UNSUPPORTED_FORMAT;
 
 	end_of_messages = ftell(reader->fhd) + size_of_chunk;

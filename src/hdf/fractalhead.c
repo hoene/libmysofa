@@ -86,7 +86,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 		if (offset > 0x10000000 || length > 0x10000000)
 			return MYSOFA_UNSUPPORTED_FORMAT;
 
-		log(" %d %4" PRIX64 " %ld %8lX\n",typeandversion,offset,length,ftell(reader->fhd));
+		log(" %d %4" PRIX64 " %" PRIX64 "%08lX\n",typeandversion,offset,length,ftell(reader->fhd));
 
 		/* TODO: for the following part, the specification is incomplete */
 		if (typeandversion == 3) {
