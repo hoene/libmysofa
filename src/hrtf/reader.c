@@ -74,7 +74,7 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 		log(" %s=%s\n",attr->name,attr->value);
 
 		if (!strcmp(attr->name, "NAME")
-				&& !strncmp(attr->value,
+				&& attr->value && !strncmp(attr->value,
 						"This is a netCDF dimension but not a netCDF variable.",
 						53)) {
 			char *p = attr->value + strlen(attr->value) - 1;
