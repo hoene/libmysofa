@@ -101,7 +101,7 @@ static void printDimensions(FILE *out, struct MYSOFA_HRTF *hrtf,
 
 		fprintf(out, "   \"DimensionNames\":[");
 		s = found->value;
-		while (s[0] && dims < 4) {
+		while (s && s[0] && dims < 4) {
 			switch (s[0]) {
 			case 'I':
 				dimensions[dims++] = hrtf->I;
