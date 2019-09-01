@@ -377,6 +377,8 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 			if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
 				return errno;
 			if (!data->data) {
+				if(size < 0 || size > 0x10000000)
+					return MYSOFA_INVALID_FORMAT;
 				data->data_len = size;
 				data->data = calloc(1,size);
 				if (!data->data)
