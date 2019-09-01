@@ -358,7 +358,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 
 	case 2:
 		dimensionality = (uint8_t) fgetc(reader->fhd);
-		if(dimensionality < 0 || dimensionality >= sizeof(data->datalayout_chunk) / sizeof(data->datalayout_chunk)[0])
+		if(dimensionality < 1 || dimensionality > sizeof(data->datalayout_chunk) / sizeof(data->datalayout_chunk)[0])
 			return MYSOFA_INVALID_FORMAT;
 		data_address = readValue(reader, reader->superblock.size_of_offsets);
 		log(" CHUNK %" PRIX64 "\n", data_address);
