@@ -189,7 +189,10 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	dir = reader->superblock.dataobject.directory;
 	while (dir) {
 
-		if (!strcmp(dir->dataobject.name, "ListenerPosition")) {
+		if(!dir->dataobject.name) {
+			log("SOFA VARIABLE IS NULL.\n");
+		}
+		else if (!strcmp(dir->dataobject.name, "ListenerPosition")) {
 			*err = getArray(&hrtf->ListenerPosition, &dir->dataobject);
 		} else if (!strcmp(dir->dataobject.name, "ReceiverPosition")) {
 			*err = getArray(&hrtf->ReceiverPosition, &dir->dataobject);
