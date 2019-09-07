@@ -83,10 +83,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 		typeandversion = (uint8_t) fgetc(reader->fhd);
 		offset = readValue(reader, offset_size);
 		length = readValue(reader, length_size);
-		if (offset > 0x10000000 || length > 0x10000000 || length == 0)
+		if (offset > 0x10000000 || length > 0x10000000)
 			return MYSOFA_UNSUPPORTED_FORMAT;
 
-		log(" %d %4" PRIX64 " %" PRIX64 "%08lX\n",typeandversion,offset,length,ftell(reader->fhd));
+		log(" %d %4" PRIX64 " %" PRIX64 " %08lX\n",typeandversion,offset,length,ftell(reader->fhd));
 
 		/* TODO: for the following part, the specification is incomplete */
 		if (typeandversion == 3) {
@@ -99,12 +99,13 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 				return MYSOFA_UNSUPPORTED_FORMAT;
 			}
 
-			if (!(name = malloc(length)))
+			if (!(name = malloc(length+1)))
 				return MYSOFA_NO_MEMORY;
 			if (fread(name, 1, length, reader->fhd) != length) {
 				free(name);
 				return MYSOFA_READ_ERROR;
 			}
+			name[length]=0;	
 
 			if (readValue(reader, 4) != 0x00000013) {
 				log("FHDB type 3 unsupported values");
