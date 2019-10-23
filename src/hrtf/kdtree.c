@@ -452,6 +452,41 @@ struct kdres *kd_nearest(struct kdtree *kd, const float *pos) {
 	}
 }
 
+void *kd_nearest_noalloc(struct kdtree *kd, const float *pos) {
+	struct kdhyperrect *rect;
+	struct kdnode *result;
+	float dist_sq;
+	int i;
+
+	if (!kd)
+		return 0;
+	if (!kd->rect)
+		return 0;
+
+	/* Duplicate the bounding hyperrectangle, we will work on the copy */
+	if (!(rect = hyperrect_duplicate(kd->rect))) {
+		return 0;
+	}
+
+	/* Our first guesstimate is the root node */
+	result = kd->root;
+	dist_sq = 0;
+	for (i = 0; i < kd->dim; i++)
+		dist_sq += SQ(result->pos[i] - pos[i]);
+
+	/* Search for the nearest neighbour recursively */
+	kd_nearest_i(kd->root, pos, &result, &dist_sq, rect);
+
+	/* Free the copy of the hyperrect */
+	hyperrect_free(rect);
+
+	if (result) {
+		return result->data;
+	} else {
+		return 0;
+	}
+}
+
 struct kdres *kd_nearestf(struct kdtree *tree, const float *pos) {
 	static float sbuf[16];
 	float *bptr, *buf = 0;

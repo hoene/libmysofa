@@ -92,7 +92,7 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
 MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
 
 	int index;
-	struct kdres *res;
+	void *res;
 	float r = radius(coordinate);
 	if (r > lookup->radius_max) {
 		r = lookup->radius_max / r;
@@ -106,13 +106,11 @@ MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate)
 		coordinate[2] *= r;
 	}
 
-	res = kd_nearest((struct kdtree *) lookup->kdtree, coordinate);
-	if (kd_res_size(res) != 1) {
-		kd_res_free(res);
+	res = kd_nearest_noalloc((struct kdtree *) lookup->kdtree, coordinate);
+	if (!res) {
 		return -1;
 	}
-	index = (uintptr_t) kd_res_item_data(res);
-	kd_res_free(res);
+	index = (uintptr_t) res;
 	return index;
 }
 
