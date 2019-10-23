@@ -452,7 +452,7 @@ struct kdres *kd_nearest(struct kdtree *kd, const float *pos) {
 	}
 }
 
-void *kd_nearest_noalloc(struct kdtree *kd, const float *pos) {
+int kd_nearest_noalloc(struct kdtree *kd, const float *pos, void **res) {
 	struct kdhyperrect *rect;
 	struct kdnode *result;
 	float dist_sq;
@@ -481,9 +481,10 @@ void *kd_nearest_noalloc(struct kdtree *kd, const float *pos) {
 	hyperrect_free(rect);
 
 	if (result) {
-		return result->data;
-	} else {
+		*res = result->data;
 		return 0;
+	} else {
+		return -1;
 	}
 }
 
