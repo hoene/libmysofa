@@ -459,13 +459,13 @@ int kd_nearest_noalloc(struct kdtree *kd, const float *pos, void **res) {
 	int i;
 
 	if (!kd)
-		return 0;
+		return -1;
 	if (!kd->rect)
-		return 0;
+		return -1;
 
 	/* Duplicate the bounding hyperrectangle, we will work on the copy */
 	if (!(rect = hyperrect_duplicate(kd->rect))) {
-		return 0;
+		return -1;
 	}
 
 	/* Our first guesstimate is the root node */
