@@ -244,6 +244,7 @@ MYSOFA_EXPORT struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 	}
 	reader.gcol = NULL;
 	reader.all = NULL;
+	reader.recursive_counter = 0;
 
 	*err = superblockRead(&reader, &reader.superblock);
 
