@@ -60,6 +60,7 @@ int kd_insert3f(struct kdtree *tree, float x, float y, float z, void *data);
  * This function returns a pointer to a result set with at most one element.
  */
 struct kdres *kd_nearest(struct kdtree *tree, const float *pos);
+int kd_nearest_noalloc(struct kdtree *tree, const float *pos, void **res);
 struct kdres *kd_nearestf(struct kdtree *tree, const float *pos);
 struct kdres *kd_nearest3(struct kdtree *tree, float x, float y, float z);
 struct kdres *kd_nearest3f(struct kdtree *tree, float x, float y, float z);
