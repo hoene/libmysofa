@@ -182,6 +182,8 @@ struct READER {
 	struct SUPERBLOCK superblock;
 
 	struct GCOL *gcol;
+
+	int recursive_counter;
 };
 
 int validAddress(struct READER *reader, uint64_t address);

@@ -33,12 +33,17 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	UNUSED(block_size);
 	UNUSED(block_offset);
 
+	if(reader->recursive_counter >= 10)
+		return MYSOFA_INVALID_FORMAT;
+	else
+		reader->recursive_counter++;
+
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHDB", 4)) {
 		log("cannot read signature of fractal heap indirect block\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	log("%08" PRIX64 " %.4s stack %d\n", (uint64_t )ftell(reader->fhd) - 4, buf, reader->recursive_counter);
 
 	if (fgetc(reader->fhd) != 0) {
 		log("object FHDB must have version 0\n");
@@ -218,6 +223,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
 	} while (typeandversion != 0);
 
+	reader->recursive_counter--;
 	return MYSOFA_OK;
 }
 
