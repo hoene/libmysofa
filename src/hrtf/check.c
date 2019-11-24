@@ -56,21 +56,21 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 			!verifyAttribute(hrtf->attributes, "DataType", "FIR")
 			|| !verifyAttribute(hrtf->attributes, "RoomType", "free field"))
 
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_INVALID_ATTRIBUTES;
 
 	/*==============================================================================
 	 dimensions
 	 ============================================================================== */
 
 	if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2)
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_INVALID_DIMENSIONS;
 
 	/* verify format */
 
 	if (hrtf->ListenerView.values) {
 		if (!verifyAttribute(hrtf->ListenerView.attributes, "DIMENSION_LIST",
 				"I,C"))
-			return MYSOFA_INVALID_FORMAT;
+			return MYSOFA_INVALID_DIMENSION_LIST;
 		if (verifyAttribute(hrtf->ListenerView.attributes, "Type",
 				"cartesian")) {
 			if (!compareValues(&hrtf->ListenerView, array100, 3))
@@ -80,7 +80,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 			if (!compareValues(&hrtf->ListenerView, array001, 3))
 				return MYSOFA_INVALID_FORMAT;
 		} else
-			return MYSOFA_INVALID_FORMAT;
+			return MYSOFA_INVALID_COORDINATE_TYPE;
 	}
 
 #if 0
@@ -107,30 +107,30 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 	/* TODO: support ECM too */
 	if (!verifyAttribute(hrtf->EmitterPosition.attributes, "DIMENSION_LIST",
 			"E,C,I"))
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED;
 	if (!compareValues(&hrtf->EmitterPosition, array000, 3))
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED;
 
 	if (hrtf->DataDelay.values) {
 		if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST",
 				"I,R")
 				&& !verifyAttribute(hrtf->DataDelay.attributes,
 						"DIMENSION_LIST", "M,R"))
-			return MYSOFA_INVALID_FORMAT;
+			return MYSOFA_ONLY_DELAYS_WITH_IR_OR_MR_SUPPORTED;
 	}
 
 	/* TODO: Support different sampling rate per measurement, support default sampling rate of 48000
 	 However, so far, I have not seen any sofa files with an format other and I */
 	if (!verifyAttribute(hrtf->DataSamplingRate.attributes, "DIMENSION_LIST",
 			"I"))
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_ONLY_THE_SAME_SAMPLING_RATE_SUPPORTED;
 
 	if (!verifyAttribute(hrtf->ReceiverPosition.attributes, "DIMENSION_LIST",
 			"R,C,I"))
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_RECEIVERS_WITH_RCI_SUPPORTED;
 	if (!verifyAttribute(hrtf->ReceiverPosition.attributes, "Type",
 			"cartesian"))
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_RECEIVERS_WITH_CARTESIAN_SUPPORTED;
 
 	if (!fequals(hrtf->ReceiverPosition.values[0],
 			0.) || hrtf->ReceiverPosition.values[1] > 0
@@ -139,13 +139,13 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 			|| !fequals(hrtf->ReceiverPosition.values[4],
 					-hrtf->ReceiverPosition.values[1])
 			|| !fequals(hrtf->ReceiverPosition.values[5], 0.)) {
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_INVALID_RECEIVER_POSITIONS;
 	}
 
 	/* read source positions */
 	if (!verifyAttribute(hrtf->SourcePosition.attributes, "DIMENSION_LIST",
 			"M,C"))
-		return MYSOFA_INVALID_FORMAT;
+		return MYSOFA_ONLY_SOURCES_WITH_MC_SUPPORTED;
 
 	return MYSOFA_OK;
 }
