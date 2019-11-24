@@ -88,6 +88,7 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
 /*
  * looks for a filter that is similar to the given Cartesian coordinate
  * BE AWARE: The coordinate vector will be normalized if required
+ * A return value of -1 = MYSOFA_INTERNAL_ERROR indicates an error
  */
 MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate) {
 
@@ -109,7 +110,7 @@ MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate)
 
 	success = kd_nearest_noalloc((struct kdtree *) lookup->kdtree, coordinate, &res);
 	if (success != 0) {
-		return success;
+		return MYSOFA_INTERNAL_ERROR;
 	}
 	index = (uintptr_t) res;
 	return index;
