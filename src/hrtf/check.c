@@ -15,9 +15,9 @@ static int compareValues(struct MYSOFA_ARRAY *array, float *compare,
 	return 1;
 }
 
-static float array000[] = { 0, 0, 0 };
-static float array001[] = { 0, 0, 1 };
-static float array100[] = { 1, 0, 0 };
+static const float array000[] = { 0, 0, 0 };
+static const float array001[] = { 0, 0, 1 };
+static const float array100[] = { 1, 0, 0 };
 
 MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 
