@@ -108,7 +108,7 @@ MYSOFA_EXPORT int mysofa_lookup(struct MYSOFA_LOOKUP *lookup, float *coordinate)
 		coordinate[2] *= r;
 	}
 
-	success = kd_nearest_noalloc((struct kdtree *) lookup->kdtree, coordinate, &res);
+	success = kd_nearest((struct kdtree *) lookup->kdtree, coordinate, &res);
 	if (success != 0) {
 		return MYSOFA_INTERNAL_ERROR;
 	}
