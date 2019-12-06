@@ -4,7 +4,7 @@
 #include "mysofa.h"
 #include "tools.h"
 
-static int compareValues(struct MYSOFA_ARRAY *array, float *compare,
+static int compareValues(struct MYSOFA_ARRAY *array, const float *compare,
 		int elements) {
 	int i;
 	if (array->values == NULL || array->elements != elements)
