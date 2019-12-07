@@ -21,7 +21,12 @@
 static struct MYSOFA_EASY* mysofa_open_default(const char *filename,
 		float samplerate, int *filterlength, int *err, bool applyNorm,
 		float neighbor_angle_step, float neighbor_radius_step) {
+	
 	struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
+	
+	// set all values of struct to their default "0" (to avoid freeing unallocated values in mysofa_free)
+	*easy = (struct MYSOFA_EASY){ 0 };
+	
 	if (!easy) {
 		*err = MYSOFA_NO_MEMORY;
 		return NULL;
