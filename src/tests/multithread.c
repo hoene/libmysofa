@@ -105,10 +105,9 @@ void *thread(void *arg) {
   return NULL;
 }
 
-void* timer(void* arg)
-{
-	sleep(10);
-	abort();
+void *timer(void *arg) {
+  sleep(10);
+  abort();
 }
 
 #define THREADS (20)
@@ -134,8 +133,8 @@ int main() {
   // start watchdog
   pthread_t watchdog;
   if (pthread_create(&watchdog, NULL, timer, NULL))
-      abort();
-  
+    abort();
+
   // end multithread
   for (t = 0; t < THREADS; t++) {
     if (pthread_join(threads[t], NULL))
