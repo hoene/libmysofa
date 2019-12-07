@@ -106,7 +106,7 @@ void *thread(void *arg) {
 }
 
 void *timer(void *arg) {
-  sleep(10);
+  sleep(170);
   abort();
 }
 
