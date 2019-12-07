@@ -106,7 +106,7 @@ void *thread(void *arg) {
 }
 
 void *timer(void *arg) {
-  sleep(170);
+  sleep(600);
   abort();
 }
 
@@ -142,6 +142,8 @@ int main() {
   }
 
   pthread_cancel(watchdog);
+
+  mysofa_close(easy);
 
   printf("ALL GOOD\n");
   return 0;
