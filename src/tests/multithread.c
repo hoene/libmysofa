@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifndef M_PI
 #define M_PI (3.14159265358979323846)
@@ -104,6 +105,11 @@ void *thread(void *arg) {
   return NULL;
 }
 
+void *timer(void *arg) {
+  sleep(10);
+  abort();
+}
+
 #define THREADS (20)
 
 int main() {
@@ -124,12 +130,18 @@ int main() {
       abort();
   }
 
-  // end multithread
+  // start watchdog
+  pthread_t watchdog;
+  if (pthread_create(&watchdog, NULL, timer, NULL))
+    abort();
 
+  // end multithread
   for (t = 0; t < THREADS; t++) {
     if (pthread_join(threads[t], NULL))
       abort();
   }
+
+  pthread_cancel(watchdog);
 
   printf("ALL GOOD\n");
   return 0;
