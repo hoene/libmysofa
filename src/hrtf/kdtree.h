@@ -33,8 +33,8 @@ extern "C" {
 
 struct kdtree;
 
-/* create a kd-tree for "k"-dimensional data */
-struct kdtree *kd_create(int k);
+/* create a kd-tree for 3-dimensional data */
+struct kdtree *kd_create();
 
 /* free the struct kdtree */
 void kd_free(struct kdtree *tree);

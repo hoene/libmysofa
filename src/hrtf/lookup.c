@@ -68,7 +68,7 @@ MYSOFA_EXPORT struct MYSOFA_LOOKUP* mysofa_lookup_init(struct MYSOFA_HRTF *hrtf)
 	/*
 	 * Allocate kd tree
 	 */
-	lookup->kdtree = kd_create(3);
+	lookup->kdtree = kd_create();
 	if (!lookup->kdtree) {
 		free(lookup);
 		return NULL;
