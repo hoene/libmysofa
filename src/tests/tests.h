@@ -33,4 +33,8 @@ void test_cache();
 
 void test_easy();
 
+void test_easy_open();
+
+void test_easy_nonorm();
+
 #endif /* TESTS_H_ */
