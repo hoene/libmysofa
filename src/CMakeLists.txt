@@ -93,6 +93,9 @@ if(BUILD_TESTS)
   target_link_libraries (internal m ${CUNIT_LIBRARIES})
   add_test(NAME internal WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND internal)
   
+  add_executable(multithread tests/multithread.c)
+  target_link_libraries (multithread mysofa-shared pthread)
+  add_test(NAME multithread WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND multithread)
 
   install(TARGETS mysofa2json
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
