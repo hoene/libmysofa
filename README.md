@@ -132,9 +132,7 @@ mysofa_close_cached(hrtf4);
 ...
 mysofa_cache_release_all();
 ```
-Then, all HRTFs having the same filename and sampling rate are stored only once in memory.
-
-If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the library at a given time.
+Then, all HRTFs having the same filename and sampling rate are stored only once in memory. If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the mysofa_open_cached and mysofa_close_cached functions at a given time.
 
 ## OS support
 
