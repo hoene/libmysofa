@@ -138,7 +138,8 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
   case 2:
     return readOHDRHeaderMessageDataspace2(reader, ds);
   default:
-    log("object OHDR dataspace message must have version 1 or 2\n");
+    log("object OHDR dataspace message must have version 1 or 2 but is %X\n",
+        version);
     return MYSOFA_INVALID_FORMAT;
   }
 }
@@ -246,51 +247,86 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
     break;
 
   case 6:
-    log("    COMPONENT %d %02X\n", dt->size, dt->class_bit_field);
-    if ((dt->class_and_version & 0xf0) != 0x30) {
-      log("object OHDR datatype message must have version 1 not %d\n",
+    log("    COMPOUND %d %02X\n", dt->size, dt->class_bit_field);
+    switch (dt->class_and_version >> 4) {
+    case 3:
+      for (i = 0; i < (dt->class_bit_field & 0xffff); i++) {
+        int maxsize = 0x1000;
+        buffer = malloc(maxsize);
+        if (!buffer)
+          return MYSOFA_NO_MEMORY;
+        for (j = 0; j < maxsize - 1; j++) {
+          c = fgetc(reader->fhd);
+          if (c < 0) {
+            free(buffer);
+            return MYSOFA_READ_ERROR;
+          }
+          buffer[j] = c;
+          if (c == 0)
+            break;
+        }
+        buffer[j] = 0;
+
+        for (j = 0, c = 0; (dt->size >> (8 * j)) > 0; j++) {
+          c |= fgetc(reader->fhd) << (8 * j);
+        }
+
+        log("   COMPOUND %s offset %d\n", buffer, c);
+
+        /* not needed until the data is stored somewhere permanently
+         p = realloc(buffer, j);
+         if (!p) {
+         free(buffer);
+         return errno;
+         }
+         buffer = p;
+         */
+        free(buffer);
+
+        err = readOHDRHeaderMessageDatatype(reader, &dt2);
+        if (err)
+          return err;
+      }
+      break;
+
+    case 1:
+      for (i = 0; i < (dt->class_bit_field & 0xffff); i++) {
+        char name[256];
+        for (j = 0;; j++) {
+          if (j == sizeof(name))
+            return MYSOFA_INVALID_FORMAT;
+          name[j] = fgetc(reader->fhd);
+          if (name[j] < 0)
+            return MYSOFA_READ_ERROR;
+          if (name[j] == 0)
+            break;
+        }
+        if (fseek(reader->fhd, (7 - j) & 7, SEEK_CUR))
+          return MYSOFA_READ_ERROR;
+
+        c = readValue(reader, 4);
+        uint8_t dimension = fgetc(reader->fhd);
+        if (dimension != 0) {
+          log("COMPOUND v1 with dimension not supported");
+          return MYSOFA_INVALID_FORMAT;
+        }
+
+        // ignore the following fields
+        if (fseek(reader->fhd, 3 + 4 + 4 + 4 * 4, SEEK_CUR))
+          return MYSOFA_READ_ERROR;
+
+        log("  COMPOUND %s %d %d %X\n", name, c, dimension, ftell(reader->fhd));
+        err = readOHDRHeaderMessageDatatype(reader, &dt2);
+        if (err)
+          return err;
+      }
+      break;
+    default:
+      log("object OHDR datatype message must have version 1 or 3 not %d\n",
           dt->class_and_version >> 4);
       return MYSOFA_INVALID_FORMAT;
     }
-    for (i = 0; i < (dt->class_bit_field & 0xffff); i++) {
-      int maxsize = 0x1000;
-      buffer = malloc(maxsize);
-      if (!buffer)
-        return MYSOFA_NO_MEMORY;
-      for (j = 0; j < maxsize - 1; j++) {
-        c = fgetc(reader->fhd);
-        if (c < 0) {
-          free(buffer);
-          return MYSOFA_READ_ERROR;
-        }
-        buffer[j] = c;
-        if (c == 0)
-          break;
-      }
-      buffer[j] = 0;
-
-      for (j = 0, c = 0; (dt->size >> (8 * j)) > 0; j++) {
-        c |= fgetc(reader->fhd) << (8 * j);
-      }
-
-      log("   COMPONENT %s offset %d\n", buffer, c);
-
-      /* not needed until the data is stored somewhere permanently
-       p = realloc(buffer, j);
-       if (!p) {
-       free(buffer);
-       return errno;
-       }
-       buffer = p;
-       */
-      free(buffer);
-
-      err = readOHDRHeaderMessageDatatype(reader, &dt2);
-      if (err)
-        return err;
-    }
     break;
-
   case 7: /* reference */
     log("   REFERENCE %d %02X\n", dt->size, dt->class_bit_field);
     break;
@@ -380,18 +416,18 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 /*
  * IV.A.2.i. The Data Layout Message
 
- 00000ec0                       08  00 00 00 00 00 00 00 00  |......+.........|
- 00000ed0  00 9e 47 0b 16 00 01 00  00 02 02 02 00 01 00 01  |..G.............|
- 00000ee0  00 08 00 00 00 01 00 01  00 01 00 01 00 00 00 08  |................|
- 00000ef0  17 00 01 00 00 03 02 03  01 42 00 00 00 00 00 00  |.........B......|
- 00000f00  01 00 00 00 03 00 00 00  08 00 00 00 15 1c 00 04  |................|
+ 00000ec0                       08  00 00 00 00 00 00 00 00 |......+.........|
+ 00000ed0  00 9e 47 0b 16 00 01 00  00 02 02 02 00 01 00 01 |..G.............|
+ 00000ee0  00 08 00 00 00 01 00 01  00 01 00 01 00 00 00 08 |................|
+ 00000ef0  17 00 01 00 00 03 02 03  01 42 00 00 00 00 00 00 |.........B......|
+ 00000f00  01 00 00 00 03 00 00 00  08 00 00 00 15 1c 00 04 |................|
 
 
  03 02 03  01 42 00 00 00 00 00 00  |.........B......|
- 00000f00  01 00 00 00 03 00 00 00  08 00 00 00 15 1c 00 04  |................|
- 00000f10  00 00 00 03 03 00 ff ff  ff ff ff ff ff ff ff ff  |................|
- 00000f20  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff 0c 23  |...............#|
- 00000f30  00 00 00 00 03 00 05 00  08 00 04 00 00 54 79 70  |.............Typ|
+ 00000f00  01 00 00 00 03 00 00 00  08 00 00 00 15 1c 00 04 |................|
+ 00000f10  00 00 00 03 03 00 ff ff  ff ff ff ff ff ff ff ff |................|
+ 00000f20  ff ff ff ff ff ff ff ff  ff ff ff ff ff ff 0c 23 |...............#|
+ 00000f30  00 00 00 00 03 00 05 00  08 00 04 00 00 54 79 70 |.............Typ|
 
 
  */
@@ -469,7 +505,8 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     break;
 
   default:
-    log("object OHDR message data layout message has unknown layout class %d\n",
+    log("object OHDR message data layout message has unknown layout class "
+        "%d\n",
         layout_class);
     return MYSOFA_INVALID_FORMAT;
   }
@@ -583,8 +620,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     }
     log("    GCOL %d %8" PRIX64 " %8lX\n", dt->list - dt->size, gcol,
         ftell(reader->fhd));
-    /*		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); TODO: missing part
-     * in specification */
+    /*		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); TODO:
+     * missing part in specification */
   }
 
   switch (dt->class_and_version & 0xf) {
@@ -682,7 +719,7 @@ int readData(struct READER *reader, struct DATAOBJECT *da, struct DATATYPE *dt,
  IV.A.2.q. The Object Header Continuation Message
 
  10 10 00 00 07 00 6d  |...............m|
- 000007f0  36 00 00 00 00 00 00 ea  00 00 00 00 00 00 00 15  |6...............|
+ 000007f0  36 00 00 00 00 00 00 ea  00 00 00 00 00 00 00 15 |6...............|
  */
 
 static int readOHDRHeaderMessageContinue(struct READER *reader,
@@ -742,8 +779,10 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 
   memset(&d, 0, sizeof(d));
 
-  if (fgetc(reader->fhd) != 3) {
-    log("object OHDR attribute message must have version 3\n");
+  uint8_t version = fgetc(reader->fhd);
+
+  if (version != 1 && version != 3) {
+    log("object OHDR attribute message must have version 1 or 3\n");
     return MYSOFA_INVALID_FORMAT;
   }
 
@@ -752,7 +791,8 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
   name_size = (uint16_t)readValue(reader, 2);
   datatype_size = (uint16_t)readValue(reader, 2);
   dataspace_size = (uint16_t)readValue(reader, 2);
-  encoding = (uint8_t)fgetc(reader->fhd);
+  if (version == 3)
+    encoding = (uint8_t)fgetc(reader->fhd);
 
   if (name_size > 0x1000)
     return MYSOFA_NO_MEMORY;
@@ -763,11 +803,16 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     free(name);
     return errno;
   }
-  name[name_size] = 0;
-  log("  attribute name %s\n", name);
+  if (version == 1 && fseek(reader->fhd, (8 - name_size) & 7, SEEK_CUR) != 0) {
+    free(name);
+    return errno;
+  }
 
-  if (flags & 3) {
-    log("object OHDR attribute message must have any flags set\n");
+  name[name_size] = 0;
+  log("  attribute name %s %d %d\n", name, datatype_size, dataspace_size);
+
+  if (version == 3 && (flags & 3)) {
+    log("object OHDR attribute message must not have any flags set\n");
     free(name);
     return MYSOFA_INVALID_FORMAT;
   }
@@ -804,8 +849,8 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 /*
  * IV.A.2.v. The Attribute Info Message
 
- 00000070                           15 1c 00 04 00 00 00 03  |................|
- 00000080  16 00 40 02 00 00 00 00  00 00 d2 02 00 00 00 00  |..@.............|
+ 00000070                           15 1c 00 04 00 00 00 03 |................|
+ 00000080  16 00 40 02 00 00 00 00  00 00 d2 02 00 00 00 00 |..@.............|
  00000090  00 00 f8 02 00 00 00 00  00 00
 
  */
