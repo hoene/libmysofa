@@ -137,8 +137,10 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	reader->superblock.dataobject.attributes = NULL;
 
 	/* check SOFA file attributes */
-	if (!!(*err = checkAttribute(hrtf->attributes, "Conventions", "SOFA")))
+	if (!!(*err = checkAttribute(hrtf->attributes, "Conventions", "SOFA"))) {
+		mylog("no Conventions=SOFA attribute\n");
 		goto error;
+        }
 
 	/* read dimensions */
 	while (dir) {
