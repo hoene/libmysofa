@@ -138,8 +138,9 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
   case 2:
     return readOHDRHeaderMessageDataspace2(reader, ds);
   default:
-    log("object OHDR dataspace message must have version 1 or 2 but is %X\n",
-        version);
+    log("object OHDR dataspace message must have version 1 or 2 but is %X at "
+        "%06X\n",
+        version, ftell(reader->fhd) - 1);
     return MYSOFA_INVALID_FORMAT;
   }
 }
@@ -197,8 +198,8 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
   dt->class_and_version = (uint8_t)fgetc(reader->fhd);
   if ((dt->class_and_version & 0xf0) != 0x10 &&
       (dt->class_and_version & 0xf0) != 0x30) {
-    log("object OHDR datatype message must have version 1 not %d\n",
-        dt->class_and_version >> 4);
+    log("object OHDR datatype message must have version 1 not %d at %06X\n",
+        dt->class_and_version >> 4, ftell(reader->fhd) - 1);
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -211,7 +212,8 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
   case 0: /* int */
     dt->u.i.bit_offset = readValue(reader, 2);
     dt->u.i.bit_precision = readValue(reader, 2);
-    log("    INT bit %d %d\n", dt->u.i.bit_offset, dt->u.i.bit_precision);
+    log("    INT bit %d %d %d %d\n", dt->u.i.bit_offset, dt->u.i.bit_precision,
+        dt->class_and_version >> 4, dt->size);
     break;
 
   case 1: /* float */
@@ -328,7 +330,7 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
     }
     break;
   case 7: /* reference */
-    log("   REFERENCE %d %02X\n", dt->size, dt->class_bit_field);
+    log("    REFERENCE %d %02X\n", dt->size, dt->class_bit_field);
     break;
 
   case 9: /* list */
@@ -360,9 +362,9 @@ static int readOHDRHeaderMessageDataFill1or2(struct READER *reader) {
   uint8_t fillValueWriteTime = fgetc(reader->fhd);
   uint8_t fillValueDefined = fgetc(reader->fhd);
 
-  if (spaceAllocationTime != 2 || fillValueWriteTime != 2 ||
+  if ((spaceAllocationTime & ~1) != 2 || fillValueWriteTime != 2 ||
       (fillValueDefined & ~1) != 0) {
-    log("spaceAllocationTime %d fillValueWriteTime %d fillValueDefined %d",
+    log("spaceAllocationTime %d fillValueWriteTime %d fillValueDefined %d\n",
         spaceAllocationTime, fillValueWriteTime, fillValueDefined);
     return MYSOFA_INVALID_FORMAT;
   }
@@ -411,6 +413,17 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
   }
 
   flags = (uint8_t)fgetc(reader->fhd);
+}
+
+static int readOHDRHeaderMessageDataFillOld(struct READER *reader) {
+
+  uint32_t size;
+
+  size = (uint32_t)readValue(reader, 4);
+  if (fseek(reader->fhd, size, SEEK_CUR) < 0)
+    return errno;
+
+  return MYSOFA_OK;
 }
 
 /*
@@ -809,7 +822,8 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
   }
 
   name[name_size] = 0;
-  log("  attribute name %s %d %d\n", name, datatype_size, dataspace_size);
+  log("  attribute name %s %d %d %X\n", name, datatype_size, dataspace_size,
+      ftell(reader->fhd));
 
   if (version == 3 && (flags & 3)) {
     log("object OHDR attribute message must not have any flags set\n");
@@ -822,12 +836,18 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     free(name);
     return MYSOFA_INVALID_FORMAT;
   }
+  if (version == 1)
+    fseek(reader->fhd, (8 - datatype_size) & 7, SEEK_CUR);
+
   err = readOHDRHeaderMessageDataspace(reader, &d.ds);
   if (err) {
     log("object OHDR attribute message read dataspace error\n");
     free(name);
     return MYSOFA_INVALID_FORMAT;
   }
+  if (version == 1)
+    fseek(reader->fhd, (8 - dataspace_size) & 7, SEEK_CUR);
+
   err = readData(reader, &d, &d.dt, &d.ds);
   if (err) {
     log("object OHDR attribute message read data error\n");
@@ -926,6 +946,10 @@ static int readOHDRmessages(struct READER *reader,
       break;
     case 3: /* Datatype Message */
       if (!!(err = readOHDRHeaderMessageDatatype(reader, &dataobject->dt)))
+        return err;
+      break;
+    case 4: /* Data Fill Message Old */
+      if (!!(err = readOHDRHeaderMessageDataFillOld(reader)))
         return err;
       break;
     case 5: /* Data Fill Message */
