@@ -80,13 +80,13 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTLF", 4)) {
-		log("cannot read signature of BTLF\n");
+		mylog("cannot read signature of BTLF\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	mylog("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
-		log("object BTLF must have version 0\n");
+		mylog("object BTLF must have version 0\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
 
@@ -98,7 +98,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 		case 5:
 			records->type5.hash_of_name = (uint32_t) readValue(reader, 4);
 			records->type5.heap_id = readValue(reader, 7);
-			log(" type5 %08X %14" PRIX64 "\n", records->type5.hash_of_name,
+			mylog(" type5 %08X %14" PRIX64 "\n", records->type5.hash_of_name,
 					records->type5.heap_id);
 			records++;
 			break;
@@ -131,7 +131,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 			break;
 
 		default:
-			log("object BTLF has unknown type %d\n", type);
+			mylog("object BTLF has unknown type %d\n", type);
 			return MYSOFA_INVALID_FORMAT;
 		}
 	}
@@ -156,13 +156,13 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
 
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTHD", 4)) {
-		log("cannot read signature of BTHD\n");
+		mylog("cannot read signature of BTHD\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	mylog("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	if (fgetc(reader->fhd) != 0) {
-		log("object BTHD must have version 0\n");
+		mylog("object BTHD must have version 0\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
 
@@ -225,16 +225,16 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	UNUSED(key);
 
 	if (data->ds.dimensionality > 3) {
-		log("TREE dimensions > 3");
+		mylog("TREE dimensions > 3");
 		return MYSOFA_INVALID_FORMAT;
 	}
 
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "TREE", 4)) {
-		log("cannot read signature of TREE\n");
+		mylog("cannot read signature of TREE\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
-	log("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
+	mylog("%08" PRIX64 " %.4s\n", (uint64_t )ftell(reader->fhd) - 4, buf);
 
 	node_type = (uint8_t) fgetc(reader->fhd);
 	node_level = (uint8_t) fgetc(reader->fhd);
@@ -258,7 +258,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 	szy = sz * sy;
 	size = data->datalayout_chunk[data->ds.dimensionality];
 
-	log("elements %d size %d\n",elements,size);
+	mylog("elements %d size %d\n",elements,size);
 
 	if (elements >= 0x100000 || size > 0x10)
 		return MYSOFA_INVALID_FORMAT;
@@ -273,14 +273,14 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 			size_of_chunk = (uint32_t) readValue(reader, 4);
 			filter_mask = (uint32_t) readValue(reader, 4);
 			if (filter_mask) {
-				log("TREE all filters must be enabled\n");
+				mylog("TREE all filters must be enabled\n");
 				free(output);
 				return MYSOFA_INVALID_FORMAT;
 			}
 
 			for (j = 0; j < data->ds.dimensionality; j++) {
 				start[j] = readValue(reader, 8);
-				log("start %d %" PRIu64 "\n",j,start[j]);
+				mylog("start %d %" PRIu64 "\n",j,start[j]);
 			}
 
 			if (readValue(reader, 8)) {
@@ -289,7 +289,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
 			child_pointer = readValue(reader,
 					reader->superblock.size_of_offsets);
-			log(" data at %" PRIX64 " len %u\n", child_pointer, size_of_chunk);
+			mylog(" data at %" PRIX64 " len %u\n", child_pointer, size_of_chunk);
 
 			/* read data */
 			store = ftell(reader->fhd);
@@ -312,7 +312,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 			err = gunzip(size_of_chunk, input, &olen, output);
 			free(input);
 
-			log("   gunzip %d %d %d\n",err, olen, elements*size);
+			mylog("   gunzip %d %d %d\n",err, olen, elements*size);
 			if (err || olen != elements * size) {
 				free(output);
 				return MYSOFA_INVALID_FORMAT;
@@ -362,7 +362,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 				}
 				break;
 			default:
-				log("invalid dim\n");
+				mylog("invalid dim\n");
 				return MYSOFA_INTERNAL_ERROR;
 			}
 

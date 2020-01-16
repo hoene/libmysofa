@@ -25,7 +25,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
 
   if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8 ||
       superblock->size_of_lengths < 2 || superblock->size_of_lengths > 8) {
-    log("size of offsets and length is invalid: %d %d\n",
+    mylog("size of offsets and length is invalid: %d %d\n",
         superblock->size_of_offsets, superblock->size_of_lengths);
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
@@ -39,7 +39,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
       readValue(reader, superblock->size_of_offsets);
 
   if (superblock->base_address != 0) {
-    log("base address is not null\n");
+    mylog("base address is not null\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -47,7 +47,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
     return errno;
 
   if (superblock->end_of_file_address != ftell(reader->fhd)) {
-    log("file size mismatch\n");
+    mylog("file size mismatch\n");
     return MYSOFA_INVALID_FORMAT;
   }
 
@@ -56,7 +56,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
   /* seek to first object */
   if (fseek(reader->fhd, superblock->root_group_object_header_address,
             SEEK_SET)) {
-    log("cannot seek to first object at %" PRId64 "\n",
+    mylog("cannot seek to first object at %" PRId64 "\n",
         superblock->root_group_object_header_address);
     return errno;
   }
@@ -89,7 +89,7 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
 
   if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8 ||
       superblock->size_of_lengths < 2 || superblock->size_of_lengths > 8) {
-    log("size of offsets and length is invalid: %d %d\n",
+    mylog("size of offsets and length is invalid: %d %d\n",
         superblock->size_of_offsets, superblock->size_of_lengths);
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
@@ -105,7 +105,7 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
 
   superblock->base_address = readValue(reader, superblock->size_of_offsets);
   if (superblock->base_address != 0) {
-    log("base address is not null\n");
+    mylog("base address is not null\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -124,7 +124,7 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
       reader, superblock->size_of_offsets); /* Object Header Address */
 
   if (readValue(reader, 4) != 0) {
-    log("cache type must be 0\n");
+    mylog("cache type must be 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -132,14 +132,14 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
     return errno;
 
   if (superblock->end_of_file_address != ftell(reader->fhd)) {
-    log("file size mismatch\n");
+    mylog("file size mismatch\n");
   }
   /* end of superblock */
 
   /* seek to first object */
   if (fseek(reader->fhd, superblock->root_group_object_header_address,
             SEEK_SET)) {
-    log("cannot seek to first object at %" PRId64 "\n",
+    mylog("cannot seek to first object at %" PRId64 "\n",
         superblock->root_group_object_header_address);
     return errno;
   }
@@ -154,7 +154,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
   /* signature */
   if (fread(buf, 1, 8, reader->fhd) != 8 ||
       strncmp("\211HDF\r\n\032\n", buf, 8)) {
-    log("file does not have correct signature");
+    mylog("file does not have correct signature");
     return MYSOFA_INVALID_FORMAT;
   }
 
@@ -169,7 +169,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
   case 3:
     return superblockRead2or3(reader, superblock);
   default:
-    log("superblock must have version 0, 1, 2, or 3 but has %d\n", version);
+    mylog("superblock must have version 0, 1, 2, or 3 but has %d\n", version);
     return MYSOFA_INVALID_FORMAT;
   }
 }

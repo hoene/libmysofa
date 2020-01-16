@@ -31,21 +31,23 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
   UNUSED(block_size);
   UNUSED(block_offset);
 
-  if (reader->recursive_counter >= 10)
+  if (reader->recursive_counter >= 20) {
+    mylog("recursive problem");
     return MYSOFA_INVALID_FORMAT;
+  }
   else
     reader->recursive_counter++;
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHDB", 4)) {
-    log("cannot read signature of fractal heap indirect block\n");
+    mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  log("%08" PRIX64 " %.4s stack %d\n", (uint64_t)ftell(reader->fhd) - 4, buf,
+  mylog("%08" PRIX64 " %.4s stack %d\n", (uint64_t)ftell(reader->fhd) - 4, buf,
       reader->recursive_counter);
 
   if (fgetc(reader->fhd) != 0) {
-    log("object FHDB must have version 0\n");
+    mylog("object FHDB must have version 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -66,7 +68,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
   else
     length_size = ceilf(log2f(fractalheap->maximum_size) / 8);
 
-  log(" %d %" PRIu64 " %d\n", size, block_offset, offset_size);
+  mylog(" %d %" PRIu64 " %d\n", size, block_offset, offset_size);
 
   /*
    * 00003e00  00 46 48 44 42 00 40 02  00 00 00 00 00 00 00 00
@@ -91,7 +93,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     if (offset > 0x10000000 || length > 0x10000000)
       return MYSOFA_UNSUPPORTED_FORMAT;
 
-    log(" %d %4" PRIX64 " %" PRIX64 " %08lX\n", typeandversion, offset, length,
+    mylog(" %d %4" PRIX64 " %" PRIX64 " %08lX\n", typeandversion, offset, length,
         ftell(reader->fhd));
 
     /* TODO: for the following part, the specification is incomplete */
@@ -101,7 +103,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
        */
 
       if (readValue(reader, 5) != 0x0000040008) {
-        log("FHDB type 3 unsupported values");
+        mylog("FHDB type 3 unsupported values");
         return MYSOFA_UNSUPPORTED_FORMAT;
       }
 
@@ -114,7 +116,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
       name[length] = 0;
 
       if (readValue(reader, 4) != 0x00000013) {
-        log("FHDB type 3 unsupported values");
+        mylog("FHDB type 3 unsupported values");
         free(name);
         return MYSOFA_UNSUPPORTED_FORMAT;
       }
@@ -147,12 +149,12 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         }
         strcpy(value, "");
       } else {
-        log("FHDB type 3 unsupported values: %12" PRIX64 "\n", unknown);
+        mylog("FHDB type 3 unsupported values: %12" PRIX64 "\n", unknown);
         free(name);
         /* TODO:			return MYSOFA_UNSUPPORTED_FORMAT; */
         return MYSOFA_OK;
       }
-      log(" %s = %s\n", name, value);
+      mylog(" %s = %s\n", name, value);
 
       attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
       attr->name = name;
@@ -166,7 +168,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
        */
       unknown = readValue(reader, 6);
       if (unknown) {
-        log("FHDB type 1 unsupported values\n");
+        mylog("FHDB type 1 unsupported values\n");
         return MYSOFA_UNSUPPORTED_FORMAT;
       }
 
@@ -186,7 +188,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
       heap_header_address =
           readValue(reader, reader->superblock.size_of_offsets);
 
-      log("fractal head type 1 length %4" PRIX64 " name %s address %" PRIX64
+      mylog("fractal head type 1 length %4" PRIX64 " name %s address %" PRIX64
           "\n",
           length, name, heap_header_address);
 
@@ -219,7 +221,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
     } else if (typeandversion != 0) {
       /* TODO is must be avoided somehow */
-      log("fractal head unknown type %d\n", typeandversion);
+      mylog("fractal head unknown type %d\n", typeandversion);
       /*			return MYSOFA_UNSUPPORTED_FORMAT; */
       return MYSOFA_OK;
     }
@@ -252,13 +254,13 @@ static int indirectblockRead(struct READER *reader,
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHIB", 4)) {
-    log("cannot read signature of fractal heap indirect block\n");
+    mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  log("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
+  mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
-    log("object FHIB must have version 0\n");
+    mylog("object FHIB must have version 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -269,7 +271,7 @@ static int indirectblockRead(struct READER *reader,
   block_offset = readValue(reader, size);
 
   if (block_offset) {
-    log("FHIB block offset is not 0\n");
+    mylog("FHIB block offset is not 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -302,7 +304,7 @@ static int indirectblockRead(struct READER *reader,
       size_filtered = readValue(reader, reader->superblock.size_of_lengths);
       filter_mask = readValue(reader, 4);
     }
-    log(">> %d %" PRIX64 " %d\n", k, child_direct_block, size);
+    mylog(">> %d %" PRIX64 " %d\n", k, child_direct_block, size);
     if (validAddress(reader, child_direct_block)) {
       store = ftell(reader->fhd);
       if (fseek(reader->fhd, child_direct_block, SEEK_SET) < 0)
@@ -364,13 +366,13 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FRHP", 4)) {
-    log("cannot read signature of fractal heap\n");
+    mylog("cannot read signature of fractal heap\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
-  log("%" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
+  mylog("%" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
-    log("object fractal heap must have version 0\n");
+    mylog("object fractal heap must have version 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -443,12 +445,12 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
   }
 
   if (fractalheap->number_huge_objects) {
-    log("cannot handle huge objects\n");
+    mylog("cannot handle huge objects\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
   if (fractalheap->number_tiny_objects) {
-    log("cannot handle tiny objects\n");
+    mylog("cannot handle tiny objects\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 

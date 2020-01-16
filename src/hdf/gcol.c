@@ -24,12 +24,12 @@ static int readGCOL(struct READER *reader) {
 
 	/* read signature */
 	if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "GCOL", 4)) {
-		log("cannot read signature of global heap collection\n");
+		mylog("cannot read signature of global heap collection\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
 
 	if (fgetc(reader->fhd) != 1) {
-		log("object GCOL must have version 1\n");
+		mylog("object GCOL must have version 1\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
 	if (fgetc(reader->fhd) < 0 || fgetc(reader->fhd) < 0
@@ -62,14 +62,14 @@ static int readGCOL(struct READER *reader) {
 		}
 		gcol->value = readValue(reader, gcol->object_size);
 		gcol->address = address;
-		log(" GCOL object %d size %" PRIu64 " value %08" PRIX64 "\n", gcol->heap_object_index,
+		mylog(" GCOL object %d size %" PRIu64 " value %08" PRIX64 "\n", gcol->heap_object_index,
 				gcol->object_size, gcol->value);
 
 		gcol->next = reader->gcol;
 		reader->gcol = gcol;
 	}
 
-	log(" END %08lX vs. %08" PRIX64 "\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
+	mylog(" END %08lX vs. %08" PRIX64 "\n", ftell(reader->fhd), end); /* bug in the normal hdf5 specification */
 	/*	fseek(reader->fhd, end, SEEK_SET); */
 	return MYSOFA_OK;
 }
@@ -97,7 +97,7 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 			p = p->next;
 		}
 		if (!p) {
-			log("unknown gcol %" PRIX64 " %d\n",gcol,reference);
+			mylog("unknown gcol %" PRIX64 " %d\n",gcol,reference);
 			return MYSOFA_INVALID_FORMAT;
 		}
 	}
@@ -110,11 +110,11 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
 gcol = reader->gcol;
 for (;;) {
 	if (gcol == NULL) {
-		log("reference unknown!\n");
+		mylog("reference unknown!\n");
 		return MYSOFA_INVALID_FORMAT;
 	}
 	if (gcol->heap_object_index == reference) {
-		log("found reference at %LX\n", gcol->object_pos);
+		mylog("found reference at %LX\n", gcol->object_pos);
 		break;
 		pos = ftell(reader->fhd);
 		fseek(reader->fhd, gcol->object_pos, SEEK_SET);
