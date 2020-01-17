@@ -33,7 +33,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 	UNUSED(block_size);
 	UNUSED(block_offset);
 
-	if(reader->recursive_counter >= 10)
+	if(reader->recursive_counter >= 20)
 		return MYSOFA_INVALID_FORMAT;
 	else
 		reader->recursive_counter++;

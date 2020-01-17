@@ -622,7 +622,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
 		return MYSOFA_UNSUPPORTED_FORMAT;
 
 	log(" continue %08" PRIX64 " %08" PRIX64 "\n", offset, length);
-	if(reader->recursive_counter >= 10)
+	if(reader->recursive_counter >= 20)
 		return MYSOFA_UNSUPPORTED_FORMAT;
 	else
 		reader->recursive_counter++;
