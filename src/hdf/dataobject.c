@@ -465,18 +465,36 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
   layout_class = (uint8_t)fgetc(reader->fhd);
 
   switch (layout_class) {
-  #if 0
+#if 0
 	case 0:
 	data_size = readValue(reader, 2);
 	fseek(reader->fhd, data_size, SEEK_CUR);
 	mylog("TODO 0 SIZE %u\n", data_size);
 	break;
-	#endif
+#endif
   case 1:
     data_address = readValue(reader, reader->superblock.size_of_offsets);
     data_size = readValue(reader, reader->superblock.size_of_lengths);
-    mylog("TODO 1 SIZE %" PRIu64 "\n", data_size);
-//    return MYSOFA_INVALID_FORMAT;
+    mylog("CHUNK Contiguous SIZE %" PRIu64 "\n", data_size);
+
+    if (validAddress(reader, data_address)) {
+      store = ftell(reader->fhd);
+      if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
+        return errno;
+      if (!data->data) {
+        if (data_size < 0 || data_size > 0x10000000)
+          return MYSOFA_INVALID_FORMAT;
+        data->data_len = data_size;
+        data->data = calloc(1, data_size);
+        if (!data->data)
+          return MYSOFA_NO_MEMORY;
+      }
+      err = fread(data->data, 1, data_size, reader->fhd);
+      if (err != data_size)
+        return MYSOFA_READ_ERROR;
+      if (fseek(reader->fhd, store, SEEK_SET) < 0)
+        return errno;
+    }
     break;
 
   case 2:
@@ -663,7 +681,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     mylog("COMPONENT todo %lX %d\n", ftell(reader->fhd), dt->size);
     if (fseek(reader->fhd, dt->size, SEEK_CUR))
       return errno;
-  //  return MYSOFA_INVALID_FORMAT;
+    //  return MYSOFA_INVALID_FORMAT;
     break;
 
   case 7:
