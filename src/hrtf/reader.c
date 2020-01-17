@@ -71,7 +71,7 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 		return err;
 
 	while (attr) {
-		log(" %s=%s\n",attr->name,attr->value);
+		mylog(" %s=%s\n",attr->name,attr->value);
 
 		if (!strcmp(attr->name, "NAME")
 				&& attr->value && !strncmp(attr->value,
@@ -83,7 +83,7 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 			}
 			p++;
 			*dim = atoi(p);
-			log("NETCDF DIM %u\n",*dim);
+			mylog("NETCDF DIM %u\n",*dim);
 			return MYSOFA_OK;
 		}
 		attr = attr->next;
@@ -98,7 +98,7 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 
 	struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
 	while (attr) {
-		log(" %s=%s\n",attr->name,attr->value);
+		mylog(" %s=%s\n",attr->name,attr->value);
 		attr = attr->next;
 	}
 
@@ -233,8 +233,10 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	hrtf->variables = NULL;
 
 	/* check SOFA file attributes */
-	if (!!(*err = checkAttribute(hrtf->attributes, "Conventions", "SOFA")))
+	if (!!(*err = checkAttribute(hrtf->attributes, "Conventions", "SOFA"))) {
+		mylog("no Conventions=SOFA attribute\n");
 		goto error;
+        }
 
 	/* read dimensions */
 	while (dir) {
@@ -268,8 +270,8 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 			case 'S':
 				break; /* be graceful, some issues with API version 0.4.4 */
 			default:
-				log("UNKNOWN SOFA VARIABLE %s", dir->dataobject.name);
-				//goto error;
+				mylog("UNKNOWN SOFA VARIABLE %s", dir->dataobject.name);
+				goto error;
 			}
 			if (*err)
 				goto error;
@@ -278,7 +280,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	}
 
 	if (dimensionflags != 0x3f || hrtf->I != 1 || hrtf->C != 3) {
-		log("dimensions are missing or wrong\n");
+		mylog("dimensions are missing or wrong\n");
 		goto error;
 	}
 
@@ -286,7 +288,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	while (dir) {
 
 		if(!dir->dataobject.name) {
-			log("SOFA VARIABLE IS NULL.\n");
+			mylog("SOFA VARIABLE IS NULL.\n");
 		}
 		else if (!strcmp(dir->dataobject.name, "ListenerPosition")) {
 			*err = getArray(&hrtf->ListenerPosition, &dir->dataobject);
@@ -306,9 +308,9 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 			*err = getArray(&hrtf->DataSamplingRate, &dir->dataobject);
 		} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
 			*err = getArray(&hrtf->DataDelay, &dir->dataobject);
-		} else {
+		} else { 
 			if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
-				log("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);
+				mylog("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);
 				if(isNonStandardVariable(dir)) {
 					*err = addNonStandardVariable(hrtf, &dir->dataobject);
 				}
@@ -338,7 +340,7 @@ MYSOFA_EXPORT struct MYSOFA_HRTF* mysofa_load(const char *filename, int *err) {
 		reader.fhd = stdin;
 
 	if (!reader.fhd) {
-		log("cannot open file %s\n", filename);
+		mylog("cannot open file %s\n", filename);
 		*err = errno;
 		return NULL;
 	}

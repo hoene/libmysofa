@@ -54,6 +54,7 @@ if(BUILD_TESTS)
   add_test(Tester ../tests/compare.sh ../tests/tester)
   add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa ../tests/compare.sh ../tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m)
   add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa ../tests/compare.sh ../tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m)
+  add_test(example_dummy_sofa48.sofa ../tests/compare.sh ../tests/example_dummy_sofa48.sofa)
 endif(BUILD_TESTS)
 
 add_subdirectory(src)
