@@ -310,8 +310,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 			if(isNonStandardVariable(dir)) {				
 				*err = addNonStandardVariable(hrtf, &dir->dataobject);
 			} else if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
-				log("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);
-				
+				mylog("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);				
 			}				
 		}
 		dir = dir->next;
