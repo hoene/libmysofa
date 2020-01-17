@@ -99,7 +99,6 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 	struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
 	while (attr) {
 		log(" %s=%s\n",attr->name,attr->value);
-
 		attr = attr->next;
 	}
 
@@ -121,6 +120,101 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 	return MYSOFA_OK;
 }
 
+static int isNonStandardVariable(struct DIR *dir) {
+	if (!strcmp(dir->dataobject.name, "ListenerPosition")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "ReceiverPosition")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "SourcePosition")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "EmitterPosition")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "ListenerUp")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "ListenerView")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "Data.IR")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "Data.SamplingRate")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
+		return false;
+	} else if (dir->dataobject.name[0] == 'I' 
+		   || dir->dataobject.name[0] == 'C' 
+		   || dir->dataobject.name[0] == 'R' 
+		   || dir->dataobject.name[0] == 'E'
+		   || dir->dataobject.name[0] == 'N'
+		   || dir->dataobject.name[0] == 'M'
+		   || dir->dataobject.name[0] == 'S') {
+		return false;
+	}
+	return true;	
+}
+
+static int addNonStandardVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *dataobject) {
+	int err;
+		
+	// init variable
+	struct MYSOFA_VARIABLE *var = malloc(sizeof(struct MYSOFA_VARIABLE));
+
+	if (!var) {
+		return errno;		
+	}
+	memset(hrtf, 0, sizeof(struct MYSOFA_VARIABLE));
+			
+	// init values array
+	var->value = malloc(sizeof(struct MYSOFA_ARRAY));
+	if (!var->value) {
+		free(var);
+		return errno;
+	}
+	memset(var->value, 0, sizeof(struct MYSOFA_ARRAY));
+			
+	var->next = NULL;
+	// copy name
+	var->name = malloc(strlen(dataobject->name) + 1);
+	if (!var->name) {
+		free(var->value);
+		free(var);
+		return errno;
+	}
+	strcpy(var->name, dataobject->name);
+			
+	// get variable dimension
+	err = getDimension(&var->value->elements, dataobject);
+	if(err != MYSOFA_OK) {
+		free(var->name);
+		free(var->value);
+		free(var);
+		return err;
+	}
+
+	err = getArray(&var->value, dataobject);
+	if(err != MYSOFA_OK) {
+		if(var->value->values) {
+			free(var->value->values);
+		}
+		free(var->name);
+		free(var->value);
+		free(var);
+		return err;
+	}
+	
+	// set field if no variable has been found ...
+	if(hrtf->variables == NULL) {
+		hrtf->variables = var;		
+	} else {
+		// ... or append to variables list
+		struct MYSOFA_VARIABLE *it = hrtf->variables;
+		while (it->next != NULL) {
+			it = it->next;
+		}		
+		it->next = var;
+	}
+
+	return MYSOFA_OK;
+}
+
 static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	int dimensionflags = 0;
 	struct DIR *dir = reader->superblock.dataobject.directory;
@@ -135,6 +229,8 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	/* copy SOFA file attributes */
 	hrtf->attributes = reader->superblock.dataobject.attributes;
 	reader->superblock.dataobject.attributes = NULL;
+
+	hrtf->variables = NULL;
 
 	/* check SOFA file attributes */
 	if (!!(*err = checkAttribute(hrtf->attributes, "Conventions", "SOFA")))
@@ -211,8 +307,12 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 		} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
 			*err = getArray(&hrtf->DataDelay, &dir->dataobject);
 		} else {
-			if (!(dir->dataobject.name[0] && !dir->dataobject.name[1]))
+			if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
 				log("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);
+				if(isNonStandardVariable(dir)) {
+					*err = addNonStandardVariable(hrtf, &dir->dataobject);
+				}
+			}				
 		}
 		dir = dir->next;
 	}
@@ -281,6 +381,14 @@ MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
 		free(hrtf->attributes->value);
 		free(hrtf->attributes);
 		hrtf->attributes = next;
+	}
+
+	while (hrtf->variables) {
+		struct MYSOFA_VARIABLE *next = hrtf->variables->next;
+	        free(hrtf->variables->name);
+		arrayFree(hrtf->variables->value);
+		free(hrtf->variables);
+		hrtf->variables = next;
 	}
 
 	arrayFree(&hrtf->ListenerPosition);
