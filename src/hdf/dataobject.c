@@ -465,19 +465,19 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
   layout_class = (uint8_t)fgetc(reader->fhd);
 
   switch (layout_class) {
-#if 0
+  #if 0
 	case 0:
 	data_size = readValue(reader, 2);
 	fseek(reader->fhd, data_size, SEEK_CUR);
 	mylog("TODO 0 SIZE %u\n", data_size);
 	break;
+	#endif
   case 1:
     data_address = readValue(reader, reader->superblock.size_of_offsets);
     data_size = readValue(reader, reader->superblock.size_of_lengths);
     mylog("TODO 1 SIZE %" PRIu64 "\n", data_size);
-    return MYSOFA_INVALID_FORMAT;
+//    return MYSOFA_INVALID_FORMAT;
     break;
-#endif
 
   case 2:
     dimensionality = (uint8_t)fgetc(reader->fhd);
@@ -663,7 +663,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     mylog("COMPONENT todo %lX %d\n", ftell(reader->fhd), dt->size);
     if (fseek(reader->fhd, dt->size, SEEK_CUR))
       return errno;
-    return MYSOFA_INVALID_FORMAT;
+  //  return MYSOFA_INVALID_FORMAT;
     break;
 
   case 7:
