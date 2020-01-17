@@ -269,7 +269,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 				break; /* be graceful, some issues with API version 0.4.4 */
 			default:
 				log("UNKNOWN SOFA VARIABLE %s", dir->dataobject.name);
-				goto error;
+				//goto error;
 			}
 			if (*err)
 				goto error;
