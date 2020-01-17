@@ -94,8 +94,8 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
-  int groupLeafNodeK = readValue(reader, 2);
-  int groupInternalNodeK = readValue(reader, 2);
+  /*int groupLeafNodeK = */readValue(reader, 2);
+  /*int groupInternalNodeK = */readValue(reader, 2);
   readValue(reader, 4);
 
   if (version == 1) {

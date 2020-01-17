@@ -43,9 +43,6 @@ if(BUILD_TESTS)
 
   enable_testing()
 
- # add_test(security_1 ./src/mysofa2json ../tests/security/1.sofa)
- # add_test(security_2 /bin/sh -c "./src/mysofa2json ../tests/security/2.sofa || test \$? = 22")
-
   add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh ../tests/CIPIC_subject_003_hrir_final)
   add_test(FHK_HRIR_L2354.sofa ../tests/compare.sh ../tests/FHK_HRIR_L2354)
   add_test(LISTEN_1002_IRC_1002_C_HRIR.sofa ../tests/compare.sh ../tests/LISTEN_1002_IRC_1002_C_HRIR)
