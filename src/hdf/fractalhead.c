@@ -34,8 +34,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
   if (reader->recursive_counter >= 20) {
     mylog("recursive problem");
     return MYSOFA_INVALID_FORMAT;
-  }
-  else
+  } else
     reader->recursive_counter++;
 
   /* read signature */
@@ -44,7 +43,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     return MYSOFA_INVALID_FORMAT;
   }
   mylog("%08" PRIX64 " %.4s stack %d\n", (uint64_t)ftell(reader->fhd) - 4, buf,
-      reader->recursive_counter);
+        reader->recursive_counter);
 
   if (fgetc(reader->fhd) != 0) {
     mylog("object FHDB must have version 0\n");
@@ -72,9 +71,17 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
   /*
    * 00003e00  00 46 48 44 42 00 40 02  00 00 00 00 00 00 00 00
-   |.FHDB.@.........| 00003e10  00 00 00 83 8d ac f6 >03  00 0c 00 08 00 04 00
-   00  |................| 00003e20  43 6f 6e 76 65 6e 74 69  6f 6e 73 00 13 00
-   00 00  |Conventions.....| 00003e30  04 00 00 00 02 00 00 00  53 4f 46 41< 03
+   |.FHDB.@.........|
+
+   00003e10  00 00 00 83 8d ac f6
+
+   >03  00 0c 00 08 00 04 00 00  |................|
+
+   00003e20  43 6f 6e 76 65 6e 74 69  6f 6e 73 00
+
+   13 00 00 00  |Conventions.....|
+
+   00003e30  04 00 00 00 02 00 00 00  53 4f 46 41< 03
    00 08 00  |........SOFA....| 00003e40  08 00 04 00 00 56 65 72  73 69 6f 6e
    00 13 00 00  |.....Version....| 00003e50  00 03 00 00 00 02 00 00  00 30 2e
    36 03 00 10 00  |.........0.6....| 00003e60  08 00 04 00 00 53 4f 46  41 43
@@ -85,6 +92,11 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
    6f 6e 73 56 65 72 73  |AConventionsVers| 00003eb0  69 6f 6e 00 13 00 00 00 03
    00 00 00 02 00 00 00  |ion.............|
    *
+
+00002730  00 00 00 00 00 00 00 46  48 44 42 00 97 02 00 00  |.......FHDB.....|
+00002740  00 00 00 00 00 00 00 00  00 99 b9 5c d8
+
+
    */
   do {
     typeandversion = (uint8_t)fgetc(reader->fhd);
@@ -93,8 +105,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     if (offset > 0x10000000 || length > 0x10000000)
       return MYSOFA_UNSUPPORTED_FORMAT;
 
-    mylog(" %d %4" PRIX64 " %" PRIX64 " %08lX\n", typeandversion, offset, length,
-        ftell(reader->fhd));
+    mylog(" %d %4" PRIX64 " %" PRIX64 " %08lX\n", typeandversion, offset,
+          length, ftell(reader->fhd) - 1 - offset_size - length_size);
 
     /* TODO: for the following part, the specification is incomplete */
     if (typeandversion == 3) {
@@ -157,67 +169,163 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
       mylog(" %s = %s\n", name, value);
 
       attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
+      if (attr == NULL) {
+        free(value);
+        free(name);
+        return MYSOFA_NO_MEMORY;
+      }
+
       attr->name = name;
       attr->value = value;
       attr->next = dataobject->attributes;
       dataobject->attributes = attr;
 
     } else if (typeandversion == 1) {
-      /*
-       * pointer to another data object
-       */
-      unknown = readValue(reader, 6);
-      if (unknown) {
-        mylog("FHDB type 1 unsupported values\n");
+
+      unknown = readValue(reader, 4);
+      switch (unknown) {
+      case 0:
+
+        unknown = readValue(reader, 2);
+        assert(unknown == 0x0000);
+
+        len = fgetc(reader->fhd);
+        if (len < 0)
+          return MYSOFA_READ_ERROR;
+        assert(len < 0x100);
+
+        if (!(name = malloc(len + 1)))
+          return MYSOFA_NO_MEMORY;
+        if (fread(name, 1, len, reader->fhd) != len) {
+          free(name);
+          return MYSOFA_READ_ERROR;
+        }
+        name[len] = 0;
+
+        heap_header_address =
+            readValue(reader, reader->superblock.size_of_offsets);
+
+        mylog("fractal head type 1 length %4" PRIX64 " name %s address %" PRIX64
+              "\n",
+              length, name, heap_header_address);
+
+        dir = malloc(sizeof(struct DIR));
+        if (!dir) {
+          free(name);
+          return MYSOFA_NO_MEMORY;
+        }
+        memset(dir, 0, sizeof(*dir));
+
+        dir->next = dataobject->directory;
+        dataobject->directory = dir;
+
+        store = ftell(reader->fhd);
+        if (fseek(reader->fhd, heap_header_address, SEEK_SET)) {
+          free(name);
+          return errno;
+        }
+
+        err = dataobjectRead(reader, &dir->dataobject, name);
+        if (err) {
+          return err;
+        }
+
+        if (store < 0) {
+          return errno;
+        }
+        if (fseek(reader->fhd, store, SEEK_SET) < 0)
+          return errno;
+        break;
+      case 0x00080008:
+
+        /*
+            > 01 00 0e  |...........\....|
+    00002750  00 08 00 08 00 5f 4e 43  50 72 6f 70 65 72 74 69
+    |....._NCProperti| 00002760  65 73 00 00 00 13 00 00  00 37 00 00 00 01 00
+    00  |es.......7......|
+
+    00002770  00 00 00 00 00 76 65 72  73 69 6f 6e 3d 31 7c 6e
+    |.....version=1|n| 00002780  65 74 63 64 66 6c 69 62  76 65 72 73 69 6f 6e
+    3d  |etcdflibversion=| 00002790  34 2e 36 2e 31 7c 68 64  66 35 6c 69 62 76
+    65 72  |4.6.1|hdf5libver| 000027a0  73 69 6f 6e 3d 31 2e 31  30 2e 34 00 01
+    00 0c 00  |sion=1.10.4.....| 000027b0  08 00 08 00 43 6f 6e 76  65 6e 74 69
+    6f 6e 73 00  |....Conventions.| 000027c0  00 00 00 00 13 00 00 00  04 00 00
+    00 01 00 00 00  |................| 000027d0  00 00 00 00 53 4f 46 41  01 00
+    08 00 08 00 08 00  |....SOFA........| 000027e0  56 65 72 73 69 6f 6e 00  13
+    00 00 00 03 00 00 00  |Version.........| 000027f0  01 00 00 00 00 00 00 00
+    31 2e 30 01 00 10 00 08  |........1.0.....| 00002800  00 08 00 53 4f 46 41
+    43  6f 6e 76 65 6e 74 69 6f  |...SOFAConventio| 00002810  6e 73 00 13 00 00
+    00 13  00 00 00 01 00 00 00 00  |ns..............| 00002820  00 00 00 53 69
+    6d 70 6c  65 46 72 65 65 46 69 65  |...SimpleFreeFie|
+    */
+        if (!(name = malloc(100)))
+          return MYSOFA_NO_MEMORY;
+        len = -1;
+        for (int i = 0; i < 100; i++) {
+          int c = fgetc(reader->fhd);
+          if (c < 0 || i == 100 - 1) {
+            free(name);
+            return MYSOFA_READ_ERROR;
+          }
+          name[i] = c;
+          if (len < 0 && c == 0)
+            len = i;
+          if (c == 0x13)
+            break;
+        }
+        name = realloc(name, len + 1);
+        mylog("name %d %s\n", len, name);
+
+        if (readValue(reader, 3) != 0x000000) {
+          mylog("FHDB type 3 unsupported values");
+          free(name);
+          return MYSOFA_UNSUPPORTED_FORMAT;
+        }
+
+        len = (int)readValue(reader, 4);
+        if (len > 0x1000 || len < 0) {
+          mylog("FHDB type 3 unsupported values");
+          free(name);
+          return MYSOFA_UNSUPPORTED_FORMAT;
+        }
+
+        unknown = (int)readValue(reader, 8);
+        if (unknown != 0x00000001) {
+          mylog("FHDB type 3 unsupported values");
+          free(name);
+          return MYSOFA_UNSUPPORTED_FORMAT;
+        }
+        if (!(value = malloc(len + 1))) {
+          free(name);
+          return MYSOFA_NO_MEMORY;
+        }
+        if (fread(value, 1, len, reader->fhd) != len) {
+          free(value);
+          free(name);
+          return MYSOFA_READ_ERROR;
+        }
+        value[len] = 0;
+
+        mylog(" %s = %s\n", name, value);
+
+        attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
+        if (attr == NULL) {
+          free(value);
+          free(name);
+          return MYSOFA_NO_MEMORY;
+        }
+
+        attr->name = name;
+        attr->value = value;
+        attr->next = dataobject->attributes;
+        dataobject->attributes = attr;
+        break;
+
+      default:
+        mylog("FHDB type 1 unsupported values %08X %lX\n", unknown,
+              ftell(reader->fhd) - 4);
         return MYSOFA_UNSUPPORTED_FORMAT;
       }
-
-      len = fgetc(reader->fhd);
-      if (len < 0)
-        return MYSOFA_READ_ERROR;
-      assert(len < 0x100);
-
-      if (!(name = malloc(len + 1)))
-        return MYSOFA_NO_MEMORY;
-      if (fread(name, 1, len, reader->fhd) != len) {
-        free(name);
-        return MYSOFA_READ_ERROR;
-      }
-      name[len] = 0;
-
-      heap_header_address =
-          readValue(reader, reader->superblock.size_of_offsets);
-
-      mylog("fractal head type 1 length %4" PRIX64 " name %s address %" PRIX64
-          "\n",
-          length, name, heap_header_address);
-
-      dir = malloc(sizeof(struct DIR));
-      if (!dir) {
-        free(name);
-        return MYSOFA_NO_MEMORY;
-      }
-      memset(dir, 0, sizeof(*dir));
-
-      dir->next = dataobject->directory;
-      dataobject->directory = dir;
-
-      store = ftell(reader->fhd);
-      if (fseek(reader->fhd, heap_header_address, SEEK_SET)) {
-        free(name);
-        return errno;
-      }
-
-      err = dataobjectRead(reader, &dir->dataobject, name);
-      if (err) {
-        return err;
-      }
-
-      if (store < 0) {
-        return errno;
-      }
-      if (fseek(reader->fhd, store, SEEK_SET) < 0)
-        return errno;
 
     } else if (typeandversion != 0) {
       /* TODO is must be avoided somehow */
