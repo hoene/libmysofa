@@ -66,10 +66,9 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 	int err;
 	struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
 
-	if (!!(err = checkAttribute(dataobject->attributes, "CLASS",
-			"DIMENSION_SCALE")))
+	if (!!(err = checkAttribute(dataobject->attributes, "CLASS", "DIMENSION_SCALE")))
 		return err;
-
+	
 	while (attr) {
 		log(" %s=%s\n",attr->name,attr->value);
 
@@ -139,15 +138,22 @@ static int isNonStandardVariable(struct DIR *dir) {
 		return false;
 	} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
 		return false;
-	} else if (dir->dataobject.name[0] == 'I' 
-		   || dir->dataobject.name[0] == 'C' 
-		   || dir->dataobject.name[0] == 'R' 
-		   || dir->dataobject.name[0] == 'E'
-		   || dir->dataobject.name[0] == 'N'
-		   || dir->dataobject.name[0] == 'M'
-		   || dir->dataobject.name[0] == 'S') {
+	} else if (!strcmp(dir->dataobject.name, "I")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "C")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "R")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "E")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "N")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "M")) {
+		return false;
+	} else if (!strcmp(dir->dataobject.name, "S")) {
 		return false;
 	}
+		
 	return true;	
 }
 
@@ -160,8 +166,8 @@ static int addNonStandardVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *d
 	if (!var) {
 		return errno;		
 	}
-	memset(hrtf, 0, sizeof(struct MYSOFA_VARIABLE));
-			
+	memset(var, 0, sizeof(struct MYSOFA_VARIABLE));
+	
 	// init values array
 	var->value = malloc(sizeof(struct MYSOFA_ARRAY));
 	if (!var->value) {
@@ -169,7 +175,7 @@ static int addNonStandardVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *d
 		return errno;
 	}
 	memset(var->value, 0, sizeof(struct MYSOFA_ARRAY));
-			
+	
 	var->next = NULL;
 	// copy name
 	var->name = malloc(strlen(dataobject->name) + 1);
@@ -179,17 +185,8 @@ static int addNonStandardVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *d
 		return errno;
 	}
 	strcpy(var->name, dataobject->name);
-			
-	// get variable dimension
-	err = getDimension(&var->value->elements, dataobject);
-	if(err != MYSOFA_OK) {
-		free(var->name);
-		free(var->value);
-		free(var);
-		return err;
-	}
-
-	err = getArray(&var->value, dataobject);
+	
+	err = getArray(var->value, dataobject);
 	if(err != MYSOFA_OK) {
 		if(var->value->values) {
 			free(var->value->values);
@@ -199,9 +196,9 @@ static int addNonStandardVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *d
 		free(var);
 		return err;
 	}
-	
+
 	// set field if no variable has been found ...
-	if(hrtf->variables == NULL) {
+	if(hrtf->variables == NULL) {		
 		hrtf->variables = var;		
 	} else {
 		// ... or append to variables list
@@ -257,11 +254,11 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 				*err = getDimension(&hrtf->E, &dir->dataobject);
 				dimensionflags |= 8;
 				break;
-			case 'N':
+			case 'N':			       
 				*err = getDimension(&hrtf->N, &dir->dataobject);
 				dimensionflags |= 0x10;
 				break;
-			case 'M':
+			case 'M':			       
 				*err = getDimension(&hrtf->M, &dir->dataobject);
 				dimensionflags |= 0x20;
 				break;
@@ -269,7 +266,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 				break; /* be graceful, some issues with API version 0.4.4 */
 			default:
 				log("UNKNOWN SOFA VARIABLE %s", dir->dataobject.name);
-				//goto error;
+				goto error;
 			}
 			if (*err)
 				goto error;
@@ -307,11 +304,11 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 		} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
 			*err = getArray(&hrtf->DataDelay, &dir->dataobject);
 		} else {
-			if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
+			if(isNonStandardVariable(dir)) {				
+				*err = addNonStandardVariable(hrtf, &dir->dataobject);
+			} else if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
 				log("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);
-				if(isNonStandardVariable(dir)) {
-					*err = addNonStandardVariable(hrtf, &dir->dataobject);
-				}
+				
 			}				
 		}
 		dir = dir->next;
