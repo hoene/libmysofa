@@ -119,7 +119,7 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 	return MYSOFA_OK;
 }
 
-static int isNonStandardVariable(struct DIR *dir) {
+static int isUserDefinedVariable(struct DIR *dir) {
 	if (!strcmp(dir->dataobject.name, "ListenerPosition")) {
 		return false;
 	} else if (!strcmp(dir->dataobject.name, "ReceiverPosition")) {
@@ -157,7 +157,7 @@ static int isNonStandardVariable(struct DIR *dir) {
 	return true;	
 }
 
-static int addNonStandardVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *dataobject) {
+static int addUserDefinedVariable(struct MYSOFA_HRTF *hrtf, struct DATAOBJECT *dataobject) {
 	int err;
 		
 	// init variable
@@ -304,8 +304,8 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 			*err = getArray(&hrtf->DataSamplingRate, &dir->dataobject);
 		} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
 			*err = getArray(&hrtf->DataDelay, &dir->dataobject);
-		} else if(isNonStandardVariable(dir)) {							
-			*err = addNonStandardVariable(hrtf, &dir->dataobject);							
+		} else if(isUserDefinedVariable(dir)) {							
+			*err = addUserDefinedVariable(hrtf, &dir->dataobject);							
 		}
 		dir = dir->next;
 	}
