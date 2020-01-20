@@ -227,9 +227,7 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 	/* copy SOFA file attributes */
 	hrtf->attributes = reader->superblock.dataobject.attributes;
 	reader->superblock.dataobject.attributes = NULL;
-
-	hrtf->variables = NULL;
-
+	
 	/* check SOFA file attributes */
 	if (!!(*err = checkAttribute(hrtf->attributes, "Conventions", "SOFA"))) {
 		mylog("no Conventions=SOFA attribute\n");
@@ -306,12 +304,8 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
 			*err = getArray(&hrtf->DataSamplingRate, &dir->dataobject);
 		} else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
 			*err = getArray(&hrtf->DataDelay, &dir->dataobject);
-		} else {
-			if(isNonStandardVariable(dir)) {				
-				*err = addNonStandardVariable(hrtf, &dir->dataobject);
-			} else if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
-				mylog("UNKNOWN SOFA VARIABLE %s.\n", dir->dataobject.name);				
-			}				
+		} else if(isNonStandardVariable(dir)) {							
+			*err = addNonStandardVariable(hrtf, &dir->dataobject);							
 		}
 		dir = dir->next;
 	}
