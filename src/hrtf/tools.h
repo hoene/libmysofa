@@ -20,7 +20,7 @@ char *getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name);
 void convertCartesianToSpherical(float *values, int elements);
 void convertSphericalToCartesian(float *values, int elements);
 
-#define fequals(a, b) (fabsf(a - b) < 0.00001)
+#define fequals(a, b) (fabs(a - b) < 0.00001)
 
 float radius(float *cartesian);
 

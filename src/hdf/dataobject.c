@@ -405,7 +405,8 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
   case 3:
     return readOHDRHeaderMessageDataFill3(reader);
   default:
-    mylog("object OHDR data storage fill value message must have version 3 not "
+    mylog("object OHDR data storage fill value message must have version 1,2, "
+          "or 3 not "
           "%d\n",
           version);
     return MYSOFA_INVALID_FORMAT;
@@ -681,7 +682,6 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     mylog("COMPONENT todo %lX %d\n", ftell(reader->fhd), dt->size);
     if (fseek(reader->fhd, dt->size, SEEK_CUR))
       return errno;
-    //  return MYSOFA_INVALID_FORMAT;
     break;
 
   case 7:
@@ -689,7 +689,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     reference = readValue(reader, dt->size - 4);
     mylog(" REFERENCE size %d %" PRIX64 "\n", dt->size, reference);
     if (!!(err = gcolRead(reader, gcol, reference, &dataobject))) {
-      return MYSOFA_OK; /* ignore error
+      return MYSOFA_OK; /* ignore error. TODO: why?
        return err; */
     }
     referenceData = findDataobject(reader, dataobject);
@@ -701,7 +701,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     }
     mylog("    REFERENCE %" PRIX64 " %" PRIX64 " %s\n", reference, dataobject,
           buffer);
-    /*		if(!referenceData) {
+    /*		if(!referenceData) { TODO?
      return MYSOFA_UNSUPPORTED_FORMAT;
      } */
     if (data->string) {

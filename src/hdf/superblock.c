@@ -158,7 +158,7 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
     return MYSOFA_INVALID_FORMAT;
   }
 
-  /* read version of superblock, must be 2 */
+  /* read version of superblock, must be 0,1,2, or 3 */
   int version = fgetc(reader->fhd);
 
   switch (version) {

@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_NAME_LENGTH (0x100)
+
 static int log2i(int a) { return round(log2(a)); }
 
 static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
@@ -192,7 +194,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         len = fgetc(reader->fhd);
         if (len < 0)
           return MYSOFA_READ_ERROR;
-        assert(len < 0x100);
+        if (len > MAX_NAME_LENGTH)
+          return MYSOFA_INVALID_FORMAT;
 
         if (!(name = malloc(len + 1)))
           return MYSOFA_NO_MEMORY;
@@ -258,12 +261,12 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     00 13  00 00 00 01 00 00 00 00  |ns..............| 00002820  00 00 00 53 69
     6d 70 6c  65 46 72 65 65 46 69 65  |...SimpleFreeFie|
     */
-        if (!(name = malloc(100)))
+        if (!(name = malloc(MAX_NAME_LENGTH)))
           return MYSOFA_NO_MEMORY;
         len = -1;
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < MAX_NAME_LENGTH; i++) {
           int c = fgetc(reader->fhd);
-          if (c < 0 || i == 100 - 1) {
+          if (c < 0 || i == MAX_NAME_LENGTH - 1) {
             free(name);
             return MYSOFA_READ_ERROR;
           }
@@ -274,6 +277,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
             break;
         }
         name = realloc(name, len + 1);
+        if (!name)
+          return MYSOFA_NO_MEMORY;
         mylog("name %d %s\n", len, name);
 
         if (readValue(reader, 3) != 0x000000) {
