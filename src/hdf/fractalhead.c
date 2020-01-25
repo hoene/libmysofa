@@ -322,8 +322,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         break;
 
       default:
-        mylog("FHDB type 1 unsupported values %08" PRIX64 " %" PRIX64 "\n", unknown,
-              ftell(reader->fhd) - 4);
+        mylog("FHDB type 1 unsupported values %08" PRIX64 " %" PRIX64 "\n",
+              unknown, ftell(reader->fhd) - 4);
         return MYSOFA_UNSUPPORTED_FORMAT;
       }
 

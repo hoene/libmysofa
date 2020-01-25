@@ -49,4 +49,4 @@ int kd_nearest(struct kdtree *tree, const float *pos, void **res);
 }
 #endif
 
-#endif	/* _KDTREE_H_ */
+#endif /* _KDTREE_H_ */

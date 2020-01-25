@@ -26,7 +26,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
   if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8 ||
       superblock->size_of_lengths < 2 || superblock->size_of_lengths > 8) {
     mylog("size of offsets and length is invalid: %d %d\n",
-        superblock->size_of_offsets, superblock->size_of_lengths);
+          superblock->size_of_offsets, superblock->size_of_lengths);
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
@@ -57,7 +57,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
   if (fseek(reader->fhd, superblock->root_group_object_header_address,
             SEEK_SET)) {
     mylog("cannot seek to first object at %" PRId64 "\n",
-        superblock->root_group_object_header_address);
+          superblock->root_group_object_header_address);
     return errno;
   }
 
@@ -90,12 +90,12 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
   if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8 ||
       superblock->size_of_lengths < 2 || superblock->size_of_lengths > 8) {
     mylog("size of offsets and length is invalid: %d %d\n",
-        superblock->size_of_offsets, superblock->size_of_lengths);
+          superblock->size_of_offsets, superblock->size_of_lengths);
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
-  /*int groupLeafNodeK = */readValue(reader, 2);
-  /*int groupInternalNodeK = */readValue(reader, 2);
+  /*int groupLeafNodeK = */ readValue(reader, 2);
+  /*int groupInternalNodeK = */ readValue(reader, 2);
   readValue(reader, 4);
 
   if (version == 1) {
@@ -140,7 +140,7 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
   if (fseek(reader->fhd, superblock->root_group_object_header_address,
             SEEK_SET)) {
     mylog("cannot seek to first object at %" PRId64 "\n",
-        superblock->root_group_object_header_address);
+          superblock->root_group_object_header_address);
     return errno;
   }
 
