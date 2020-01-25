@@ -69,7 +69,8 @@ void test_easy() {
     l2 = round(easy->hrtf->DataDelay.values[filters * 2 + 1] * 48000 * 2);
 
 #ifdef VDEBUG
-    /*   		printf("compare %d %f %f %f %f %f\n",filters,c[0],c[1],c[2],l1,l2);
+    /*   		printf("compare %d %f %f %f %f
+     * %f\n",filters,c[0],c[1],c[2],l1,l2);
      */
 #endif
     CU_ASSERT(
