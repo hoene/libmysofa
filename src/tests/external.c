@@ -37,7 +37,8 @@ int main() {
        CU_add_test(pSuite, "test of mysofa_easy open", test_easy_open)) ||
       (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy_nonorm)) ||
       (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy)) ||
-      (NULL == CU_add_test(pSuite, "test of user defined variables", test_user_defined_variable))) {
+      (NULL == CU_add_test(pSuite, "test of user defined variables",
+                           test_user_defined_variable))) {
     CU_cleanup_registry();
     return CU_get_error();
   }

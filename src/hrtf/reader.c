@@ -118,45 +118,6 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
   return MYSOFA_OK;
 }
 
-static int isUserDefinedVariable(struct DIR *dir) {
-  printf("isUserDefinedVariable %s\n", dir->dataobject.name);
-  if (!strcmp(dir->dataobject.name, "ListenerPosition")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "ReceiverPosition")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "SourcePosition")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "EmitterPosition")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "ListenerUp")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "ListenerView")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "Data.IR")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "Data.SamplingRate")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "I")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "C")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "R")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "E")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "N")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "M")) {
-    return false;
-  } else if (!strcmp(dir->dataobject.name, "S")) {
-    return false;
-  }
-
-  return true;
-}
-
 static int addUserDefinedVariable(struct MYSOFA_HRTF *hrtf,
                                   struct DATAOBJECT *dataobject) {
   int err;
@@ -305,7 +266,6 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
     } else if (!strcmp(dir->dataobject.name, "Data.Delay")) {
       *err = getArray(&hrtf->DataDelay, &dir->dataobject);
     } else if (!(dir->dataobject.name[0] && !dir->dataobject.name[1])) {
-      printf("isUsedDefined %s\n", dir->dataobject.name);
       *err = addUserDefinedVariable(hrtf, &dir->dataobject);
     }
     dir = dir->next;
