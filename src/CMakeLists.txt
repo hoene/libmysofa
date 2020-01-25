@@ -85,7 +85,7 @@ if(BUILD_TESTS)
   target_link_libraries (mysofa2json mysofa-static)
 
   add_executable(external tests/external.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
-    tests/minphase.c tests/easy.c tests/cache.c tests/json.c)
+    tests/minphase.c tests/easy.c tests/cache.c tests/json.c tests/user_defined_variable.c)
   target_link_libraries (external mysofa-shared ${CUNIT_LIBRARIES})
   add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
 
