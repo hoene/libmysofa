@@ -6,7 +6,6 @@
  */
 
 #include "json.h"
-#include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include <stdio.h>
 #include <string.h>
