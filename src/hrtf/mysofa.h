@@ -29,6 +29,13 @@ struct MYSOFA_ARRAY {
   struct MYSOFA_ATTRIBUTE *attributes;
 };
 
+/** additional variable */
+struct MYSOFA_VARIABLE {
+  struct MYSOFA_VARIABLE *next;
+  char *name;
+  struct MYSOFA_ARRAY *value;
+};
+
 /*
  * The HRTF structure data types
  */
@@ -69,6 +76,9 @@ struct MYSOFA_HRTF {
 
   /** general file attributes */
   struct MYSOFA_ATTRIBUTE *attributes;
+
+  /** additional variables that might be present in a SOFA file */
+  struct MYSOFA_VARIABLE *variables;
 };
 
 /* structure for lookup HRTF filters */
