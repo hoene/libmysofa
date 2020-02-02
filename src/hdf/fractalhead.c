@@ -20,7 +20,7 @@ static int log2i(int a) { return round(log2(a)); }
 static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
                            struct FRACTALHEAP *fractalheap) {
 
-  char buf[4], *name, *value;
+  char buf[5], *name, *value;
   int size, offset_size, length_size, err, len;
   uint8_t typeandversion;
   uint64_t unknown, heap_header_address, block_offset, block_size, offset,
@@ -44,6 +44,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s stack %d\n", (uint64_t)ftell(reader->fhd) - 4, buf,
         reader->recursive_counter);
 
@@ -359,7 +360,7 @@ static int indirectblockRead(struct READER *reader,
       child_direct_block = 0, size_filtered, child_indirect_block;
   long store;
 
-  char buf[4];
+  char buf[5];
 
   UNUSED(size_filtered);
   UNUSED(heap_header_address);
@@ -370,6 +371,7 @@ static int indirectblockRead(struct READER *reader,
     mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
@@ -475,13 +477,14 @@ static int indirectblockRead(struct READER *reader,
 int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
                     struct FRACTALHEAP *fractalheap) {
   int err;
-  char buf[4];
+  char buf[5];
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FRHP", 4)) {
     mylog("cannot read signature of fractal heap\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
+  buf[4]=0;
   mylog("%" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {

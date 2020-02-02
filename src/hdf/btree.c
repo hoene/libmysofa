@@ -71,7 +71,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
   uint32_t creation_order, hash_of_name;
   uint64_t heap_id;
 
-  char buf[4];
+  char buf[5];
 
   UNUSED(heap_id);
   UNUSED(hash_of_name);
@@ -83,6 +83,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
     mylog("cannot read signature of BTLF\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
@@ -153,13 +154,14 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
  */
 
 int btreeRead(struct READER *reader, struct BTREE *btree) {
-  char buf[4];
+  char buf[5];
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTHD", 4)) {
     mylog("cannot read signature of BTHD\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
@@ -216,7 +218,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   uint64_t address_of_left_sibling, address_of_right_sibling, start[4],
       child_pointer, key, store;
 
-  char buf[4];
+  char buf[5];
 
   UNUSED(node_level);
   UNUSED(address_of_right_sibling);
@@ -233,6 +235,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
     mylog("cannot read signature of TREE\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   node_type = (uint8_t)fgetc(reader->fhd);

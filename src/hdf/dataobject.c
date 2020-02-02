@@ -309,7 +309,7 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
           return MYSOFA_READ_ERROR;
 
         c = readValue(reader, 4);
-        uint8_t dimension = fgetc(reader->fhd);
+        int dimension = fgetc(reader->fhd);
         if (dimension != 0) {
           mylog("COMPOUND v1 with dimension not supported");
           return MYSOFA_INVALID_FORMAT;
@@ -1028,13 +1028,14 @@ static int readOHDRmessages(struct READER *reader,
 static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
                     uint64_t end) {
   int err;
-  char buf[4];
+  char buf[5];
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OCHK", 4)) {
     mylog("cannot read signature of OCHK\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   err = readOHDRmessages(reader, dataobject, end - 4); /* subtract checksum */
@@ -1049,7 +1050,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
                    char *name) {
   uint64_t size_of_chunk, end_of_messages;
   int err;
-  char buf[4];
+  char buf[5];
 
   memset(dataobject, 0, sizeof(*dataobject));
   dataobject->address = ftell(reader->fhd);
@@ -1060,6 +1061,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
     mylog("cannot read signature of data object\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
   mylog("%08" PRIX64 " %.4s\n", dataobject->address, buf);
 
   if (fgetc(reader->fhd) != 2) {

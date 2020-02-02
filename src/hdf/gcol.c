@@ -18,7 +18,7 @@ static int readGCOL(struct READER *reader) {
   uint16_t reference_count, address;
   uint64_t collection_size, end;
   struct GCOL *gcol;
-  char buf[4];
+  char buf[5];
 
   UNUSED(reference_count);
 
@@ -27,6 +27,7 @@ static int readGCOL(struct READER *reader) {
     mylog("cannot read signature of global heap collection\n");
     return MYSOFA_INVALID_FORMAT;
   }
+  buf[4]=0;
 
   if (fgetc(reader->fhd) != 1) {
     mylog("object GCOL must have version 1\n");
