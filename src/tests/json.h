@@ -1,4 +1,4 @@
-#include <stdio.h>
 #include "../hrtf/mysofa.h"
+#include <stdio.h>
 
-void printJson(FILE *out, struct MYSOFA_HRTF *hrtf);
+void printJson(FILE *out, struct MYSOFA_HRTF *hrtf, int sanitize);

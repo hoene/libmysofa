@@ -48,25 +48,44 @@ static void printString(FILE *out, char *string) {
   fprintf(out, "\"");
 }
 
-static void printAttributes(FILE *out, int spaces,
-                            struct MYSOFA_ATTRIBUTE *attr) {
-  int i;
+static int printAttributes(FILE *out, int spaces, struct MYSOFA_ATTRIBUTE *attr,
+                           int sanitize) {
+  int i = 0;
+  // search a relevant attribute)
+  for (struct MYSOFA_ATTRIBUTE *n = attr; n; n = n->next) {
+    if (!sanitize || (strcmp(n->name, "_NCProperties") &&
+                      strcmp(n->name, "_Netcdf4Coordinates"))) {
+      i++;
+      break;
+    }
+  }
+  if (i == 0)
+    return 0;
 
   for (i = 0; i < spaces; i++)
     fprintf(out, " ");
   fprintf(out, "\"Attributes\": {\n");
+
+  int count = 0;
   while (attr) {
-    for (i = 0; i <= spaces; i++)
-      fprintf(out, " ");
-    printString(out, attr->name);
-    fprintf(out, ": ");
-    printString(out, attr->value);
-    fprintf(out, "%s", attr->next ? ",\n" : "\n");
+    if (!sanitize || (strcmp(attr->name, "_NCProperties") &&
+                      strcmp(attr->name, "_Netcdf4Coordinates"))) {
+      if (count)
+        fprintf(out, ",\n");
+      count++;
+      for (i = 0; i <= spaces; i++)
+        fprintf(out, " ");
+      printString(out, attr->name);
+      fprintf(out, ": ");
+      printString(out, attr->value);
+    }
     attr = attr->next;
   }
+  fprintf(out, "\n");
   for (i = 0; i < spaces; i++)
     fprintf(out, " ");
   fprintf(out, "}");
+  return count;
 }
 
 /*
@@ -145,7 +164,7 @@ static void printDimensions(FILE *out, struct MYSOFA_HRTF *hrtf,
 }
 
 static int printArray(FILE *out, struct MYSOFA_HRTF *hrtf,
-                      struct MYSOFA_ARRAY *array, char *name) {
+                      struct MYSOFA_ARRAY *array, char *name, int sanitize) {
   int i = 0;
 
   if (!array->elements)
@@ -159,14 +178,12 @@ static int printArray(FILE *out, struct MYSOFA_HRTF *hrtf,
 
   printDimensions(out, hrtf, &array->attributes);
 
-  if (array->attributes) {
-    printAttributes(out, 3, array->attributes);
+  if (printAttributes(out, 3, array->attributes, sanitize))
     fprintf(out, ",\n");
-  }
 
   fprintf(out, "   \"Values\": [");
   for (i = 0; i < array->elements; i++) {
-    fprintf(out, "%c%s%.6f", i == 0 ? ' ' : ',', i % 20 == 19 ? "\n    " : "",
+    fprintf(out, "%c%s%12e", i == 0 ? ' ' : ',', i % 20 == 19 ? "\n    " : "",
             array->values[i]);
   }
 
@@ -178,13 +195,11 @@ static int printArray(FILE *out, struct MYSOFA_HRTF *hrtf,
 /*
  * The HRTF structure data types
  */
-void printJson(FILE *out, struct MYSOFA_HRTF *hrtf) {
+void printJson(FILE *out, struct MYSOFA_HRTF *hrtf, int sanitize) {
   fprintf(out, "{\n");
 
-  if (hrtf->attributes) {
-    printAttributes(out, 1, hrtf->attributes);
+  if (printAttributes(out, 1, hrtf->attributes, sanitize))
     fprintf(out, ",\n");
-  }
 
   fprintf(out, " \"Dimensions\": {\n");
   fprintf(out, "  \"I\": %d,\n", hrtf->I);
@@ -196,22 +211,26 @@ void printJson(FILE *out, struct MYSOFA_HRTF *hrtf) {
   fprintf(out, " },\n");
 
   fprintf(out, " \"Variables\": {\n");
-  if (printArray(out, hrtf, &hrtf->ListenerPosition, "ListenerPosition"))
+  if (printArray(out, hrtf, &hrtf->ListenerPosition, "ListenerPosition",
+                 sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->ReceiverPosition, "ReceiverPosition"))
+  if (printArray(out, hrtf, &hrtf->ReceiverPosition, "ReceiverPosition",
+                 sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->SourcePosition, "SourcePosition"))
+  if (printArray(out, hrtf, &hrtf->SourcePosition, "SourcePosition", sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->EmitterPosition, "EmitterPosition"))
+  if (printArray(out, hrtf, &hrtf->EmitterPosition, "EmitterPosition",
+                 sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->ListenerUp, "ListenerUp"))
+  if (printArray(out, hrtf, &hrtf->ListenerUp, "ListenerUp", sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->ListenerView, "ListenerView"))
+  if (printArray(out, hrtf, &hrtf->ListenerView, "ListenerView", sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->DataIR, "Data.IR"))
+  if (printArray(out, hrtf, &hrtf->DataIR, "Data.IR", sanitize))
     fprintf(out, ",\n");
-  if (printArray(out, hrtf, &hrtf->DataSamplingRate, "Data.SamplingRate"))
+  if (printArray(out, hrtf, &hrtf->DataSamplingRate, "Data.SamplingRate",
+                 sanitize))
     fprintf(out, ",\n");
-  printArray(out, hrtf, &hrtf->DataDelay, "Data.Delay");
+  printArray(out, hrtf, &hrtf->DataDelay, "Data.Delay", sanitize);
   fprintf(out, " }\n}\n");
 }

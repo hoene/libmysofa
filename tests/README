@@ -1,5 +1,5 @@
 These sofa files have been downloaded from http://sofacoustics.org/data/sofa_api_mo_test/
-and converted to json with the program sofa2json from https://github.com/hoene/API_Cpp.
+and converted to json with the program sofa2json from https://github.com/hoene/libsofa.
 
 
  

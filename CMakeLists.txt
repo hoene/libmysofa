@@ -64,6 +64,8 @@ if(BUILD_TESTS)
            ../tests/example_dummy_sofa48)
   add_test(TestSOFA48_netcdf472.sofa ../tests/compare.sh
            ../tests/TestSOFA48_netcdf472)
+  add_test(ignore_user_defined_variable ./src/mysofa2json
+           ../tests/example_dummy_sofa48_with_user_defined_variable.sofa)
 
 endif(BUILD_TESTS)
 

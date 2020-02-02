@@ -1,7 +1,7 @@
 #!/bin/sh
 
 NODEJS=`which node || which nodejs || which false`
-../build/src/mysofa2json "$1".sofa >tmp1.json 2>tmp1.txt 
+../build/src/mysofa2json -s "$1".sofa >tmp1.json 2>tmp1.txt 
 
 ret=$?
 if [ "$ret" != 0 ]; then 
