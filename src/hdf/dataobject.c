@@ -294,12 +294,14 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
     case 1:
       for (i = 0; i < (dt->class_bit_field & 0xffff); i++) {
         char name[256];
+        int res;
         for (j = 0;; j++) {
           if (j == sizeof(name))
             return MYSOFA_INVALID_FORMAT;
-          name[j] = fgetc(reader->fhd);
-          if (name[j] < 0)
+          res = fgetc(reader->fhd);
+          if (res < 0)
             return MYSOFA_READ_ERROR;
+          name[j] = res;
           if (name[j] == 0)
             break;
         }
@@ -818,7 +820,7 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 
   memset(&d, 0, sizeof(d));
 
-  uint8_t version = fgetc(reader->fhd);
+  int version = fgetc(reader->fhd);
 
   if (version != 1 && version != 3) {
     mylog("object OHDR attribute message must have version 1 or 3\n");
