@@ -156,9 +156,8 @@ void test_easy() {
 
   file = fopen("/tmp/easy.tmp.json", "w");
   CU_ASSERT(file != NULL);
-  printJson(file, easy->hrtf);
+  printJson(file, easy->hrtf, 0);
   fclose(file);
-  /* TODO verify correctness of the easy.json file */
 
   mysofa_close(easy);
 }

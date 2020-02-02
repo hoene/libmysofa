@@ -657,6 +657,12 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
   }
 
   switch (dt->class_and_version & 0xf) {
+  case 0:
+    mylog("FIXED POINT todo %lX %d\n", ftell(reader->fhd), dt->size);
+    if (fseek(reader->fhd, dt->size, SEEK_CUR))
+      return errno;
+    break;
+
   case 3:
     buffer = malloc(dt->size + 1);
     if (buffer == NULL) {

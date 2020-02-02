@@ -15,20 +15,30 @@
 int main(int argc, char **argv) {
   struct MYSOFA_HRTF *hrtf = NULL;
   int err = 0;
+  int sanitize = 0;
+  char *filename;
 
-  if (argc != 2) {
-    fprintf(stderr, "Usage: %s <FILE.SOFA>\n", argv[0]);
+  if (argc == 3 && !strcmp("-s", argv[1])) {
+    sanitize = 1;
+    filename = argv[2];
+  } else if (argc == 2) {
+    filename = argv[1];
+  } else {
+    fprintf(stderr,
+            "Usage: %s [-s] <FILE.SOFA>\n converts a sofa file to json "
+            "output.\nAdd -s to sanitize the json output from netcdf fields.",
+            argv[0]);
     return 1;
   }
 
-  hrtf = mysofa_load(argv[1], &err);
+  hrtf = mysofa_load(filename, &err);
 
   if (!hrtf) {
     fprintf(stderr, "Error reading file %s. Error code: %d\n", argv[1], err);
     return err;
   }
 
-  printJson(stdout, hrtf);
+  printJson(stdout, hrtf, sanitize);
 
   mysofa_free(hrtf);
 
