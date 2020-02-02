@@ -85,10 +85,12 @@ void *thread(void *arg) {
         count++;
       }
     }
-    err = err * 100. / count;
-    sdiff1 = sdiff1 / (count - err);
-    sdiff2 = sdiff2 / (count - err);
-
+    if (count != 0)
+      err = err * 100. / count;
+    if (count != err) {
+      sdiff1 = sdiff1 / (count - err);
+      sdiff2 = sdiff2 / (count - err);
+    }
 #ifdef VDEBUG
     printf("errors %f%% diffs %f %f\n", err * 100. / count,
            sdiff1 / (count - err), sdiff2 / (count - err));

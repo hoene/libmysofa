@@ -25,17 +25,14 @@ mysofa_open_default(const char *filename, float samplerate, int *filterlength,
 
   struct MYSOFA_EASY *easy = malloc(sizeof(struct MYSOFA_EASY));
 
-  // set all values of struct to their default "0" (to avoid freeing unallocated
-  // values in mysofa_free)
-  *easy = (struct MYSOFA_EASY){0};
-
   if (!easy) {
     *err = MYSOFA_NO_MEMORY;
     return NULL;
   }
 
-  easy->lookup = NULL;
-  easy->neighborhood = NULL;
+  // set all values of struct to their default "0" (to avoid freeing unallocated
+  // values in mysofa_free)
+  *easy = (struct MYSOFA_EASY){0};
 
   easy->hrtf = mysofa_load(filename, err);
   if (!easy->hrtf) {

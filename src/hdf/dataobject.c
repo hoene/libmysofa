@@ -361,9 +361,11 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 
 static int readOHDRHeaderMessageDataFill1or2(struct READER *reader) {
 
-  uint8_t spaceAllocationTime = fgetc(reader->fhd);
-  uint8_t fillValueWriteTime = fgetc(reader->fhd);
-  uint8_t fillValueDefined = fgetc(reader->fhd);
+  int spaceAllocationTime = fgetc(reader->fhd);
+  int fillValueWriteTime = fgetc(reader->fhd);
+  int fillValueDefined = fgetc(reader->fhd);
+  if (spaceAllocationTime < 0 || fillValueWriteTime < 0 || fillValueDefined < 0)
+    return MYSOFA_READ_ERROR;
 
   if ((spaceAllocationTime & ~1) != 2 || fillValueWriteTime != 2 ||
       (fillValueDefined & ~1) != 0) {
@@ -397,10 +399,7 @@ static int readOHDRHeaderMessageDataFill3(struct READER *reader) {
 
 static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 
-  uint8_t version;
-
-  version = (uint8_t)fgetc(reader->fhd);
-  switch (version) {
+  switch (fgetc(reader->fhd)) {
   case 1:
   case 2:
     return readOHDRHeaderMessageDataFill1or2(reader);
@@ -413,8 +412,6 @@ static int readOHDRHeaderMessageDataFill(struct READER *reader) {
           version);
     return MYSOFA_INVALID_FORMAT;
   }
-
-  /*flags = (uint8_t)*/ fgetc(reader->fhd);
 }
 
 static int readOHDRHeaderMessageDataFillOld(struct READER *reader) {
@@ -485,7 +482,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
         return errno;
       if (!data->data) {
-        if (data_size < 0 || data_size > 0x10000000)
+        if (data_size > 0x10000000)
           return MYSOFA_INVALID_FORMAT;
         data->data_len = data_size;
         data->data = calloc(1, data_size);
@@ -865,7 +862,8 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     return MYSOFA_INVALID_FORMAT;
   }
   if (version == 1)
-    fseek(reader->fhd, (8 - datatype_size) & 7, SEEK_CUR);
+    if (fseek(reader->fhd, (8 - datatype_size) & 7, SEEK_CUR) < 0)
+      return errno;
 
   err = readOHDRHeaderMessageDataspace(reader, &d.ds);
   if (err) {
@@ -874,7 +872,8 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     return MYSOFA_INVALID_FORMAT;
   }
   if (version == 1)
-    fseek(reader->fhd, (8 - dataspace_size) & 7, SEEK_CUR);
+    if (fseek(reader->fhd, (8 - dataspace_size) & 7, SEEK_CUR) < 0)
+      return errno;
 
   err = readData(reader, &d, &d.dt, &d.ds);
   if (err) {
