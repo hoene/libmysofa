@@ -92,8 +92,9 @@ void *thread(void *arg) {
       sdiff2 = sdiff2 / (count - err);
     }
 #ifdef VDEBUG
-    printf("errors %f%% diffs %f %f\n", err * 100. / count,
-           sdiff1 / (count - err), sdiff2 / (count - err));
+    if (count != 0 && count != err)
+      printf("errors %f%% diffs %f %f\n", err * 100. / count,
+             sdiff1 / (count - err), sdiff2 / (count - err));
 #endif
     if (!(err < 31.7 && sdiff1 < 1.67 && sdiff2 < 1.43)) {
       abort();
