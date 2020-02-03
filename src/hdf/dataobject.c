@@ -399,7 +399,8 @@ static int readOHDRHeaderMessageDataFill3(struct READER *reader) {
 
 static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 
-  switch (fgetc(reader->fhd)) {
+  int version = fgetc(reader->fhd);
+  switch (version) {
   case 1:
   case 2:
     return readOHDRHeaderMessageDataFill1or2(reader);
@@ -1035,7 +1036,7 @@ static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
     mylog("cannot read signature of OCHK\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  buf[4]=0;
+  buf[4] = 0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   err = readOHDRmessages(reader, dataobject, end - 4); /* subtract checksum */
@@ -1061,7 +1062,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
     mylog("cannot read signature of data object\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  buf[4]=0;
+  buf[4] = 0;
   mylog("%08" PRIX64 " %.4s\n", dataobject->address, buf);
 
   if (fgetc(reader->fhd) != 2) {

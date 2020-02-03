@@ -27,7 +27,7 @@ static int readGCOL(struct READER *reader) {
     mylog("cannot read signature of global heap collection\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  buf[4]=0;
+  buf[4] = 0;
 
   if (fgetc(reader->fhd) != 1) {
     mylog("object GCOL must have version 1\n");

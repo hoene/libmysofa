@@ -44,7 +44,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  buf[4]=0;
+  buf[4] = 0;
   mylog("%08" PRIX64 " %.4s stack %d\n", (uint64_t)ftell(reader->fhd) - 4, buf,
         reader->recursive_counter);
 
@@ -371,7 +371,7 @@ static int indirectblockRead(struct READER *reader,
     mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  buf[4]=0;
+  buf[4] = 0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
@@ -484,7 +484,7 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
     mylog("cannot read signature of fractal heap\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
-  buf[4]=0;
+  buf[4] = 0;
   mylog("%" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
