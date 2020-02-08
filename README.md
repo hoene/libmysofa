@@ -18,15 +18,19 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 <a href="https://travis-ci.org/hoene/libmysofa">
 <img alt="Travis CI Status" src="https://travis-ci.org/hoene/libmysofa.svg?branch=master"/>
 </a>
+<a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
+<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
+</a>
 <a href="https://scan.coverity.com/projects/hoene-libmysofa">
 <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/13030/badge.svg"/>
 </a>
-<a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
-<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
+<a href="https://codecov.io/gh/hoene/libmysofa">
+  <img src="https://codecov.io/gh/hoene/libmysofa/branch/master/graph/badge.svg" />
 </a>
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GUN8R6NUQCS3C" >
 <img alt="Donate" src="https://symonics.com/Donate-PayPal-green.svg"/>
 </a>
+	
 </div>
 
 ## Compile

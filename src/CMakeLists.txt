@@ -28,10 +28,6 @@ else()
   include_directories(${PROJECT_SOURCE_DIR}/windows/third-party/zlib-1.2.11/include/)
 endif()
 
-# include(FindZLIB)
-# include_directories(${ZLIB_INCLUDE_DIRS})
-# MESSAGE(STATUS "ZLIB libs" ${ZLIB_LIBRARIES})
-
 if(NOT MSVC)
   if(NOT WIN32)
     find_library(MATH m)
@@ -58,10 +54,23 @@ set(libsrc hrtf/reader.c hdf/superblock.c hdf/dataobject.c hdf/btree.c hdf/fract
   hrtf/lookup.c hrtf/tools.c hrtf/kdtree.c hrtf/neighbors.c hrtf/interpolate.c hrtf/resample.c hrtf/loudness.c hrtf/minphase.c hrtf/easy.c hrtf/cache.c 
   resampler/speex_resampler.c)
 add_library(mysofa-static STATIC ${libsrc})
-target_link_libraries (mysofa-static ${MATH} ${ZLIB_LIBRARIES})
+target_link_libraries (mysofa-static LINK_PRIVATE ${MATH} ${ZLIB_LIBRARIES})
 SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1 POSITION_INDEPENDENT_CODE ON)
 install(TARGETS mysofa-static
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(mysofa-static PUBLIC
+    -g -O0 -Wall -fprofile-arcs -ftest-coverage
+#    -fprofile-instr-generate -fcoverage-mapping
+  )
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options(mysofa-static INTERFACE gcov --coverage)
+  else()
+    target_link_libraries(mysofa-static LINK_PUBLIC gcov --coverage)
+  endif()
+endif()
 
 if(BUILD_SHARED_LIBS)
   add_library(mysofa-shared SHARED ${libsrc})
@@ -71,6 +80,21 @@ if(BUILD_SHARED_LIBS)
   set_property(TARGET mysofa-shared PROPERTY SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR} )
   set_property(TARGET mysofa-shared PROPERTY C_VISIBILITY_PRESET hidden)
   GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa EXPORT_FILE_NAME ${PROJECT_SOURCE_DIR}/src/hrtf/mysofa_export.h)
+
+
+if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(mysofa-shared PUBLIC
+    -g -O0 -Wall -fprofile-arcs -ftest-coverage
+#    -fprofile-instr-generate -fcoverage-mapping
+  )
+  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options(mysofa-shared INTERFACE gcov --coverage)
+  else()
+    target_link_libraries(mysofa-shared LINK_PUBLIC gcov --coverage)
+  endif()
+endif()
+
   install(TARGETS mysofa-shared 
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
@@ -86,7 +110,7 @@ if(BUILD_TESTS)
 
   add_executable(external tests/external.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
     tests/minphase.c tests/easy.c tests/cache.c tests/json.c tests/user_defined_variable.c)
-  target_link_libraries (external mysofa-shared ${CUNIT_LIBRARIES})
+  target_link_libraries (external mysofa-static ${CUNIT_LIBRARIES})
   add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
 
   add_executable(internal tests/internal.c tests/tools.c hrtf/tools.c)
@@ -94,8 +118,18 @@ if(BUILD_TESTS)
   add_test(NAME internal WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND internal)
   
   add_executable(multithread tests/multithread.c)
-  target_link_libraries (multithread mysofa-shared pthread)
+  target_link_libraries (multithread mysofa-static pthread)
   add_test(NAME multithread WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND multithread)
+
+if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(internal PUBLIC
+    -g -O0 -Wall -fprofile-arcs -ftest-coverage
+#    -fprofile-instr-generate -fcoverage-mapping
+  )
+  target_link_libraries (internal gcov --coverage)
+endif()
+
 
   install(TARGETS mysofa2json
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
