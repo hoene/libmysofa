@@ -1,5 +1,5 @@
 <div align="right">
-<a href="https://symonics.com/">
+<a href="https://mysofa.audio/">
 	<img alt="Symonics MySofa" width="320px" src="https://raw.githubusercontent.com/hoene/libmysofa/master/symonics-mysofa.png"/>
 </a>
 </div
