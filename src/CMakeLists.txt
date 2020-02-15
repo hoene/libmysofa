@@ -59,11 +59,9 @@ SET_TARGET_PROPERTIES(mysofa-static PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_O
 install(TARGETS mysofa-static
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  # Add required flags (GCC & LLVM/Clang)
+if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_compile_options(mysofa-static PUBLIC
     -g -O0 -Wall -fprofile-arcs -ftest-coverage
-#    -fprofile-instr-generate -fcoverage-mapping
   )
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
     target_link_options(mysofa-static INTERFACE gcov --coverage)
@@ -82,11 +80,9 @@ if(BUILD_SHARED_LIBS)
   GENERATE_EXPORT_HEADER(mysofa-shared BASE_NAME mysofa EXPORT_FILE_NAME ${PROJECT_SOURCE_DIR}/src/hrtf/mysofa_export.h)
 
 
-if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  # Add required flags (GCC & LLVM/Clang)
+if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_compile_options(mysofa-shared PUBLIC
     -g -O0 -Wall -fprofile-arcs -ftest-coverage
-#    -fprofile-instr-generate -fcoverage-mapping
   )
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
     target_link_options(mysofa-shared INTERFACE gcov --coverage)
@@ -121,11 +117,9 @@ if(BUILD_TESTS)
   target_link_libraries (multithread mysofa-static pthread)
   add_test(NAME multithread WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND multithread)
 
-if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  # Add required flags (GCC & LLVM/Clang)
+if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_compile_options(internal PUBLIC
     -g -O0 -Wall -fprofile-arcs -ftest-coverage
-#    -fprofile-instr-generate -fcoverage-mapping
   )
   target_link_libraries (internal gcov --coverage)
 endif()
