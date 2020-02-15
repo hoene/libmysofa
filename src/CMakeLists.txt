@@ -107,15 +107,15 @@ if(BUILD_TESTS)
   add_executable(external tests/external.c tests/check.c tests/lookup.c tests/neighbors.c tests/interpolate.c tests/resample.c tests/loudness.c
     tests/minphase.c tests/easy.c tests/cache.c tests/json.c tests/user_defined_variable.c)
   target_link_libraries (external mysofa-static ${CUNIT_LIBRARIES})
-  add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
+#  add_test(NAME external WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND external)
 
   add_executable(internal tests/internal.c tests/tools.c hrtf/tools.c)
   target_link_libraries (internal m ${CUNIT_LIBRARIES})
-  add_test(NAME internal WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND internal)
+#  add_test(NAME internal WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND internal)
   
   add_executable(multithread tests/multithread.c)
   target_link_libraries (multithread mysofa-static pthread)
-  add_test(NAME multithread WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND multithread)
+#  add_test(NAME multithread WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND multithread)
 
 if(UNIX AND CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_compile_options(internal PUBLIC
