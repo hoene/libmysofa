@@ -62,6 +62,8 @@
 
  */
 
+// LCOV_EXCL_START
+
 static int readBTLF(struct READER *reader, struct BTREE *btree,
                     int number_of_records, union RECORD *records) {
 
@@ -80,15 +82,15 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTLF", 4)) {
-    mylog("cannot read signature of BTLF\n");
-    return MYSOFA_INVALID_FORMAT;
+    mylog("cannot read signature of BTLF\n"); // LCOV_EXCL_LINE
+    return MYSOFA_INVALID_FORMAT;             // LCOV_EXCL_LINE
   }
   buf[4] = 0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
 
   if (fgetc(reader->fhd) != 0) {
-    mylog("object BTLF must have version 0\n");
-    return MYSOFA_INVALID_FORMAT;
+    mylog("object BTLF must have version 0\n"); // LCOV_EXCL_LINE
+    return MYSOFA_INVALID_FORMAT;               // LCOV_EXCL_LINE
   }
 
   type = (uint8_t)fgetc(reader->fhd);
@@ -199,6 +201,8 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
   return readBTLF(reader, btree, btree->number_of_records, btree->records);
 }
 
+// LCOV_EXCL_STOP
+
 void btreeFree(struct BTREE *btree) { free(btree->records); }
 
 /*  III.A.1. Disk Format: Level 1A1 - Version 1 B-trees
@@ -226,14 +230,14 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   UNUSED(key);
 
   if (data->ds.dimensionality > 3) {
-    mylog("TREE dimensions > 3");
-    return MYSOFA_INVALID_FORMAT;
+    mylog("TREE dimensions > 3"); // LCOV_EXCL_LINE
+    return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
   }
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "TREE", 4)) {
-    mylog("cannot read signature of TREE\n");
-    return MYSOFA_INVALID_FORMAT;
+    mylog("cannot read signature of TREE\n"); // LCOV_EXCL_LINE
+    return MYSOFA_INVALID_FORMAT;             // LCOV_EXCL_LINE
   }
   buf[4] = 0;
   mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
@@ -242,7 +246,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   node_level = (uint8_t)fgetc(reader->fhd);
   entries_used = (uint16_t)readValue(reader, 2);
   if (entries_used > 0x1000)
-    return MYSOFA_UNSUPPORTED_FORMAT;
+    return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
   address_of_left_sibling =
       readValue(reader, reader->superblock.size_of_offsets);
   address_of_right_sibling =
@@ -263,9 +267,9 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   mylog("elements %d size %d\n", elements, size);
 
   if (elements >= 0x100000 || size > 0x10)
-    return MYSOFA_INVALID_FORMAT;
+    return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
   if (!(output = malloc(elements * size))) {
-    return MYSOFA_NO_MEMORY;
+    return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
   }
 
   for (e = 0; e < entries_used * 2; e++) {
@@ -275,9 +279,9 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
       size_of_chunk = (uint32_t)readValue(reader, 4);
       filter_mask = (uint32_t)readValue(reader, 4);
       if (filter_mask) {
-        mylog("TREE all filters must be enabled\n");
-        free(output);
-        return MYSOFA_INVALID_FORMAT;
+        mylog("TREE all filters must be enabled\n"); // LCOV_EXCL_LINE
+        free(output);                                // LCOV_EXCL_LINE
+        return MYSOFA_INVALID_FORMAT;                // LCOV_EXCL_LINE
       }
 
       for (j = 0; j < data->ds.dimensionality; j++) {
@@ -295,18 +299,18 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
       /* read data */
       store = ftell(reader->fhd);
       if (fseek(reader->fhd, child_pointer, SEEK_SET) < 0) {
-        free(output);
-        return errno;
+        free(output); // LCOV_EXCL_LINE
+        return errno; // LCOV_EXCL_LINE
       }
 
       if (!(input = malloc(size_of_chunk))) {
-        free(output);
-        return MYSOFA_NO_MEMORY;
+        free(output);            // LCOV_EXCL_LINE
+        return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
       }
       if (fread(input, 1, size_of_chunk, reader->fhd) != size_of_chunk) {
-        free(output);
-        free(input);
-        return MYSOFA_INVALID_FORMAT;
+        free(output);                 // LCOV_EXCL_LINE
+        free(input);                  // LCOV_EXCL_LINE
+        return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
       }
 
       olen = elements * size;
@@ -315,8 +319,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
       mylog("   gunzip %d %d %d\n", err, olen, elements * size);
       if (err || olen != elements * size) {
-        free(output);
-        return MYSOFA_INVALID_FORMAT;
+        free(output);                 // LCOV_EXCL_LINE
+        return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
       }
 
       switch (data->ds.dimensionality) {
@@ -363,20 +367,20 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
         }
         break;
       default:
-        mylog("invalid dim\n");
-        return MYSOFA_INTERNAL_ERROR;
+        mylog("invalid dim\n");       // LCOV_EXCL_LINE
+        return MYSOFA_INTERNAL_ERROR; // LCOV_EXCL_LINE
       }
 
       if (fseek(reader->fhd, store, SEEK_SET) < 0) {
-        free(output);
-        return errno;
+        free(output); // LCOV_EXCL_LINE
+        return errno; // LCOV_EXCL_LINE
       }
     }
   }
 
   free(output);
   if (fseek(reader->fhd, 4, SEEK_CUR) < 0) /* skip checksum */
-    return errno;
+    return errno;                          // LCOV_EXCL_LINE
 
   return MYSOFA_OK;
 }

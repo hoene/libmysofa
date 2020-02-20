@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
   } else {
     fprintf(stderr,
             "Usage: %s [-s] <FILE.SOFA>\n converts a sofa file to json "
-            "output.\nAdd -s to sanitize the json output from netcdf fields.",
+            "output.\nAdd -s to sanitize the json output from netcdf fields.\n",
             argv[0]);
     return 1;
   }

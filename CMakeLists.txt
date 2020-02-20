@@ -7,6 +7,7 @@ include(GNUInstallDirs)
 
 option(BUILD_TESTS "Build test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared library" ON)
+option(CODE_COVERAGE "Enable coverage reporting" ON)
 
 set(CPACK_PACKAGE_DESCRIPTION "SOFA file reader for better HRTFs")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
@@ -48,21 +49,20 @@ if(BUILD_TESTS)
 
   add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh
            ../tests/CIPIC_subject_003_hrir_final)
-  add_test(FHK_HRIR_L2354.sofa ../tests/compare.sh ../tests/FHK_HRIR_L2354)
-  add_test(LISTEN_1002_IRC_1002_C_HRIR.sofa ../tests/compare.sh
+  add_test(FHK_HRIR_L2354 ../tests/compare.sh ../tests/FHK_HRIR_L2354)
+  add_test(LISTEN_1002_IRC_1002_C_HRIR ../tests/compare.sh
            ../tests/LISTEN_1002_IRC_1002_C_HRIR)
-  add_test(MIT_KEMAR_large_pinna.sofa ../tests/compare.sh
+  add_test(MIT_KEMAR_large_pinna ../tests/compare.sh
            ../tests/MIT_KEMAR_large_pinna)
   add_test(Pulse ../tests/compare.sh ../tests/Pulse)
   add_test(Tester ../tests/compare.sh ../tests/tester)
-  add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m.sofa
-           ../tests/compare.sh
+  add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m ../tests/compare.sh
            ../tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m)
-  add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m.sofa ../tests/compare.sh
+  add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m ../tests/compare.sh
            ../tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m)
-  add_test(example_dummy_sofa48.sofa ../tests/compare.sh
+  add_test(example_dummy_sofa48 ../tests/compare.sh
            ../tests/example_dummy_sofa48)
-  add_test(TestSOFA48_netcdf472.sofa ../tests/compare.sh
+  add_test(TestSOFA48_netcdf472 ../tests/compare.sh
            ../tests/TestSOFA48_netcdf472)
   add_test(ignore_user_defined_variable ./src/mysofa2json
            ../tests/example_dummy_sofa48_with_user_defined_variable.sofa)
