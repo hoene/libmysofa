@@ -89,7 +89,7 @@ if(UNIX
   target_compile_options(mysofa-static PUBLIC -g -O0 -Wall -fprofile-arcs
                                               -ftest-coverage)
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-    target_link_options(mysofa-static INTERFACE gcov --coverage)
+    target_link_options(mysofa-static INTERFACE --coverage)
   else()
     target_link_libraries(mysofa-static LINK_PUBLIC gcov --coverage)
   endif()
@@ -118,7 +118,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_options(mysofa-shared PUBLIC -g -O0 -Wall -fprofile-arcs
                                                 -ftest-coverage)
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-      target_link_options(mysofa-shared INTERFACE gcov --coverage)
+      target_link_options(mysofa-shared INTERFACE --coverage)
     else()
       target_link_libraries(mysofa-shared LINK_PUBLIC gcov --coverage)
     endif()
