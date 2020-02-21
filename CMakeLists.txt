@@ -47,6 +47,21 @@ if(BUILD_TESTS)
 
   enable_testing()
 
+  foreach(
+    ISSUE
+    72
+    75
+    76
+    77
+    79
+    82
+    83
+    84
+    96)
+    add_test(fail-issue-${ISSUE} ../tests/notcrashed.sh
+             ../tests/fail-issue-${ISSUE})
+  endforeach(ISSUE)
+
   add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh
            ../tests/CIPIC_subject_003_hrir_final)
   add_test(FHK_HRIR_L2354 ../tests/compare.sh ../tests/FHK_HRIR_L2354)
