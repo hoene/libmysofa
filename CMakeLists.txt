@@ -56,8 +56,8 @@ if(BUILD_TESTS)
     79
     82
     83
-    84
-    96)
+    84)
+# issues with osx    96)
     add_test(fail-issue-${ISSUE} ../tests/notcrashed.sh
              ../tests/fail-issue-${ISSUE})
   endforeach(ISSUE)
