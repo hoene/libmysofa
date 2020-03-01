@@ -57,7 +57,7 @@ if(BUILD_TESTS)
     82
     83
     84)
-# issues with osx    96)
+    # issues with osx    96)
     add_test(fail-issue-${ISSUE} ../tests/notcrashed.sh
              ../tests/fail-issue-${ISSUE})
   endforeach(ISSUE)
@@ -79,9 +79,8 @@ if(BUILD_TESTS)
            ../tests/example_dummy_sofa48)
   add_test(TestSOFA48_netcdf472 ../tests/compare.sh
            ../tests/TestSOFA48_netcdf472)
-  add_test(ignore_user_defined_variable ./src/mysofa2json
-           ../tests/example_dummy_sofa48_with_user_defined_variable.sofa)
-
+  add_test(example_dummy_sofa48_with_user_defined_variable ../tests/compare.sh
+           ../tests/example_dummy_sofa48_with_user_defined_variable)
 endif(BUILD_TESTS)
 
 add_subdirectory(src)

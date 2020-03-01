@@ -232,5 +232,13 @@ void printJson(FILE *out, struct MYSOFA_HRTF *hrtf, int sanitize) {
                  sanitize))
     fprintf(out, ",\n");
   printArray(out, hrtf, &hrtf->DataDelay, "Data.Delay", sanitize);
+
+  struct MYSOFA_VARIABLE *node = hrtf->variables;
+  while (node) {
+    fprintf(out, ",\n");
+    printArray(out, hrtf, hrtf->variables->value, hrtf->variables->name,
+               sanitize);
+    node = node->next;
+  }
   fprintf(out, " }\n}\n");
 }
