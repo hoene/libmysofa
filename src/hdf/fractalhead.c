@@ -41,28 +41,30 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
   /* read signature */
   if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "FHDB", 4)) {
+    // LCOV_EXCL_START
     mylog("cannot read signature of fractal heap indirect block\n");
     return MYSOFA_INVALID_FORMAT;
+    // LCOV_EXCL_STOP
   }
   buf[4] = 0;
   mylog("%08" PRIX64 " %.4s stack %d\n", (uint64_t)ftell(reader->fhd) - 4, buf,
         reader->recursive_counter);
 
   if (fgetc(reader->fhd) != 0) {
-    mylog("object FHDB must have version 0\n");
-    return MYSOFA_UNSUPPORTED_FORMAT;
+    mylog("object FHDB must have version 0\n"); // LCOV_EXCL_LINE
+    return MYSOFA_UNSUPPORTED_FORMAT;           // LCOV_EXCL_LINE
   }
 
   /* ignore heap_header_address */
   if (fseek(reader->fhd, reader->superblock.size_of_offsets, SEEK_CUR) < 0)
-    return errno;
+    return errno; // LCOV_EXCL_LINE
 
   size = (fractalheap->maximum_heap_size + 7) / 8;
   block_offset = readValue(reader, size);
 
   if (fractalheap->flags & 2)
     if (fseek(reader->fhd, 4, SEEK_CUR))
-      return errno;
+      return errno; // LCOV_EXCL_LINE
 
   offset_size = ceilf(log2f(fractalheap->maximum_heap_size) / 8);
   if (fractalheap->maximum_direct_block_size < fractalheap->maximum_size)
@@ -96,8 +98,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
    00 00 00 02 00 00 00  |ion.............|
    *
 
-00002730  00 00 00 00 00 00 00 46  48 44 42 00 97 02 00 00  |.......FHDB.....|
-00002740  00 00 00 00 00 00 00 00  00 99 b9 5c d8
+  00002730  00 00 00 00 00 00 00 46  48 44 42 00 97 02 00 00  |.......FHDB.....|
+  00002740  00 00 00 00 00 00 00 00  00 99 b9 5c d8
 
 
    */
@@ -106,7 +108,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     offset = readValue(reader, offset_size);
     length = readValue(reader, length_size);
     if (offset > 0x10000000 || length > 0x10000000)
-      return MYSOFA_UNSUPPORTED_FORMAT;
+      return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
 
     mylog(" %d %4" PRIX64 " %" PRIX64 " %08lX\n", typeandversion, offset,
           length, ftell(reader->fhd) - 1 - offset_size - length_size);
@@ -118,28 +120,28 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
        */
 
       if (readValue(reader, 5) != 0x0000040008) {
-        mylog("FHDB type 3 unsupported values");
-        return MYSOFA_UNSUPPORTED_FORMAT;
+        mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
+        return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
       }
 
       if (!(name = malloc(length + 1)))
-        return MYSOFA_NO_MEMORY;
+        return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
       if (fread(name, 1, length, reader->fhd) != length) {
-        free(name);
-        return MYSOFA_READ_ERROR;
+        free(name);               // LCOV_EXCL_LINE
+        return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
       }
       name[length] = 0;
 
       if (readValue(reader, 4) != 0x00000013) {
-        mylog("FHDB type 3 unsupported values");
-        free(name);
-        return MYSOFA_UNSUPPORTED_FORMAT;
+        mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
+        free(name);                              // LCOV_EXCL_LINE
+        return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
       }
 
       len = (int)readValue(reader, 2);
       if (len > 0x1000 || len < 0) {
-        free(name);
-        return MYSOFA_UNSUPPORTED_FORMAT;
+        free(name);                       // LCOV_EXCL_LINE
+        return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
       }
 
       /* TODO: Get definition of this field */
@@ -148,19 +150,19 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         value = NULL;
       else if (unknown == 0x000000020000) {
         if (!(value = malloc(len + 1))) {
-          free(name);
-          return MYSOFA_NO_MEMORY;
+          free(name);              // LCOV_EXCL_LINE
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         }
         if (fread(value, 1, len, reader->fhd) != len) {
-          free(value);
-          free(name);
-          return MYSOFA_READ_ERROR;
+          free(value);              // LCOV_EXCL_LINE
+          free(name);               // LCOV_EXCL_LINE
+          return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
         }
         value[len] = 0;
       } else if (unknown == 0x20000020000) {
         if (!(value = malloc(5))) {
-          free(name);
-          return MYSOFA_NO_MEMORY;
+          free(name);              // LCOV_EXCL_LINE
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         }
         strcpy(value, "");
       } else {
@@ -173,9 +175,9 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
       attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
       if (attr == NULL) {
-        free(value);
-        free(name);
-        return MYSOFA_NO_MEMORY;
+        free(value);             // LCOV_EXCL_LINE
+        free(name);              // LCOV_EXCL_LINE
+        return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
       }
 
       attr->name = name;
@@ -194,15 +196,15 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
         len = fgetc(reader->fhd);
         if (len < 0)
-          return MYSOFA_READ_ERROR;
+          return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
         if (len > MAX_NAME_LENGTH)
-          return MYSOFA_INVALID_FORMAT;
+          return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
 
         if (!(name = malloc(len + 1)))
-          return MYSOFA_NO_MEMORY;
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         if (fread(name, 1, len, reader->fhd) != len) {
-          free(name);
-          return MYSOFA_READ_ERROR;
+          free(name);               // LCOV_EXCL_LINE
+          return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
         }
         name[len] = 0;
 
@@ -215,8 +217,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
         dir = malloc(sizeof(struct DIR));
         if (!dir) {
-          free(name);
-          return MYSOFA_NO_MEMORY;
+          free(name);              // LCOV_EXCL_LINE
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         }
         memset(dir, 0, sizeof(*dir));
 
@@ -225,20 +227,20 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
         store = ftell(reader->fhd);
         if (fseek(reader->fhd, heap_header_address, SEEK_SET)) {
-          free(name);
-          return errno;
+          free(name);   // LCOV_EXCL_LINE
+          return errno; // LCOV_EXCL_LINE
         }
 
         err = dataobjectRead(reader, &dir->dataobject, name);
         if (err) {
-          return err;
+          return err; // LCOV_EXCL_LINE
         }
 
         if (store < 0) {
-          return errno;
+          return errno; // LCOV_EXCL_LINE
         }
         if (fseek(reader->fhd, store, SEEK_SET) < 0)
-          return errno;
+          return errno; // LCOV_EXCL_LINE
         break;
       case 0x00080008:
 
@@ -263,13 +265,13 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
     6d 70 6c  65 46 72 65 65 46 69 65  |...SimpleFreeFie|
     */
         if (!(name = malloc(MAX_NAME_LENGTH)))
-          return MYSOFA_NO_MEMORY;
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         len = -1;
         for (int i = 0; i < MAX_NAME_LENGTH; i++) {
           int c = fgetc(reader->fhd);
           if (c < 0 || i == MAX_NAME_LENGTH - 1) {
-            free(name);
-            return MYSOFA_READ_ERROR;
+            free(name);               // LCOV_EXCL_LINE
+            return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
           }
           name[i] = c;
           if (len < 0 && c == 0)
@@ -279,36 +281,36 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         }
         name = realloc(name, len + 1);
         if (!name)
-          return MYSOFA_NO_MEMORY;
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         mylog("name %d %s\n", len, name);
 
         if (readValue(reader, 3) != 0x000000) {
-          mylog("FHDB type 3 unsupported values");
-          free(name);
-          return MYSOFA_UNSUPPORTED_FORMAT;
+          mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
+          free(name);                              // LCOV_EXCL_LINE
+          return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
         }
 
         len = (int)readValue(reader, 4);
         if (len > 0x1000 || len < 0) {
-          mylog("FHDB type 3 unsupported values");
-          free(name);
-          return MYSOFA_UNSUPPORTED_FORMAT;
+          mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
+          free(name);                              // LCOV_EXCL_LINE
+          return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
         }
 
         unknown = (int)readValue(reader, 8);
         if (unknown != 0x00000001) {
-          mylog("FHDB type 3 unsupported values");
-          free(name);
-          return MYSOFA_UNSUPPORTED_FORMAT;
+          mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
+          free(name);                              // LCOV_EXCL_LINE
+          return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
         }
         if (!(value = malloc(len + 1))) {
-          free(name);
-          return MYSOFA_NO_MEMORY;
+          free(name);              // LCOV_EXCL_LINE
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         }
         if (fread(value, 1, len, reader->fhd) != len) {
-          free(value);
-          free(name);
-          return MYSOFA_READ_ERROR;
+          free(value);              // LCOV_EXCL_LINE
+          free(name);               // LCOV_EXCL_LINE
+          return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
         }
         value[len] = 0;
 
@@ -316,9 +318,9 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
         attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
         if (attr == NULL) {
-          free(value);
-          free(name);
-          return MYSOFA_NO_MEMORY;
+          free(value);             // LCOV_EXCL_LINE
+          free(name);              // LCOV_EXCL_LINE
+          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         }
 
         attr->name = name;
@@ -327,10 +329,12 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         dataobject->attributes = attr;
         break;
 
+        // LCOV_EXCL_START
       default:
         mylog("FHDB type 1 unsupported values %08" PRIX64 " %" PRIX64 "\n",
               unknown, (uint64_t)ftell(reader->fhd) - 4);
         return MYSOFA_UNSUPPORTED_FORMAT;
+        // LCOV_EXCL_STOP
       }
 
     } else if (typeandversion != 0) {
