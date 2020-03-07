@@ -137,7 +137,25 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
       !fequals(hrtf->ReceiverPosition.values[4],
                -hrtf->ReceiverPosition.values[1]) ||
       !fequals(hrtf->ReceiverPosition.values[5], 0.)) {
-    return MYSOFA_INVALID_RECEIVER_POSITIONS;
+
+    if (!(hrtf->ReceiverPosition.values[1] > 0 &&
+          hrtf->ReceiverPosition.values[0] < hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[0] >
+              -hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[2] < hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[2] >
+              -hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[4] < 0 &&
+          hrtf->ReceiverPosition.values[3] > hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[3] <
+              -hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[5] > hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[5] <
+              -hrtf->ReceiverPosition.values[1])) {
+      return MYSOFA_INVALID_RECEIVER_POSITIONS;
+    }
+  } else {
+    mylog("WARNING: SOFA file is written with wrong receiver positions.");
   }
 
   /* read source positions */

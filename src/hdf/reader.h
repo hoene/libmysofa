@@ -11,16 +11,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef VDEBUG
-#define mylog(...)                                                             \
-  {                                                                            \
-    fprintf(stderr, "%s:%d: ", __FILE__, __LINE__);                            \
-    fprintf(stderr, __VA_ARGS__);                                              \
-  }
-#else
-#define mylog(...)
-#endif
-
 #define UNUSED(x) (void)(x)
 
 struct READER;

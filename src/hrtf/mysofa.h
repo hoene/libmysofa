@@ -16,6 +16,18 @@ extern "C" {
 #define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5
 #define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01
 
+/** debugging output */
+#ifdef VDEBUG
+#include <stdio.h>
+#define mylog(...)                                                             \
+  {                                                                            \
+    fprintf(stderr, "%s:%d: ", __FILE__, __LINE__);                            \
+    fprintf(stderr, __VA_ARGS__);                                              \
+  }
+#else
+#define mylog(...)
+#endif
+
 /** attributes */
 struct MYSOFA_ATTRIBUTE {
   struct MYSOFA_ATTRIBUTE *next;
