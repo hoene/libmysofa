@@ -146,10 +146,10 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
           hrtf->ReceiverPosition.values[2] >
               -hrtf->ReceiverPosition.values[1] &&
           hrtf->ReceiverPosition.values[4] < 0 &&
-          hrtf->ReceiverPosition.values[3] > hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[3] > hrtf->ReceiverPosition.values[4] &&
           hrtf->ReceiverPosition.values[3] <
               -hrtf->ReceiverPosition.values[1] &&
-          hrtf->ReceiverPosition.values[5] > hrtf->ReceiverPosition.values[1] &&
+          hrtf->ReceiverPosition.values[5] > hrtf->ReceiverPosition.values[4] &&
           hrtf->ReceiverPosition.values[5] <
               -hrtf->ReceiverPosition.values[1])) {
       return MYSOFA_INVALID_RECEIVER_POSITIONS;
