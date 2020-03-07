@@ -56,7 +56,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
       !verifyAttribute(hrtf->attributes, "DataType", "FIR") ||
       !verifyAttribute(hrtf->attributes, "RoomType", "free field"))
 
-    return MYSOFA_INVALID_ATTRIBUTES;
+    return MYSOFA_INVALID_ATTRIBUTES; // LCOV_EXCL_LINE
 
   /*==============================================================================
    dimensions
@@ -64,23 +64,23 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
  */
 
   if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2)
-    return MYSOFA_INVALID_DIMENSIONS;
+    return MYSOFA_INVALID_DIMENSIONS; // LCOV_EXCL_LINE
 
   /* verify format */
 
   if (hrtf->ListenerView.values) {
     if (!verifyAttribute(hrtf->ListenerView.attributes, "DIMENSION_LIST",
                          "I,C"))
-      return MYSOFA_INVALID_DIMENSION_LIST;
+      return MYSOFA_INVALID_DIMENSION_LIST; // LCOV_EXCL_LINE
     if (verifyAttribute(hrtf->ListenerView.attributes, "Type", "cartesian")) {
       if (!compareValues(&hrtf->ListenerView, array100, 3))
-        return MYSOFA_INVALID_FORMAT;
+        return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
     } else if (verifyAttribute(hrtf->ListenerView.attributes, "Type",
                                "spherical")) {
       if (!compareValues(&hrtf->ListenerView, array001, 3))
-        return MYSOFA_INVALID_FORMAT;
+        return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
     } else
-      return MYSOFA_INVALID_COORDINATE_TYPE;
+      return MYSOFA_INVALID_COORDINATE_TYPE; // LCOV_EXCL_LINE
   }
 
 #if 0
@@ -107,14 +107,14 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
   /* TODO: support ECM too */
   if (!verifyAttribute(hrtf->EmitterPosition.attributes, "DIMENSION_LIST",
                        "E,C,I"))
-    return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED;
+    return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED; // LCOV_EXCL_LINE
   if (!compareValues(&hrtf->EmitterPosition, array000, 3))
-    return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED;
+    return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED; // LCOV_EXCL_LINE
 
   if (hrtf->DataDelay.values) {
     if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "I,R") &&
         !verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "M,R"))
-      return MYSOFA_ONLY_DELAYS_WITH_IR_OR_MR_SUPPORTED;
+      return MYSOFA_ONLY_DELAYS_WITH_IR_OR_MR_SUPPORTED; // LCOV_EXCL_LINE
   }
 
   /* TODO: Support different sampling rate per measurement, support default
@@ -122,13 +122,13 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
    an format other and I */
   if (!verifyAttribute(hrtf->DataSamplingRate.attributes, "DIMENSION_LIST",
                        "I"))
-    return MYSOFA_ONLY_THE_SAME_SAMPLING_RATE_SUPPORTED;
+    return MYSOFA_ONLY_THE_SAME_SAMPLING_RATE_SUPPORTED; // LCOV_EXCL_LINE
 
   if (!verifyAttribute(hrtf->ReceiverPosition.attributes, "DIMENSION_LIST",
                        "R,C,I"))
-    return MYSOFA_RECEIVERS_WITH_RCI_SUPPORTED;
+    return MYSOFA_RECEIVERS_WITH_RCI_SUPPORTED; // LCOV_EXCL_LINE
   if (!verifyAttribute(hrtf->ReceiverPosition.attributes, "Type", "cartesian"))
-    return MYSOFA_RECEIVERS_WITH_CARTESIAN_SUPPORTED;
+    return MYSOFA_RECEIVERS_WITH_CARTESIAN_SUPPORTED; // LCOV_EXCL_LINE
 
   if (!fequals(hrtf->ReceiverPosition.values[0], 0.) ||
       hrtf->ReceiverPosition.values[1] > 0 ||
@@ -152,7 +152,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
           hrtf->ReceiverPosition.values[5] > hrtf->ReceiverPosition.values[4] &&
           hrtf->ReceiverPosition.values[5] <
               -hrtf->ReceiverPosition.values[1])) {
-      return MYSOFA_INVALID_RECEIVER_POSITIONS;
+      return MYSOFA_INVALID_RECEIVER_POSITIONS; // LCOV_EXCL_LINE
     }
   } else {
     mylog("WARNING: SOFA file is written with wrong receiver positions.");
@@ -161,7 +161,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
   /* read source positions */
   if (!verifyAttribute(hrtf->SourcePosition.attributes, "DIMENSION_LIST",
                        "M,C"))
-    return MYSOFA_ONLY_SOURCES_WITH_MC_SUPPORTED;
+    return MYSOFA_ONLY_SOURCES_WITH_MC_SUPPORTED; // LCOV_EXCL_LINE
 
   return MYSOFA_OK;
 }
