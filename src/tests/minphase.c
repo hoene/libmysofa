@@ -27,7 +27,7 @@ void test_minphase() {
     CU_ASSERT(fequals(hrtf->DataIR.values[i], 1));
   mysofa_free(hrtf);
 
-  hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa", &err);
+  hrtf = mysofa_load("tests/MIT_KEMAR_normal_pinna.old.sofa", &err);
   if (!hrtf) {
     CU_FAIL_FATAL("Error reading file.");
   }
@@ -39,7 +39,7 @@ void test_minphase() {
   CU_ASSERT(len == 361);
   mysofa_free(hrtf);
 
-  hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa", &err);
+  hrtf = mysofa_load("tests/MIT_KEMAR_normal_pinna.old.sofa", &err);
   if (!hrtf) {
     CU_FAIL_FATAL("Error reading file.");
   }
@@ -51,7 +51,7 @@ void test_minphase() {
   CU_ASSERT(len == 463);
   mysofa_free(hrtf);
 
-  hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa", &err);
+  hrtf = mysofa_load("tests/MIT_KEMAR_normal_pinna.old.sofa", &err);
   if (!hrtf) {
     CU_FAIL_FATAL("Error reading file.");
   }
