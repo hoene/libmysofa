@@ -62,6 +62,12 @@ if(BUILD_TESTS)
              ../tests/fail-issue-${ISSUE})
   endforeach(ISSUE)
 
+  add_test(MIT_KEMAR_large_pinna ../tests/compare.sh
+           ../tests/MIT_KEMAR_large_pinna)
+  add_test(MIT_KEMAR_normal_pinna ../tests/compare.sh
+           ../tests/MIT_KEMAR_normal_pinna)
+  add_test(MIT_KEMAR_normal_pinna.old ../tests/compare.sh
+           ../tests/MIT_KEMAR_normal_pinna.old)
   add_test(D1_48K_24bit_0.3s_FIR_SOFA ../tests/compare.sh
            ../tests/D1_48K_24bit_0.3s_FIR_SOFA)
   add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh
@@ -69,8 +75,6 @@ if(BUILD_TESTS)
   add_test(FHK_HRIR_L2354 ../tests/compare.sh ../tests/FHK_HRIR_L2354)
   add_test(LISTEN_1002_IRC_1002_C_HRIR ../tests/compare.sh
            ../tests/LISTEN_1002_IRC_1002_C_HRIR)
-  add_test(MIT_KEMAR_large_pinna ../tests/compare.sh
-           ../tests/MIT_KEMAR_large_pinna)
   add_test(Pulse ../tests/compare.sh ../tests/Pulse)
   add_test(Tester ../tests/compare.sh ../tests/tester)
   add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m ../tests/compare.sh
