@@ -3,7 +3,7 @@
 SCRIPTDIR=${0%/*}
 NODEJS=$(which node nodejs false | head -1)
 
-${MYSOFA2JSON:-${SCRIPTDIR}/../build/src/mysofa2json} -s "$1".sofa >tmp1.json 2>tmp1.txt
+${MYSOFA2JSON:-${SCRIPTDIR}/../build/src/mysofa2json} -s -c "$1".sofa >tmp1.json 2>tmp1.txt
 
 ret=$?
 if [ "$ret" != 0 ]; then 
