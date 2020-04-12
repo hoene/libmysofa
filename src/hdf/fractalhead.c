@@ -23,8 +23,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
   char buf[5], *name, *value;
   int size, offset_size, length_size, err, len;
   uint8_t typeandversion;
-  uint64_t unknown, heap_header_address, block_offset, block_size, offset,
-      length;
+  uint64_t unknown1, unknown2, unknown3, unknown4, heap_header_address,
+      block_offset, block_size, offset, length;
   long store;
   struct DIR *dir;
   struct MYSOFA_ATTRIBUTE *attr;
@@ -75,27 +75,30 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
   mylog(" %d %" PRIu64 " %d\n", size, block_offset, offset_size);
 
   /*
-   * 00003e00  00 46 48 44 42 00 40 02  00 00 00 00 00 00 00 00
+   00003e00  00 46 48 44 42 00 40 02  00 00 00 00 00 00 00 00
    |.FHDB.@.........|
-
-   00003e10  00 00 00 83 8d ac f6
-
-   >03  00 0c 00 08 00 04 00 00  |................|
-
-   00003e20  43 6f 6e 76 65 6e 74 69  6f 6e 73 00
-
-   13 00 00 00  |Conventions.....|
-
-   00003e30  04 00 00 00 02 00 00 00  53 4f 46 41< 03
-   00 08 00  |........SOFA....| 00003e40  08 00 04 00 00 56 65 72  73 69 6f 6e
-   00 13 00 00  |.....Version....| 00003e50  00 03 00 00 00 02 00 00  00 30 2e
-   36 03 00 10 00  |.........0.6....| 00003e60  08 00 04 00 00 53 4f 46  41 43
-   6f 6e 76 65 6e 74  |.....SOFAConvent| 00003e70  69 6f 6e 73 00 13 00 00  00
-   13 00 00 00 02 00 00  |ions............| 00003e80  00 53 69 6d 70 6c 65 46 72
-   65 65 46 69 65 6c 64  |.SimpleFreeField| 00003e90  48 52 49 52 03 00 17 00 08
-   00 04 00 00 53 4f 46  |HRIR.........SOF| 00003ea0  41 43 6f 6e 76 65 6e 74 69
-   6f 6e 73 56 65 72 73  |AConventionsVers| 00003eb0  69 6f 6e 00 13 00 00 00 03
-   00 00 00 02 00 00 00  |ion.............|
+   00003e10  00 00 00 83 8d ac f6 03  00 0c 00 08 00 04 00 00
+   |................|
+   00003e20  43 6f 6e 76 65 6e 74 69  6f 6e 73 00 13 00 00 00
+   |Conventions.....|
+   00003e30  04 00 00 00 02 00 00 00  53 4f 46 41 03 00 08 00
+   |........SOFA....|
+   00003e40  08 00 04 00 00 56 65 72  73 69 6f 6e 00 13 00 00
+   |.....Version....|
+   00003e50  00 03 00 00 00 02 00 00  00 30 2e 36 03 00 10 00
+   |.........0.6....|
+   00003e60  08 00 04 00 00 53 4f 46  41 43 6f 6e 76 65 6e 74
+   |.....SOFAConvent|
+   00003e70  69 6f 6e 73 00 13 00 00  00 13 00 00 00 02 00 00
+   |ions............|
+   00003e80  00 53 69 6d 70 6c 65 46  72 65 65 46 69 65 6c 64
+   |.SimpleFreeField|
+   00003e90  48 52 49 52 03 00 17 00  08 00 04 00 00 53 4f 46
+   |HRIR.........SOF|
+   00003ea0  41 43 6f 6e 76 65 6e 74  69 6f 6e 73 56 65 72 73
+   |AConventionsVers|
+   00003eb0  69 6f 6e 00 13 00 00 00  03 00 00 00 02 00 00 00
+   |ion.............|
    *
 
   00002730  00 00 00 00 00 00 00 46  48 44 42 00 97 02 00 00  |.......FHDB.....|
@@ -145,10 +148,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
       }
 
       /* TODO: Get definition of this field */
-      unknown = readValue(reader, 6);
-      if (unknown == 0x000000020200)
+      unknown1 = readValue(reader, 6);
+      if (unknown1 == 0x000000020200)
         value = NULL;
-      else if (unknown == 0x000000020000) {
+      else if (unknown1 == 0x000000020000) {
         if (!(value = malloc(len + 1))) {
           free(name);              // LCOV_EXCL_LINE
           return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
@@ -159,14 +162,14 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
           return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
         }
         value[len] = 0;
-      } else if (unknown == 0x20000020000) {
+      } else if (unknown1 == 0x20000020000) {
         if (!(value = malloc(5))) {
           free(name);              // LCOV_EXCL_LINE
           return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         }
         strcpy(value, "");
       } else {
-        mylog("FHDB type 3 unsupported values: %12" PRIX64 "\n", unknown);
+        mylog("FHDB type 3 unsupported values: %12" PRIX64 "\n", unknown1);
         free(name);
         /* TODO:			return MYSOFA_UNSUPPORTED_FORMAT; */
         return MYSOFA_OK;
@@ -184,15 +187,16 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
       attr->value = value;
       attr->next = dataobject->attributes;
       dataobject->attributes = attr;
-
     } else if (typeandversion == 1) {
 
-      unknown = readValue(reader, 4);
-      switch (unknown) {
+      /* TODO: Get definition of this field */
+      unknown2 = readValue(reader, 4);
+      switch (unknown2) {
       case 0:
 
-        unknown = readValue(reader, 2);
-        assert(unknown == 0x0000);
+        /* TODO: Get definition of this field */
+        unknown3 = readValue(reader, 2);
+        assert(unknown3 == 0x0000);
 
         len = fgetc(reader->fhd);
         if (len < 0)
@@ -243,27 +247,91 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
           return errno; // LCOV_EXCL_LINE
         break;
       case 0x00080008:
-
         /*
-            > 01 00 0e  |...........\....|
+                                                      01 00 0e
+    |...........\....|
     00002750  00 08 00 08 00 5f 4e 43  50 72 6f 70 65 72 74 69
-    |....._NCProperti| 00002760  65 73 00 00 00 13 00 00  00 37 00 00 00 01 00
-    00  |es.......7......|
-
+    |....._NCProperti|
+    00002760  65 73 00 00 00 13 00 00  00 37 00 00 00 01 00 00
+    |es.......7......|
     00002770  00 00 00 00 00 76 65 72  73 69 6f 6e 3d 31 7c 6e
-    |.....version=1|n| 00002780  65 74 63 64 66 6c 69 62  76 65 72 73 69 6f 6e
-    3d  |etcdflibversion=| 00002790  34 2e 36 2e 31 7c 68 64  66 35 6c 69 62 76
-    65 72  |4.6.1|hdf5libver| 000027a0  73 69 6f 6e 3d 31 2e 31  30 2e 34 00 01
-    00 0c 00  |sion=1.10.4.....| 000027b0  08 00 08 00 43 6f 6e 76  65 6e 74 69
-    6f 6e 73 00  |....Conventions.| 000027c0  00 00 00 00 13 00 00 00  04 00 00
-    00 01 00 00 00  |................| 000027d0  00 00 00 00 53 4f 46 41  01 00
-    08 00 08 00 08 00  |....SOFA........| 000027e0  56 65 72 73 69 6f 6e 00  13
-    00 00 00 03 00 00 00  |Version.........| 000027f0  01 00 00 00 00 00 00 00
-    31 2e 30 01 00 10 00 08  |........1.0.....| 00002800  00 08 00 53 4f 46 41
-    43  6f 6e 76 65 6e 74 69 6f  |...SOFAConventio| 00002810  6e 73 00 13 00 00
-    00 13  00 00 00 01 00 00 00 00  |ns..............| 00002820  00 00 00 53 69
-    6d 70 6c  65 46 72 65 65 46 69 65  |...SimpleFreeFie|
+    |.....version=1|n|
+    00002780  65 74 63 64 66 6c 69 62  76 65 72 73 69 6f 6e 3d
+    |etcdflibversion=|
+    00002790  34 2e 36 2e 31 7c 68 64  66 35 6c 69 62 76 65 72
+    |4.6.1|hdf5libver|
+    000027a0  73 69 6f 6e 3d 31 2e 31  30 2e 34 00 01 00 0c 00
+    |sion=1.10.4.....|
+    000027b0  08 00 08 00 43 6f 6e 76  65 6e 74 69 6f 6e 73 00
+    |....Conventions.|
+    000027c0  00 00 00 00 13 00 00 00  04 00 00 00 01 00 00 00
+    |................|
+    000027d0  00 00 00 00 53 4f 46 41  01 00 08 00 08 00 08 00
+    |....SOFA........|
+    000027e0  56 65 72 73 69 6f 6e 00  13 00 00 00 03 00 00 00
+    |Version.........|
+    000027f0  01 00 00 00 00 00 00 00 31 2e 30 01 00 10 00 08
+    |........1.0.....|
+    00002800  00 08 00 53 4f 46 41 43  6f 6e 76 65 6e 74 69 6f
+    |...SOFAConventio|
+    00002810  6e 73 00 13 00 00 00 13  00 00 00 01 00 00 00 00
+    |ns..............|
+    00002820  00 00 00 53 69 6d 70 6c  65 46 72 65 65 46 69 65
+    |...SimpleFreeFie|
     */
+        //      case 0x00040008:
+        /*
+        00004610           08 00 04 00 41  75 74 68 6f 72 43 6f 6e
+        |.......AuthorCon|
+        00004620  74 61 63 74 00 00 00 13  00 00 00 01 00 00 00 02
+        |tact............|
+        00004630  00 00 02 00 00 00 00 01  00 08 00 08 00 04 00 43
+        |...............C|
+        00004640  6f 6d 6d 65 6e 74 00 13  00 00 00 01 00 00 00 02
+        |omment..........|
+        00004650  00 00 02 00 00 00 00 01  00 09 00 08 00 08 00 44
+        |...............D|
+        00004660  61 74 61 54 79 70 65 00  00 00 00 00 00 00 00 13
+        |ataType.........|
+        00004670  00 00 00 03 00 00 00 01  00 00 00 00 00 00 00 46
+        |...............F|
+        00004680  49 52 01 00 08 00 08 00  08 00 48 69 73 74 6f 72
+        |IR........Histor|
+        00004690  79 00 13 00 00 00 34 00  00 00 01 00 00 00 00 00
+        |y.....4.........|
+        000046a0  00 00 43 6f 6e 76 65 72  74 65 64 20 66 72 6f 6d
+        |..Converted from|
+        000046b0  20 74 68 65 20 4d 49 54  20 66 6f 72 6d 61 74 0a
+        | the MIT format.|
+        000046c0  55 70 67 72 61 64 65 64  20 66 72 6f 6d 20 53 4f
+        |Upgraded from SO|
+        000046d0  46 41 20 30 2e 36 01 00  08 00 08 00 08 00 4c 69
+        |FA 0.6........Li|
+        000046e0  63 65 6e 73 65 00 13 00  00 00 32 00 00 00 01 00
+        |cense.....2.....|
+        000046f0  00 00 00 00 00 00 4e 6f  20 6c 69 63 65 6e 73 65
+        |......No license|
+        00004700  20 70 72 6f 76 69 64 65  64 2c 20 61 73 6b 20 74  | provided,
+        ask t| 00004710  68 65 20 61 75 74 68 6f  72 20 66 6f 72 20 70 65  |he
+        author for pe| 00004720  72 6d 69 73 73 69 6f 6e  01 00 0d 00 08 00 04
+        00  |rmission........| 00004730  4f 72 67 61 6e 69 7a 61  74 69 6f 6e 00
+        00 00 00  |Organization....| 00004740  13 00 00 00 01 00 00 00  02 00 00
+        02 00 00 00 00  |................| 00004750  01 00 0b 00 08 00 04 00  52
+        65 66 65 72 65 6e 63  |........Referenc| 00004760  65 73 00 00 00 00 00
+        00  13 00 00 00 01 00 00 00  |es..............| 00004770  02 00 00 02 00
+        00 00 00  01 00 09 00 08 00 08 00  |................| 00004780  52 6f 6f
+        6d 54 79 70 65  00 00 00 00 00 00 00 00  |RoomType........| 00004790  13
+        00 00 00 0a 00 00 00  01 00 00 00 00 00 00 00  |................|
+        000047a0  66 72 65 65 20 66 69 65  6c 64 01 00 07 00 08 00  |free
+        field......| 000047b0  04 00 4f 72 69 67 69 6e  00 00 13 00 00 00 01 00
+        |..Origin........| 000047c0  00 00 02 00 00 02 00 00  00 00 01 00 06 00
+        08 00  |................| 000047d0  04 00 54 69 74 6c 65 00  00 00 13 00
+        00 00 01 00  |..Title.........| 000047e0  00 00 02 00 00 02 00 00  00 00
+        00 00 00 00 00 00  |................| 000047f0  00 00 00 00 00 00 00 00
+        00 00 00 00 00 00 00 00  |................| 00004800  00 54 52 45 45 01
+        00 01  00 ff ff ff ff ff ff ff  |.TREE...........|
+        */
+
         if (!(name = malloc(MAX_NAME_LENGTH)))
           return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
         len = -1;
@@ -285,24 +353,29 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         mylog("name %d %s\n", len, name);
 
         if (readValue(reader, 3) != 0x000000) {
-          mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
-          free(name);                              // LCOV_EXCL_LINE
-          return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
+          mylog("FHDB type 3 unsupported values: 3bytes"); // LCOV_EXCL_LINE
+          free(name);                                      // LCOV_EXCL_LINE
+          return MYSOFA_UNSUPPORTED_FORMAT;                // LCOV_EXCL_LINE
         }
 
         len = (int)readValue(reader, 4);
         if (len > 0x1000 || len < 0) {
-          mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
-          free(name);                              // LCOV_EXCL_LINE
-          return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
+          mylog("FHDB type 3 unsupported values: len "); // LCOV_EXCL_LINE
+          free(name);                                    // LCOV_EXCL_LINE
+          return MYSOFA_UNSUPPORTED_FORMAT;              // LCOV_EXCL_LINE
         }
 
-        unknown = (int)readValue(reader, 8);
-        if (unknown != 0x00000001) {
-          mylog("FHDB type 3 unsupported values"); // LCOV_EXCL_LINE
-          free(name);                              // LCOV_EXCL_LINE
-          return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
+        /* TODO: Get definition of this field */
+        unknown4 = (int)readValue(reader, 8);
+        if (unknown4 != 0x00000001 /*&& unknown4 != 0x02000002*/) {
+          mylog("FHDB type 3 unsupported values: unknown4 %08lX\n",
+                unknown4);                  // LCOV_EXCL_LINE
+          free(name);                       // LCOV_EXCL_LINE
+          return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
         }
+//        if (unknown4 != 0x02000002)
+//          len = 0;
+
         if (!(value = malloc(len + 1))) {
           free(name);              // LCOV_EXCL_LINE
           return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
@@ -332,11 +405,10 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         // LCOV_EXCL_START
       default:
         mylog("FHDB type 1 unsupported values %08" PRIX64 " %" PRIX64 "\n",
-              unknown, (uint64_t)ftell(reader->fhd) - 4);
+              unknown2, (uint64_t)ftell(reader->fhd) - 4);
         return MYSOFA_UNSUPPORTED_FORMAT;
         // LCOV_EXCL_STOP
       }
-
     } else if (typeandversion != 0) {
       /* TODO is must be avoided somehow */
       mylog("fractal head unknown type %d\n", typeandversion);

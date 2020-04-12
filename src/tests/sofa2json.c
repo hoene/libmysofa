@@ -55,7 +55,7 @@ static const char *getErrorText(int err) {
     result = "invalid coordinate type";
     break;
   case MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED:
-    result = "only emtter with ECI dimensions supported";
+    result = "only emitter with ECI dimensions supported";
     break;
   case MYSOFA_ONLY_DELAYS_WITH_IR_OR_MR_SUPPORTED:
     result = "only delays with IR or MR dimensions spported";
