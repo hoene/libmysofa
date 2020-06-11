@@ -47,6 +47,11 @@ if(BUILD_TESTS)
 
   enable_testing()
 
+  add_test(dtf_nh2 ../tests/compareIgnoreNew.sh
+           ../tests/dtf_nh2)
+  add_test(hrtf_c_nh898 ../tests/compareIgnoreNew.sh
+           ../tests/hrtf_c_nh898)
+
   foreach(
     ISSUE
     72
@@ -61,7 +66,6 @@ if(BUILD_TESTS)
     add_test(fail-issue-${ISSUE} ../tests/notcrashed.sh
              ../tests/fail-issue-${ISSUE})
   endforeach(ISSUE)
-
   add_test(CIPIC_subject_003_hrir_final ../tests/compare.sh
            ../tests/CIPIC_subject_003_hrir_final)
   add_test(FHK_HRIR_L2354 ../tests/compare.sh ../tests/FHK_HRIR_L2354)
