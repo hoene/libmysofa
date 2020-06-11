@@ -17,7 +17,7 @@ void test_neighbors() {
   const char *dir = "RLUDFB";
 #endif
 
-  hrtf = mysofa_load("share/MIT_KEMAR_normal_pinna.sofa", &err);
+  hrtf = mysofa_load("tests/MIT_KEMAR_normal_pinna.old.sofa", &err);
   if (!hrtf) {
     CU_FAIL_FATAL("Error reading file.");
     return;

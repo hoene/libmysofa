@@ -19,7 +19,7 @@ void test_easy_open() {
   int err = 0;
   int filterlength;
 
-  easy = mysofa_open("share/MIT_KEMAR_normal_pinna.sofa", 8000., &filterlength,
+  easy = mysofa_open("tests/MIT_KEMAR_normal_pinna.old.sofa", 8000., &filterlength,
                      &err);
   if (!easy) {
     CU_FAIL_FATAL("Error reading file.");
