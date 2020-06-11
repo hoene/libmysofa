@@ -477,6 +477,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
   }
 
   layout_class = (uint8_t)fgetc(reader->fhd);
+  mylog("data layout %d\n", layout_class);
 
   switch (layout_class) {
 #if 0
@@ -513,10 +514,14 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 
   case 2:
     dimensionality = (uint8_t)fgetc(reader->fhd);
-    if (dimensionality < 1 ||
-        dimensionality >
-            sizeof(data->datalayout_chunk) / sizeof(data->datalayout_chunk)[0])
+    mylog("dimensionality %d\n", dimensionality);
+
+    if (dimensionality < 1 || dimensionality > DATAOBJECT_MAX_DIMENSIONALITY) {
+      mylog("data layout 2: invalid dimensionality %d %lu %lu\n",
+            dimensionality, sizeof(data->datalayout_chunk),
+            sizeof(data->datalayout_chunk[0]));
       return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+    }
     data_address = readValue(reader, reader->superblock.size_of_offsets);
     mylog(" CHUNK %" PRIX64 "\n", data_address);
     for (i = 0; i < dimensionality; i++) {
@@ -529,7 +534,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     for (i = 0; i < data->ds.dimensionality; i++)
       size *= data->ds.dimension_size[i];
 
-    if (validAddress(reader, data_address)) {
+    if (validAddress(reader, data_address) && dimensionality <= 4) {
       store = ftell(reader->fhd);
       if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
@@ -867,7 +872,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
 
   mylog(" continue %08" PRIX64 " %08" PRIX64 "\n", offset, length);
-  if (reader->recursive_counter >= 20) {
+  if (reader->recursive_counter >= 25) {
     mylog("recursive problem");
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
   } else
@@ -1205,12 +1210,12 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
     return err;
   }
 
-  /* not needed
-   if (validAddress(reader, dataobject->ai.attribute_name_btree)) {
-   fseek(reader->fhd, dataobject->ai.attribute_name_btree, SEEK_SET);
-   btreeRead(reader, &dataobject->attributes);
-   }
-   */
+  if (validAddress(reader, dataobject->ai.attribute_name_btree)) {
+    /* not needed
+         fseek(reader->fhd, dataobject->ai.attribute_name_btree, SEEK_SET);
+         btreeRead(reader, &dataobject->attributes);
+    */
+  }
 
   /* parse message attribute info */
   if (validAddress(reader, dataobject->ai.fractal_heap_address)) {
@@ -1229,12 +1234,12 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
       return err;
   }
 
-  /* not needed
-   if (validAddress(reader, dataobject->li.address_btree_index)) {
-   fseek(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
-   btreeRead(reader, &dataobject->objects);
-   }
-   */
+  if (validAddress(reader, dataobject->li.address_btree_index)) {
+    /* not needed
+       fseek(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
+       btreeRead(reader, &dataobject->objects);
+     */
+  }
 
   dataobject->all = reader->all;
   reader->all = dataobject;

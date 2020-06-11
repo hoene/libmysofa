@@ -107,6 +107,8 @@ struct DATATYPE {
   uint32_t list; /* size of a list in bytes */
 };
 
+#define DATAOBJECT_MAX_DIMENSIONALITY 5
+
 struct DATAOBJECT {
   char *name;
 
@@ -124,7 +126,7 @@ struct DATAOBJECT {
   struct BTREE attributes_btree;
   struct FRACTALHEAP attributes_heap;
 
-  int datalayout_chunk[4];
+  int datalayout_chunk[DATAOBJECT_MAX_DIMENSIONALITY];
 
   struct MYSOFA_ATTRIBUTE *attributes;
   struct DIR *directory;
