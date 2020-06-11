@@ -95,15 +95,19 @@ int main(int argc, char **argv) {
 
   printJson(stdout, hrtf, sanitize);
 
-  if (check)
-    err = mysofa_check(hrtf);
-
   mysofa_free(hrtf);
 
-  if (check && err != MYSOFA_OK) {
-    fprintf(stderr, "Error checking file %s. Error code: %d:%s\n", filename,
-            err, error2string(err));
-    return err;
+  if (check) {
+    struct MYSOFA_EASY *hrtf2 = NULL;
+    int filter_length;
+    hrtf2 = mysofa_open(filename, 48000, &filter_length, &err);
+
+    if (err != MYSOFA_OK) {
+      fprintf(stderr, "Error checking file %s. Error code: %d:%s\n", filename,
+              err, error2string(err));
+      return err;
+    }
+    mysofa_close(hrtf2);
   }
 
   return 0;
