@@ -47,16 +47,16 @@ if(BUILD_TESTS)
 
   enable_testing()
 
-  add_test(H20_44K_16bit_256tap_FIR_SOFA ../tests/compare.sh
+  add_test(H20_44K_16bit_256tap_FIR_SOFA ../tests/compareIgnoreNew.sh
            ../tests/H20_44K_16bit_256tap_FIR_SOFA)
   add_test(MIT_KEMAR_large_pinna ../tests/compare.sh
            ../tests/MIT_KEMAR_large_pinna)
-  add_test(MIT_KEMAR_normal_pinna ../tests/compare.sh
+  add_test(MIT_KEMAR_normal_pinna ../tests/compareIgnoreNew.sh
            ../tests/MIT_KEMAR_normal_pinna)
   add_test(MIT_KEMAR_normal_pinna.old ../tests/compare.sh
            ../tests/MIT_KEMAR_normal_pinna.old)
-  add_test(D1_48K_24bit_0.3s_FIR_SOFA ../tests/compare.sh
-           ../tests/D1_48K_24bit_0.3s_FIR_SOFA)
+#  add_test(D1_48K_24bit_0.3s_FIR_SOFA ../tests/compare.sh
+#           ../tests/D1_48K_24bit_0.3s_FIR_SOFA)
   add_test(dtf_nh2 ../tests/compareIgnoreNew.sh
            ../tests/dtf_nh2)
   add_test(hrtf_c_nh898 ../tests/compareIgnoreNew.sh

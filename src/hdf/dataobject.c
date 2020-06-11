@@ -607,32 +607,29 @@ static int readOHDRHeaderMessageGroupInfo(struct READER *reader,
 000010c0  00 01 00 01 00 64 65 66  6c 61 74 65 00 01 00 00  |.....deflate....|
 000010d0  00 00 00 00 00 08 17 00  01 00 00 03 02 03 01 48  |...............H|
 */
-static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader, uint8_t filters) {
+static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
+                                                 uint8_t filters) {
   int i, j;
-  uint16_t filter_identification_value, flags, number_client_data_values, namelength;
+  uint16_t filter_identification_value, flags, number_client_data_values,
+      namelength;
   uint32_t client_data;
-  uint64_t maximum_compact_value, minimum_dense_value, number_of_entries,
-      length_of_entries;
 
-/*
-  UNUSED(flags);
-  UNUSED(client_data);
-  UNUSED(maximum_compact_value);
-  UNUSED(minimum_dense_value);
-  UNUSED(number_of_entries);
-  UNUSED(length_of_entries);
-*/
+  if (readValue(reader, 6) != 0) {
+    mylog("reserved values not zero\n");
+    return MYSOFA_INVALID_FORMAT;
+  }
 
   for (i = 0; i < filters; i++) {
     filter_identification_value = (uint16_t)readValue(reader, 2);
     switch (filter_identification_value) {
-    case 0:
+    case 1:
+    case 2:
       break;
     default:
       // LCOV_EXCL_START
       mylog("object OHDR filter pipeline message contains unsupported filter: "
             "%d %lX\n",
-            filter_identification_value, ftell(reader->fhd)-2);
+            filter_identification_value, ftell(reader->fhd) - 2);
       return MYSOFA_INVALID_FORMAT;
       // LCOV_EXCL_STOP
     }
@@ -640,10 +637,12 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader, uint8_t 
     flags = (uint16_t)readValue(reader, 2);
     number_client_data_values = (uint16_t)readValue(reader, 2);
 
-    if(namelength>0)
-      fseek(reader->fhd, ((namelength-1)&~7) + 8, SEEK_CUR); // skip name
+    if (namelength > 0)
+      fseek(reader->fhd, ((namelength - 1) & ~7) + 8, SEEK_CUR); // skip name
 
-    mylog("  filter %d namelen %d flags %04X values %d\n", filter_identification_value,namelength,flags,number_client_data_values);
+    mylog("  filter %d namelen %d flags %04X values %d\n",
+          filter_identification_value, namelength, flags,
+          number_client_data_values);
 
     if (number_client_data_values > 0x1000)
       return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
@@ -651,13 +650,15 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader, uint8_t 
     for (j = 0; j < number_client_data_values; j++) {
       client_data = readValue(reader, 4);
     }
+    if ((number_client_data_values & 1) == 1)
+      readValue(reader, 4);
   }
 
   return MYSOFA_OK;
 }
 
-
-static int readOHDRHeaderMessageFilterPipelineV2(struct READER *reader, uint8_t filters) {
+static int readOHDRHeaderMessageFilterPipelineV2(struct READER *reader,
+                                                 uint8_t filters) {
   int i, j;
   uint16_t filter_identification_value, flags, number_client_data_values;
   uint32_t client_data;
@@ -713,16 +714,16 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
     // LCOV_EXCL_STOP
   }
 
-
-
-  switch(filterversion) {
+  switch (filterversion) {
   case 1:
     return readOHDRHeaderMessageFilterPipelineV1(reader, filters);
   case 2:
     return readOHDRHeaderMessageFilterPipelineV2(reader, filters);
   default:
     // LCOV_EXCL_START
-    mylog("object OHDR filter pipeline message must have version 2 not %d\n",filterversion);
+    mylog(
+        "object OHDR filter pipeline message must have version 1 or 2 not %d\n",
+        filterversion);
     return MYSOFA_INVALID_FORMAT;
     // LCOV_EXCL_STOP
   }
