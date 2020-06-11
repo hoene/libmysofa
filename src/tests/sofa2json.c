@@ -7,6 +7,7 @@
 #include "../hrtf/mysofa.h"
 #include "../hrtf/tools.h"
 #include "json.h"
+
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +19,7 @@ struct {
   const char *name;
 } errorNames[] = {
     {MYSOFA_OK, "OK"},
+    {MYSOFA_INVALID_FORMAT, "invalid format"},
     {MYSOFA_INTERNAL_ERROR, "internal error"},
     {MYSOFA_UNSUPPORTED_FORMAT, "unsupported format"},
     {MYSOFA_NO_MEMORY, "no memory"},
