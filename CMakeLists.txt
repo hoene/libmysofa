@@ -47,8 +47,11 @@ if(BUILD_TESTS)
 
   enable_testing()
 
-  add_test(dtf_nh2 ../tests/compare.sh
+  add_test(dtf_nh2 ../tests/compareIgnoreNew.sh
            ../tests/dtf_nh2)
+  add_test(hrtf_c_nh898 ../tests/compareIgnoreNew.sh
+           ../tests/hrtf_c_nh898)
+
   foreach(
     ISSUE
     72
