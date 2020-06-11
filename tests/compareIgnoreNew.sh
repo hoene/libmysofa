@@ -12,9 +12,9 @@ if [ "$ret" != 0 ]; then
     exit $ret
 fi
 
-cp -f "${SCRIPTDIR}/json-diff2.js" . 2>/dev/null || true
+cp -f "${SCRIPTDIR}/json-diffIgnoreNew.js" . 2>/dev/null || true
 bunzip2 -c -k "$1".json.bz2 >./tmp2.json
-"${NODEJS}" ./json-diff2.js ./tmp1.json ./tmp2.json
+"${NODEJS}" ./json-diffIgnoreNew.js ./tmp1.json ./tmp2.json
 ret=$?
 if [ "$ret" != 0 ]; then 
     echo Diff $ret

@@ -65,15 +65,6 @@ accumulateDiff = function(undefined) {
   }
   inherits(DiffEdit, Diff);
 
-  function DiffNew(path, value) {
-    DiffNew.super_.call(this, 'N', path);
-    Object.defineProperty(this, 'rhs', {
-      value: value,
-      enumerable: true
-    });
-  }
-  inherits(DiffNew, Diff);
-
   function DiffDeleted(path, value) {
     DiffDeleted.super_.call(this, 'D', path);
     Object.defineProperty(this, 'lhs', {
@@ -152,9 +143,6 @@ accumulateDiff = function(undefined) {
     var ltype = typeof lhs;
     var rtype = typeof rhs;
     if (ltype === 'undefined') {
-      if (rtype !== 'undefined') {
-//        changes(new DiffNew(currentPath, rhs));
-      }
     } else if (rtype === 'undefined') {
       changes(new DiffDeleted(currentPath, lhs));
     } else if (realTypeOf(lhs) !== realTypeOf(rhs)) {
@@ -173,9 +161,6 @@ accumulateDiff = function(undefined) {
             } else {
               deepDiff(lhs[i], rhs[i], changes, prefilter, currentPath, i, stack);
             }
-          }
-          while (i < rhs.length) {
-//            changes(new DiffArray(currentPath, i, new DiffNew(undefined, rhs[i++])));
           }
         } else {
           var akeys = Object.keys(lhs);
