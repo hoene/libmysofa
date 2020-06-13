@@ -11,16 +11,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef VDEBUG
-#define mylog(...)                                                             \
-  {                                                                            \
-    fprintf(stderr, "%s:%d: ", __FILE__, __LINE__);                            \
-    fprintf(stderr, __VA_ARGS__);                                              \
-  }
-#else
-#define mylog(...)
-#endif
-
 #define UNUSED(x) (void)(x)
 
 struct READER;
@@ -117,6 +107,8 @@ struct DATATYPE {
   uint32_t list; /* size of a list in bytes */
 };
 
+#define DATAOBJECT_MAX_DIMENSIONALITY 5
+
 struct DATAOBJECT {
   char *name;
 
@@ -134,7 +126,7 @@ struct DATAOBJECT {
   struct BTREE attributes_btree;
   struct FRACTALHEAP attributes_heap;
 
-  int datalayout_chunk[4];
+  int datalayout_chunk[DATAOBJECT_MAX_DIMENSIONALITY];
 
   struct MYSOFA_ATTRIBUTE *attributes;
   struct DIR *directory;

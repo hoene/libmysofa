@@ -47,11 +47,20 @@ if(BUILD_TESTS)
 
   enable_testing()
 
+  add_test(D1_48K_24bit_0.3s_FIR_SOFA src/mysofa2json
+           ../tests/D1_48K_24bit_0.3s_FIR_SOFA.sofa)
+  add_test(H20_44K_16bit_256tap_FIR_SOFA ../tests/compareIgnoreNew.sh
+           ../tests/H20_44K_16bit_256tap_FIR_SOFA)
+  add_test(MIT_KEMAR_large_pinna ../tests/compare.sh
+           ../tests/MIT_KEMAR_large_pinna)
+  add_test(MIT_KEMAR_normal_pinna ../tests/compareIgnoreNew.sh
+           ../tests/MIT_KEMAR_normal_pinna)
+  add_test(MIT_KEMAR_normal_pinna.old ../tests/compare.sh
+           ../tests/MIT_KEMAR_normal_pinna.old)
   add_test(dtf_nh2 ../tests/compareIgnoreNew.sh
            ../tests/dtf_nh2)
   add_test(hrtf_c_nh898 ../tests/compareIgnoreNew.sh
            ../tests/hrtf_c_nh898)
-
   foreach(
     ISSUE
     72
@@ -71,8 +80,6 @@ if(BUILD_TESTS)
   add_test(FHK_HRIR_L2354 ../tests/compare.sh ../tests/FHK_HRIR_L2354)
   add_test(LISTEN_1002_IRC_1002_C_HRIR ../tests/compare.sh
            ../tests/LISTEN_1002_IRC_1002_C_HRIR)
-  add_test(MIT_KEMAR_large_pinna ../tests/compare.sh
-           ../tests/MIT_KEMAR_large_pinna)
   add_test(Pulse ../tests/compare.sh ../tests/Pulse)
   add_test(Tester ../tests/compare.sh ../tests/tester)
   add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m ../tests/compare.sh

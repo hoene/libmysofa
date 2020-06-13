@@ -29,5 +29,5 @@ static void check(char *filename) {
 
 void test_check() {
   check("tests/Pulse.sofa");
-  check("share/MIT_KEMAR_normal_pinna.sofa");
+  check("tests/MIT_KEMAR_normal_pinna.old.sofa");
 }

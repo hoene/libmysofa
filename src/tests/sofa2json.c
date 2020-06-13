@@ -88,7 +88,6 @@ int main(int argc, char **argv) {
   filename = argv[optind];
 
   hrtf = mysofa_load(filename, &err);
-
   if (!hrtf) {
     fprintf(stderr, "Error reading file %s. Error code: %d:%s\n", filename, err,
             error2string(err));

@@ -477,6 +477,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
   }
 
   layout_class = (uint8_t)fgetc(reader->fhd);
+  mylog("data layout %d\n", layout_class);
 
   switch (layout_class) {
 #if 0
@@ -513,10 +514,14 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 
   case 2:
     dimensionality = (uint8_t)fgetc(reader->fhd);
-    if (dimensionality < 1 ||
-        dimensionality >
-            sizeof(data->datalayout_chunk) / sizeof(data->datalayout_chunk)[0])
+    mylog("dimensionality %d\n", dimensionality);
+
+    if (dimensionality < 1 || dimensionality > DATAOBJECT_MAX_DIMENSIONALITY) {
+      mylog("data layout 2: invalid dimensionality %d %lu %lu\n",
+            dimensionality, sizeof(data->datalayout_chunk),
+            sizeof(data->datalayout_chunk[0]));
       return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+    }
     data_address = readValue(reader, reader->superblock.size_of_offsets);
     mylog(" CHUNK %" PRIX64 "\n", data_address);
     for (i = 0; i < dimensionality; i++) {
@@ -529,7 +534,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     for (i = 0; i < data->ds.dimensionality; i++)
       size *= data->ds.dimension_size[i];
 
-    if (validAddress(reader, data_address)) {
+    if (validAddress(reader, data_address) && dimensionality <= 4) {
       store = ftell(reader->fhd);
       if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
@@ -599,9 +604,67 @@ static int readOHDRHeaderMessageGroupInfo(struct READER *reader,
  *
  */
 
-static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
+/* type 1
+
+                                                        00  |......G.8.......|
+000010a0  00 00 00 00 00 02 00 08  00 01 00 01 00 73 68 75  |.............shu|
+000010b0  66 66 6c 65 00 08 00 00  00 00 00 00 00 01 00 08  |ffle............|
+000010c0  00 01 00 01 00 64 65 66  6c 61 74 65 00 01 00 00  |.....deflate....|
+000010d0  00 00 00 00 00 08 17 00  01 00 00 03 02 03 01 48  |...............H|
+*/
+static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
+                                                 uint8_t filters) {
   int i, j;
-  uint8_t filters;
+  uint16_t filter_identification_value, flags, number_client_data_values,
+      namelength;
+  uint32_t client_data;
+
+  if (readValue(reader, 6) != 0) {
+    mylog("reserved values not zero\n");
+    return MYSOFA_INVALID_FORMAT;
+  }
+
+  for (i = 0; i < filters; i++) {
+    filter_identification_value = (uint16_t)readValue(reader, 2);
+    switch (filter_identification_value) {
+    case 1:
+    case 2:
+      break;
+    default:
+      // LCOV_EXCL_START
+      mylog("object OHDR filter pipeline message contains unsupported filter: "
+            "%d %lX\n",
+            filter_identification_value, ftell(reader->fhd) - 2);
+      return MYSOFA_INVALID_FORMAT;
+      // LCOV_EXCL_STOP
+    }
+    namelength = (uint16_t)readValue(reader, 2);
+    flags = (uint16_t)readValue(reader, 2);
+    number_client_data_values = (uint16_t)readValue(reader, 2);
+
+    if (namelength > 0)
+      fseek(reader->fhd, ((namelength - 1) & ~7) + 8, SEEK_CUR); // skip name
+
+    mylog("  filter %d namelen %d flags %04X values %d\n",
+          filter_identification_value, namelength, flags,
+          number_client_data_values);
+
+    if (number_client_data_values > 0x1000)
+      return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
+    /* no name here */
+    for (j = 0; j < number_client_data_values; j++) {
+      client_data = readValue(reader, 4);
+    }
+    if ((number_client_data_values & 1) == 1)
+      readValue(reader, 4);
+  }
+
+  return MYSOFA_OK;
+}
+
+static int readOHDRHeaderMessageFilterPipelineV2(struct READER *reader,
+                                                 uint8_t filters) {
+  int i, j;
   uint16_t filter_identification_value, flags, number_client_data_values;
   uint32_t client_data;
   uint64_t maximum_compact_value, minimum_dense_value, number_of_entries,
@@ -613,22 +676,6 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
   UNUSED(minimum_dense_value);
   UNUSED(number_of_entries);
   UNUSED(length_of_entries);
-
-  if (fgetc(reader->fhd) != 2) {
-    // LCOV_EXCL_START
-    mylog("object OHDR filter pipeline message must have version 2\n");
-    return MYSOFA_INVALID_FORMAT;
-    // LCOV_EXCL_STOP
-  }
-
-  filters = (uint8_t)fgetc(reader->fhd);
-  if (filters > 32) {
-    // LCOV_EXCL_START
-    mylog("object OHDR filter pipeline message has too many filters: %d\n",
-          filters);
-    return MYSOFA_INVALID_FORMAT;
-    // LCOV_EXCL_STOP
-  }
 
   for (i = 0; i < filters; i++) {
     filter_identification_value = (uint16_t)readValue(reader, 2);
@@ -656,6 +703,35 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
   }
 
   return MYSOFA_OK;
+}
+
+static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
+  uint8_t filterversion, filters;
+
+  filterversion = fgetc(reader->fhd);
+
+  filters = (uint8_t)fgetc(reader->fhd);
+  if (filters > 32) {
+    // LCOV_EXCL_START
+    mylog("object OHDR filter pipeline message has too many filters: %d\n",
+          filters);
+    return MYSOFA_INVALID_FORMAT;
+    // LCOV_EXCL_STOP
+  }
+
+  switch (filterversion) {
+  case 1:
+    return readOHDRHeaderMessageFilterPipelineV1(reader, filters);
+  case 2:
+    return readOHDRHeaderMessageFilterPipelineV2(reader, filters);
+  default:
+    // LCOV_EXCL_START
+    mylog(
+        "object OHDR filter pipeline message must have version 1 or 2 not %d\n",
+        filterversion);
+    return MYSOFA_INVALID_FORMAT;
+    // LCOV_EXCL_STOP
+  }
 }
 
 int readDataVar(struct READER *reader, struct DATAOBJECT *data,
@@ -796,7 +872,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
 
   mylog(" continue %08" PRIX64 " %08" PRIX64 "\n", offset, length);
-  if (reader->recursive_counter >= 20) {
+  if (reader->recursive_counter >= 25) {
     mylog("recursive problem");
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
   } else
@@ -1134,12 +1210,12 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
     return err;
   }
 
-  /* not needed
-   if (validAddress(reader, dataobject->ai.attribute_name_btree)) {
-   fseek(reader->fhd, dataobject->ai.attribute_name_btree, SEEK_SET);
-   btreeRead(reader, &dataobject->attributes);
-   }
-   */
+  if (validAddress(reader, dataobject->ai.attribute_name_btree)) {
+    /* not needed
+         fseek(reader->fhd, dataobject->ai.attribute_name_btree, SEEK_SET);
+         btreeRead(reader, &dataobject->attributes);
+    */
+  }
 
   /* parse message attribute info */
   if (validAddress(reader, dataobject->ai.fractal_heap_address)) {
@@ -1158,12 +1234,12 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
       return err;
   }
 
-  /* not needed
-   if (validAddress(reader, dataobject->li.address_btree_index)) {
-   fseek(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
-   btreeRead(reader, &dataobject->objects);
-   }
-   */
+  if (validAddress(reader, dataobject->li.address_btree_index)) {
+    /* not needed
+       fseek(reader->fhd, dataobject->li.address_btree_index, SEEK_SET);
+       btreeRead(reader, &dataobject->objects);
+     */
+  }
 
   dataobject->all = reader->all;
   reader->all = dataobject;

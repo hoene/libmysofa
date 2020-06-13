@@ -96,7 +96,8 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 
   struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
   while (attr) {
-    mylog(" %s=%s\n", attr->name, attr->value);
+    mylog(" %s=%s\n", attr->name ? attr->name : "(null)",
+          attr->value ? attr->value : "(null)");
     attr = attr->next;
   }
 
