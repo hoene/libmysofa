@@ -617,7 +617,6 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
   int i, j;
   uint16_t filter_identification_value, flags, number_client_data_values,
       namelength;
-  uint32_t client_data;
 
   if (readValue(reader, 6) != 0) {
     mylog("reserved values not zero\n");
@@ -655,7 +654,7 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
       return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
     /* no name here */
     for (j = 0; j < number_client_data_values; j++) {
-      client_data = readValue(reader, 4);
+      readValue(reader, 4);
     }
     if ((number_client_data_values & 1) == 1)
       readValue(reader, 4);
@@ -713,7 +712,7 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
   filterversion = fgetc(reader->fhd);
   filters = fgetc(reader->fhd);
 
-  if (filterversion == EOF || filters == EOF)
+  if (filterversion < 0 || filters < 0)
     return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
 
   if (filters > 32) {

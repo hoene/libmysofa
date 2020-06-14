@@ -349,7 +349,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         /* TODO: Get definition of this field */
         unknown4 = (int)readValue(reader, 8);
         if (unknown4 != 0x00000001 && unknown4 != 0x02000002) {
-          mylog("FHDB type 3 unsupported values: unknown4 %08LX\n",
+          mylog("FHDB type 3 unsupported values: unknown4 %" PRIX64 "\n",
                 unknown4);                  // LCOV_EXCL_LINE
           free(name);                       // LCOV_EXCL_LINE
           return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
