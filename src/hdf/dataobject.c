@@ -643,7 +643,9 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
     number_client_data_values = (uint16_t)readValue(reader, 2);
 
     if (namelength > 0)
-      fseek(reader->fhd, ((namelength - 1) & ~7) + 8, SEEK_CUR); // skip name
+      if (fseek(reader->fhd, ((namelength - 1) & ~7) + 8, SEEK_CUR) ==
+          -1)                     // skip name
+        return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
 
     mylog("  filter %d namelen %d flags %04X values %d\n",
           filter_identification_value, namelength, flags,
@@ -706,11 +708,14 @@ static int readOHDRHeaderMessageFilterPipelineV2(struct READER *reader,
 }
 
 static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
-  uint8_t filterversion, filters;
+  int filterversion, filters;
 
   filterversion = fgetc(reader->fhd);
+  filters = fgetc(reader->fhd);
 
-  filters = (uint8_t)fgetc(reader->fhd);
+  if (filterversion == EOF || filters == EOF)
+    return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
+
   if (filters > 32) {
     // LCOV_EXCL_START
     mylog("object OHDR filter pipeline message has too many filters: %d\n",
