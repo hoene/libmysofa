@@ -28,7 +28,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
   <img src="https://codecov.io/gh/hoene/libmysofa/branch/master/graph/badge.svg" />
 </a>
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GUN8R6NUQCS3C&source=url">
-<img img="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal button" />
+<img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donateCC_LG.gif" alt="Donate with PayPal button" />
 </a>
 
 ## Compile
