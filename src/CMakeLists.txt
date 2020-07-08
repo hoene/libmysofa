@@ -75,6 +75,7 @@ set(libsrc
     hrtf/easy.c
     hrtf/cache.c
     resampler/speex_resampler.c)
+if(BUILD_STATIC_LIBS)
 add_library(mysofa-static STATIC ${libsrc})
 target_link_libraries(mysofa-static LINK_PRIVATE ${MATH} ${ZLIB_LIBRARIES})
 set_target_properties(
@@ -83,15 +84,16 @@ set_target_properties(
                                                       ON)
 install(TARGETS mysofa-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-if(UNIX
-   AND CODE_COVERAGE
-   AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  target_compile_options(mysofa-static PUBLIC -g -O0 -Wall -fprofile-arcs
-                                              -ftest-coverage)
-  if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-    target_link_options(mysofa-static PUBLIC --coverage)
-  else()
-    target_link_libraries(mysofa-static LINK_PUBLIC gcov --coverage)
+  if(UNIX
+     AND CODE_COVERAGE
+     AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(mysofa-static PUBLIC -g -O0 -Wall -fprofile-arcs
+                                                -ftest-coverage)
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+      target_link_options(mysofa-static PUBLIC --coverage)
+    else()
+      target_link_libraries(mysofa-static LINK_PUBLIC gcov --coverage)
+    endif()
   endif()
 endif()
 
@@ -137,7 +139,11 @@ install(FILES hrtf/mysofa.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 if(BUILD_TESTS)
   add_executable(mysofa2json tests/sofa2json.c tests/json.c)
-  target_link_libraries(mysofa2json mysofa-static)
+  if(BUILD_STATIC_LIBS)
+    target_link_libraries(mysofa2json mysofa-static)
+  else()
+    target_link_libraries(mysofa2json mysofa-shared)
+  endif()
 
   add_executable(
     external
@@ -153,7 +159,11 @@ if(BUILD_TESTS)
     tests/cache.c
     tests/json.c
     tests/user_defined_variable.c)
-  target_link_libraries(external mysofa-static ${CUNIT_LIBRARIES})
+  if(BUILD_STATIC_LIBS)
+    target_link_libraries(external mysofa-static ${CUNIT_LIBRARIES})
+  else()
+    target_link_libraries(external mysofa-shared ${CUNIT_LIBRARIES} m)
+  endif()
   add_test(
     NAME external
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -167,7 +177,11 @@ if(BUILD_TESTS)
     COMMAND internal)
 
   add_executable(multithread tests/multithread.c)
-  target_link_libraries(multithread mysofa-static pthread)
+  if(BUILD_STATIC_LIBS)
+    target_link_libraries(multithread mysofa-static pthread)
+  else()
+    target_link_libraries(multithread mysofa-shared pthread m)
+  endif()
   add_test(
     NAME multithread
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
