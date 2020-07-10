@@ -30,6 +30,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GUN8R6NUQCS3C&source=url">
 <img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" alt="Donate with PayPal button" />
 </a>
+</div>
 
 ## Compile
 
