@@ -741,7 +741,7 @@ static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
 int readDataVar(struct READER *reader, struct DATAOBJECT *data,
                 struct DATATYPE *dt, struct DATASPACE *ds) {
 
-  char *buffer, number[16];
+  char *buffer, number[20];
   uint64_t reference, gcol = 0, dataobject;
   int err;
   struct DATAOBJECT *referenceData;

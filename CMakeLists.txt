@@ -77,6 +77,7 @@ if(BUILD_TESTS)
     82
     83
     84
+    136
     137
     138)
     # issues with osx    96)
