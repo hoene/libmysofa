@@ -8,8 +8,8 @@ include(GNUInstallDirs)
 option(BUILD_TESTS "Build test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared library" ON)
 option(BUILD_STATIC_LIBS "Build static library" ON)
-option(CODE_COVERAGE "Enable coverage reporting" ON)
-option(ADDRESS_SANITIZE "Enable address sanitizer" ON)
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+option(ADDRESS_SANITIZE "Enable address sanitizer" OFF)
 
 set(CPACK_PACKAGE_DESCRIPTION "SOFA file reader for better HRTFs")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
