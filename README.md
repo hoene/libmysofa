@@ -50,6 +50,15 @@ If you need an Debian package, call
 
 > cd build && cpack
 
+## To check for memory leaks and crazy pointers
+
+> export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
+> export ASAN_OPTIONS=symbolize=1
+> cmake -DCMAKE_BUILD_TYPE=Debug -DADDRESS_SANITIZE=ON ..
+> make all test
+
+
+
 ## Usage
 
 Libmysofa has a few main function calls.

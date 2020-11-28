@@ -68,7 +68,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
    ==============================================================================
  */
 
-  if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2)
+  if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2 || hrtf->M == 0)
     return MYSOFA_INVALID_DIMENSIONS; // LCOV_EXCL_LINE
 
   /* verify format */
@@ -140,18 +140,16 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
                        "I"))
     return MYSOFA_ONLY_THE_SAME_SAMPLING_RATE_SUPPORTED; // LCOV_EXCL_LINE
 
-  double receiverPositions[6];
   if (verifyAttribute(hrtf->ReceiverPosition.attributes, "DIMENSION_LIST",
                       "R,C,I")) {
-    memcpy(receiverPositions, hrtf->ReceiverPosition.values,
-           6 * sizeof(double));
+    // do nothing
   } else if (verifyAttribute(hrtf->ReceiverPosition.attributes,
                              "DIMENSION_LIST", "R,C,M")) {
     for (int i = 0; i < 6; i++) {
       int offset = i * hrtf->M;
-      receiverPositions[i] = hrtf->ReceiverPosition.values[offset];
+      double receiverPosition = hrtf->ReceiverPosition.values[offset];
       for (int j = 1; j < hrtf->M; j++)
-        if (!fequals(receiverPositions[i],
+        if (!fequals(receiverPosition,
                      hrtf->ReceiverPosition.values[offset + j]))
           return MYSOFA_RECEIVERS_WITH_RCI_SUPPORTED; // LCOV_EXCL_LINE
     }
