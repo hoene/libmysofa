@@ -9,6 +9,7 @@ option(BUILD_TESTS "Build test programs" ON)
 option(BUILD_SHARED_LIBS "Build shared library" ON)
 option(BUILD_STATIC_LIBS "Build static library" ON)
 option(CODE_COVERAGE "Enable coverage reporting" ON)
+option(ADDRESS_SANITIZE "Enable address sanitizer" ON)
 
 set(CPACK_PACKAGE_DESCRIPTION "SOFA file reader for better HRTFs")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
@@ -18,7 +19,7 @@ set(CPACK_PACKAGE_CONTACT "umlaeute@debian.org")
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "IOhannes m zmölnig")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib1g")
 
@@ -33,6 +34,10 @@ if(C_HAS_WALL)
 endif(C_HAS_WALL)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG -DVDEBUG")
+
+if(${ADDRESS_SANITIZE} STREQUAL "ON")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -O1 -fno-omit-frame-pointer -g")
+endif()
 
 install(FILES share/default.sofa DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
 install(FILES share/MIT_KEMAR_normal_pinna.sofa
@@ -71,7 +76,8 @@ if(BUILD_TESTS)
     79
     82
     83
-    84)
+    84
+    138)
     # issues with osx    96)
     add_test(fail-issue-${ISSUE} ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh
              ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE})

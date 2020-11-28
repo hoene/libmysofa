@@ -27,7 +27,7 @@ MYSOFA_EXPORT float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
   /*
    * find frontal source position
    */
-  for (i = 0; i < hrtf->SourcePosition.elements; i += 3) {
+  for (i = 0; i < hrtf->SourcePosition.elements; i += hrtf->C) {
     c[0] = hrtf->SourcePosition.values[i];
     c[1] = hrtf->SourcePosition.values[i + 1];
     c[2] = hrtf->SourcePosition.values[i + 2];
@@ -45,8 +45,8 @@ MYSOFA_EXPORT float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
     }
   }
 
-  /* get loudness of frontal fir filter, for both channels*/
-  factor = loudness(hrtf->DataIR.values + (index / 3) * hrtf->N * hrtf->R,
+  /* get loudness of frontal fir filter, for both channels */
+  factor = loudness(hrtf->DataIR.values + (index / hrtf->C) * hrtf->N * hrtf->R,
                     hrtf->N * hrtf->R);
   factor = sqrt(2 / factor);
   if (fequals(factor, 1.))
