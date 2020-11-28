@@ -77,6 +77,11 @@ if(BUILD_TESTS)
     82
     83
     84
+    130
+    132
+    135
+    136
+    137
     138)
     # issues with osx    96)
     add_test(fail-issue-${ISSUE} ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh

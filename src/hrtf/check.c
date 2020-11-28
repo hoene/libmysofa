@@ -160,7 +160,8 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
   if (!verifyAttribute(hrtf->ReceiverPosition.attributes, "Type", "cartesian"))
     return MYSOFA_RECEIVERS_WITH_CARTESIAN_SUPPORTED; // LCOV_EXCL_LINE
 
-  if (!fequals(hrtf->ReceiverPosition.values[0], 0.) ||
+  if (hrtf->ReceiverPosition.elements < 6 ||
+      !fequals(hrtf->ReceiverPosition.values[0], 0.) ||
       !fequals(hrtf->ReceiverPosition.values[2], 0.) ||
       !fequals(hrtf->ReceiverPosition.values[3], 0.) ||
       !fequals(hrtf->ReceiverPosition.values[5], 0.)) {
