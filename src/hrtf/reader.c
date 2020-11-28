@@ -119,6 +119,17 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
   return MYSOFA_OK;
 }
 
+static void arrayFree(struct MYSOFA_ARRAY *array) {
+  while (array->attributes) {
+    struct MYSOFA_ATTRIBUTE *next = array->attributes->next;
+    free(array->attributes->name);
+    free(array->attributes->value);
+    free(array->attributes);
+    array->attributes = next;
+  }
+  free(array->values);
+}
+
 static int addUserDefinedVariable(struct MYSOFA_HRTF *hrtf,
                                   struct DATAOBJECT *dataobject) {
   int err;
@@ -152,26 +163,15 @@ static int addUserDefinedVariable(struct MYSOFA_HRTF *hrtf,
 
   err = getArray(var->value, dataobject);
   if (err != MYSOFA_OK) {
-    if (var->value->values) {
-      free(var->value->values);
-    }
-    free(var->name);
+    arrayFree(var->value);
     free(var->value);
+    free(var->name);
     free(var);
     return err;
   }
 
-  // set field if no variable has been found ...
-  if (hrtf->variables == NULL) {
-    hrtf->variables = var;
-  } else {
-    // ... or append to variables list
-    struct MYSOFA_VARIABLE *it = hrtf->variables;
-    while (it->next != NULL) {
-      it = it->next;
-    }
-    it->next = var;
-  }
+  var->next = hrtf->variables;
+  hrtf->variables = var;
 
   return MYSOFA_OK;
 }
@@ -316,17 +316,6 @@ MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
   return hrtf;
 }
 
-static void arrayFree(struct MYSOFA_ARRAY *array) {
-  while (array->attributes) {
-    struct MYSOFA_ATTRIBUTE *next = array->attributes->next;
-    free(array->attributes->name);
-    free(array->attributes->value);
-    free(array->attributes);
-    array->attributes = next;
-  }
-  free(array->values);
-}
-
 MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
   if (!hrtf)
     return;
@@ -343,6 +332,7 @@ MYSOFA_EXPORT void mysofa_free(struct MYSOFA_HRTF *hrtf) {
     struct MYSOFA_VARIABLE *next = hrtf->variables->next;
     free(hrtf->variables->name);
     arrayFree(hrtf->variables->value);
+    free(hrtf->variables->value);
     free(hrtf->variables);
     hrtf->variables = next;
   }
