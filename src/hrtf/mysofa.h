@@ -13,8 +13,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 
-#define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5
-#define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01
+#define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5f
+#define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01f
 
 /** debugging output */
 #ifdef VDEBUG

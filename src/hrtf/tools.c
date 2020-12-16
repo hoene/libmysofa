@@ -4,7 +4,9 @@
  *  Created on: 13.01.2017
  *      Author: hoene
  */
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
+#endif // !_USE_MATH_DEFINES
 #include "tools.h"
 #include "mysofa.h"
 #include "mysofa_export.h"

@@ -92,7 +92,7 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
   float *p1;
   double *p2;
-  int i;
+  unsigned int i;
 
   struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
   while (attr) {
@@ -111,7 +111,7 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
   p1 = dataobject->data;
   p2 = dataobject->data;
   for (i = 0; i < array->elements; i++)
-    *p1++ = *p2++;
+    *p1++ = (float)*p2++;
   array->values = realloc(dataobject->data, array->elements * sizeof(float));
 
   dataobject->data = NULL;
