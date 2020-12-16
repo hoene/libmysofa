@@ -20,7 +20,7 @@ MYSOFA_EXPORT float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
   float c[3], factor;
   float min = FLT_MAX;
   int radius = 0;
-  int i, index = 0;
+  unsigned int i, index = 0;
   int cartesian =
       verifyAttribute(hrtf->SourcePosition.attributes, "Type", "cartesian");
 
@@ -48,9 +48,9 @@ MYSOFA_EXPORT float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
   /* get loudness of frontal fir filter, for both channels */
   factor = loudness(hrtf->DataIR.values + (index / hrtf->C) * hrtf->N * hrtf->R,
                     hrtf->N * hrtf->R);
-  factor = sqrt(2 / factor);
-  if (fequals(factor, 1.))
-    return 1.;
+  factor = sqrtf(2 / factor);
+  if (fequals(factor, 1.f))
+    return 1.f;
 
   scaleArray(hrtf->DataIR.values, hrtf->DataIR.elements, factor);
 

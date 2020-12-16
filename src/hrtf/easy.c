@@ -131,7 +131,7 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY *easy, float x,
   float *fr;
   int nearest;
   int *neighbors;
-  int i;
+  unsigned int i;
 
   c[0] = x;
   c[1] = y;
@@ -148,8 +148,8 @@ MYSOFA_EXPORT void mysofa_getfilter_short(struct MYSOFA_EASY *easy, float x,
   fl = easy->fir;
   fr = easy->fir + easy->hrtf->N;
   for (i = easy->hrtf->N; i > 0; i--) {
-    *IRleft++ = *fl++ * 32767.;
-    *IRright++ = *fr++ * 32767.;
+    *IRleft++ = (short)(*fl++ * 32767.);
+    *IRright++ = (short)(*fr++ * 32767.);
   }
 }
 
