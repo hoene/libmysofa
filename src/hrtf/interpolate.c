@@ -32,8 +32,9 @@ MYSOFA_EXPORT float *mysofa_interpolate(struct MYSOFA_HRTF *hrtf,
       delays[0] = hrtf->DataDelay.values[0];
       delays[1] = hrtf->DataDelay.values[1];
     }
-	copyFromFloat (fir, hrtf->DataIR.values + nearest * size, size);
-	return fir;
+    float *ret = hrtf->DataIR.values + nearest * size;
+    copyFromFloat(fir, ret, size);
+    return ret;
   }
 
   for (i = 0; i < 6; i++) {
