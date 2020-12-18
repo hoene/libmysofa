@@ -47,10 +47,13 @@ MYSOFA_EXPORT float *mysofa_interpolate(struct MYSOFA_HRTF *hrtf,
                      hrtf->SourcePosition.values + neighborhood[0] * hrtf->C);
     d6[1] = distance(cordinate,
                      hrtf->SourcePosition.values + neighborhood[1] * hrtf->C);
-    if (d6[0] < d6[1])
-      use[0] = 1;
-    else
-      use[1] = 1;
+
+    if (!fequals(d6[0], d6[1])) {
+      if (d6[0] < d6[1])
+        use[0] = 1;
+      else
+        use[1] = 1;
+    }
   } else if (neighborhood[0] >= 0) {
     d6[0] = distance(cordinate,
                      hrtf->SourcePosition.values + neighborhood[0] * hrtf->C);
@@ -66,10 +69,12 @@ MYSOFA_EXPORT float *mysofa_interpolate(struct MYSOFA_HRTF *hrtf,
                      hrtf->SourcePosition.values + neighborhood[2] * hrtf->C);
     d6[3] = distance(cordinate,
                      hrtf->SourcePosition.values + neighborhood[3] * hrtf->C);
-    if (d6[2] < d6[3])
-      use[2] = 1;
-    else
-      use[3] = 1;
+    if (!fequals(d6[2], d6[3])) {
+      if (d6[2] < d6[3])
+        use[2] = 1;
+      else
+        use[3] = 1;
+    }
   } else if (neighborhood[2] >= 0) {
     d6[2] = distance(cordinate,
                      hrtf->SourcePosition.values + neighborhood[2] * hrtf->C);
@@ -85,10 +90,12 @@ MYSOFA_EXPORT float *mysofa_interpolate(struct MYSOFA_HRTF *hrtf,
                      hrtf->SourcePosition.values + neighborhood[4] * hrtf->C);
     d6[5] = distance(cordinate,
                      hrtf->SourcePosition.values + neighborhood[5] * hrtf->C);
-    if (d6[4] < d6[5])
-      use[4] = 1;
-    else
-      use[5] = 1;
+    if (!fequals(d6[4], d6[5])) {
+      if (d6[4] < d6[5])
+        use[4] = 1;
+      else
+        use[5] = 1;
+    }
   } else if (neighborhood[4] >= 0) {
     d6[4] = distance(cordinate,
                      hrtf->SourcePosition.values + neighborhood[4] * hrtf->C);
