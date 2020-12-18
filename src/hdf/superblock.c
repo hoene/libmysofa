@@ -94,9 +94,37 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
+  /**
+  00000000  89 48 44 46 0d 0a 1a 0a  02 08 08 00 00 00 00 00  |.HDF............|
+  00000010  00 00 00 00 ff ff ff ff  ff ff ff ff 72 4d 02 00  |............rM..|
+  00000020  00 00 00 00 30 00 00 00  00 00 00 00 e5 a2 a2 a2  |....0...........|
+
+  00000000  89 48 44 46 0d 0a 1a 0a  00 00 00 00 00 08 08 00  |.HDF............|
+  00000010  04 00 10 00 01 00 00 00  00 00 00 00 00 00 00 00  |................|
+  00000020  ff ff ff ff ff ff ff ff  36 41 9c 00 00 00 00 00  |........6A......|
+  00000030  ff ff ff ff ff ff ff ff  00 00 00 00 00 00 00 00  |................|
+  00000040  60 00 00 00 00 00 00 00  01 00 00 00 00 00 00 00  |`...............|
+  00000050  88 00 00 00 00 00 00 00  a8 02 00 00 00 00 00 00  |................|
+  00000060  01 00 1c 00 01 00 00 00  18 00 00 00 00 00 00 00  |................|
+  00000070  10 00 10 00 00 00 00 00  20 03 00 00 00 00 00 00  |........ .......|
+  00000080  c8 07 00 00 00 00 00 00  54 52 45 45 00 00 02 00  |........TREE....|
+
+  00000000  89 48 44 46 0d 0a 1a 0a  00 00 00 00 00 08 08 00  |.HDF............|
+  00000010  04 00 10 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+  00000020  ff ff ff ff ff ff ff ff  a6 e6 11 00 00 00 00 00  |................|
+  00000030  ff ff ff ff ff ff ff ff  00 00 00 00 00 00 00 00  |................|
+  00000040  60 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |`...............|
+  00000050  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+  00000060  4f 48 44 52 02 0d 45 02  02 22 00 00 00 00 00 03  |OHDR..E.."......|
+  */
+
   /*int groupLeafNodeK = */ readValue(reader, 2);
   /*int groupInternalNodeK = */ readValue(reader, 2);
-  readValue(reader, 4);
+
+  if (readValue(reader, 4) != 0) { // has been 1 not 0 in Steinberg file
+    mylog("File Consistency Flags are not zero\n");
+    return MYSOFA_UNSUPPORTED_FORMAT;
+  }
 
   if (version == 1) {
     readValue(reader, 2); /* Indexed Storage Internal Node K */
@@ -123,8 +151,14 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
   superblock->root_group_object_header_address = readValue(
       reader, superblock->size_of_offsets); /* Object Header Address */
 
-  if (readValue(reader, 4) != 0) {
-    mylog("cache type must be 0\n");
+  uint64_t cache_type = readValue(reader, 4);
+  switch (cache_type) {
+  case 0:
+  case 1:
+  case 2:
+    break;
+  default:
+    mylog("cache type must be 0,1, or 2 not %" PRIu64 "\n", cache_type);
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
