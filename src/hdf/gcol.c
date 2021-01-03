@@ -45,6 +45,8 @@ static int readGCOL(struct READER *reader) {
   while (ftell(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
 
     gcol = malloc(sizeof(*gcol));
+    if (!gcol)
+      return MYSOFA_NO_MEMORY;
     gcol->heap_object_index = readValue(reader, 2);
     if (gcol->heap_object_index == 0) {
       free(gcol);
