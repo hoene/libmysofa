@@ -814,6 +814,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     if (data->string) {
       data->string =
           realloc(data->string, strlen(data->string) + strlen(buffer) + 2);
+      if (!data->string)
+        return MYSOFA_NO_MEMORY;
       strcat(data->string, ",");
       strcat(data->string, buffer);
     } else {
@@ -1004,6 +1006,12 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
   }
 
   attr = malloc(sizeof(struct MYSOFA_ATTRIBUTE));
+  if (!attr) {
+    // LCOV_EXCL_START
+    free(name);
+    return MYSOFA_NO_MEMORY;
+    // LCOV_EXCL_STOP
+  }
   attr->name = name;
   attr->value = d.string;
   d.string = NULL;
