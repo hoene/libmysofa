@@ -35,7 +35,7 @@ int main() {
       (NULL == CU_add_test(pSuite, "test of mysofa_cache", test_cache)) ||
       (NULL ==
        CU_add_test(pSuite, "test of mysofa_easy open", test_easy_open)) ||
-      (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy_nonorm)) ||
+      (NULL == CU_add_test(pSuite, "test of mysofa_easy nonorm", test_easy_nonorm)) ||
       (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy)) ||
       (NULL == CU_add_test(pSuite, "test of user defined variables",
                            test_user_defined_variable))) {
