@@ -68,7 +68,8 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
    ==============================================================================
  */
 
-  if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2 || hrtf->M == 0)
+  if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2 ||
+      hrtf->M == 0)
     return MYSOFA_INVALID_DIMENSIONS; // LCOV_EXCL_LINE
 
   /* verify format */

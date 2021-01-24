@@ -196,7 +196,7 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
         /* TODO: Get definition of this field */
         unknown3 = readValue(reader, 2);
-        if(unknown3 != 0x0000)
+        if (unknown3 != 0x0000)
           return MYSOFA_INVALID_FORMAT;
 
         len = fgetc(reader->fhd);

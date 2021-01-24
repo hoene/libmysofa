@@ -40,6 +40,10 @@ static int readGCOL(struct READER *reader) {
   address = ftell(reader->fhd);
   end = address;
   collection_size = readValue(reader, reader->superblock.size_of_lengths);
+  if (collection_size > 0x400000000) {
+    mylog("collection_size is too large\n");
+    return MYSOFA_INVALID_FORMAT;
+  }
   end += collection_size - 8;
 
   while (ftell(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {

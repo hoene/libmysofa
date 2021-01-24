@@ -25,7 +25,8 @@ char *mysofa_strdup(const char *str) {
 
 int verifyAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name, char *value) {
   while (attr) {
-    if (attr->name && !strcmp(name, attr->name) && attr->value && !strcmp(value, attr->value))
+    if (attr->name && !strcmp(name, attr->name) && attr->value &&
+        !strcmp(value, attr->value))
       return 1;
     attr = attr->next;
   }
