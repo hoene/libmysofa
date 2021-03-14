@@ -609,7 +609,6 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
     if (fread(fractalheap->filter_information, 1, fractalheap->encoded_length,
               reader->fhd) != fractalheap->encoded_length) {
-      free(fractalheap->filter_information);
       return MYSOFA_READ_ERROR;
     }
   }

@@ -56,7 +56,7 @@ To check for memory leaks and crazy pointers
 
 > export ASAN_OPTIONS=symbolize=1
 
-> cmake -DCMAKE_BUILD_TYPE=Debug -DADDRESS_SANITIZE=ON ..
+> cmake -DCMAKE_BUILD_TYPE=Debug -DADDRESS_SANITIZE=ON -DVDEBUG=1 ..
 
 > make all test
 
