@@ -881,7 +881,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
 
   offset = readValue(reader, reader->superblock.size_of_offsets);
   length = readValue(reader, reader->superblock.size_of_lengths);
-  if (offset > 0x1000000 || length > 0x10000000)
+  if (offset > 0x2000000 || length > 0x10000000)
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
 
   mylog(" continue %08" PRIX64 " %08" PRIX64 "\n", offset, length);
