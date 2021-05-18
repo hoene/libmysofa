@@ -147,7 +147,7 @@ struct MYSOFA_NEIGHBORHOOD *mysofa_neighborhood_init_withstepdefine(
 int *mysofa_neighborhood(struct MYSOFA_NEIGHBORHOOD *neighborhood, int pos);
 void mysofa_neighborhood_free(struct MYSOFA_NEIGHBORHOOD *neighborhood);
 
-float *mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *cordinate,
+float *mysofa_interpolate(struct MYSOFA_HRTF *hrtf, float *coordinate,
                           int nearest, int *neighborhood, float *fir,
                           float *delays);
 
