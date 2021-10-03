@@ -500,14 +500,17 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       store = ftell(reader->fhd);
       if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
-      if (!data->data) {
-        if (data_size > 0x10000000)
-          return MYSOFA_INVALID_FORMAT;
-        data->data_len = data_size;
-        data->data = calloc(1, data_size);
-        if (!data->data)
-          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
+      if (data->data) {
+        free(data->data);
+        data->data = NULL;
       }
+      if (data_size > 0x10000000)
+        return MYSOFA_INVALID_FORMAT;
+      data->data_len = data_size;
+      data->data = calloc(1, data_size);
+      if (!data->data)
+        return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
+
       err = fread(data->data, 1, data_size, reader->fhd);
       if (err != data_size)
         return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
