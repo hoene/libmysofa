@@ -15,7 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
+MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate)
+{
   int i, err;
   float factor;
   unsigned newN;
@@ -24,7 +25,7 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
   float *out;
   float zero[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000.)
+  if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000. || hrtf->DataIR.elements != hrtf->R * hrtf->M * hrtf->N)
     return MYSOFA_INVALID_FORMAT;
 
   if (samplerate == hrtf->DataSamplingRate.values[0])
@@ -36,20 +37,21 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
   /*
    * resample FIR filter
    */
+
   values = malloc(newN * hrtf->R * hrtf->M * sizeof(float));
   if (values == NULL)
     return MYSOFA_NO_MEMORY;
 
   resampler = speex_resampler_init(1, hrtf->DataSamplingRate.values[0],
                                    samplerate, 10, &err);
-  if (resampler == NULL) {
+  if (resampler == NULL)
+  {
     free(values);
     return err;
   }
 
-  out = malloc(sizeof(float) *
-               (newN + speex_resampler_get_output_latency(resampler)));
-  for (i = 0; i < hrtf->R * hrtf->M; i++) {
+  for (i = 0; i < hrtf->R * hrtf->M; i++)
+  {
     unsigned inlen = hrtf->N;
     unsigned outlen = newN;
     speex_resampler_reset_mem(resampler);
@@ -58,15 +60,16 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
                                   hrtf->DataIR.values + i * hrtf->N, &inlen,
                                   values + i * newN, &outlen);
     assert(inlen == hrtf->N);
-    while (outlen < newN) {
+    while (outlen < newN)
+    {
       unsigned difflen = newN - outlen;
       inlen = 10;
       speex_resampler_process_float(resampler, 0, zero, &inlen,
                                     values + i * newN + outlen, &difflen);
       outlen += difflen;
     }
+    assert(outlen == newN);
   }
-  free(out);
   speex_resampler_destroy(resampler);
 
   free(hrtf->DataIR.values);
