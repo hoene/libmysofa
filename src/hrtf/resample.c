@@ -22,7 +22,6 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate)
   unsigned newN;
   float *values;
   SpeexResamplerState *resampler;
-  float *out;
   float zero[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
   if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000. || hrtf->DataIR.elements != hrtf->R * hrtf->M * hrtf->N)

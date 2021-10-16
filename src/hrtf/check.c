@@ -7,7 +7,8 @@
 #include <string.h>
 
 static int compareValues(struct MYSOFA_ARRAY *array, const float *compare,
-                         int elements, int size) {
+                         int elements, int size)
+{
   int i, j;
   if (array->values == NULL || array->elements != elements * size)
     return 0;
@@ -22,7 +23,8 @@ static const float array000[] = {0, 0, 0};
 static const float array001[] = {0, 0, 1};
 static const float array100[] = {1, 0, 0};
 
-MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
+MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf)
+{
 
   /* check for valid parameter ranges */
   /*
@@ -74,24 +76,31 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 
   /* verify format */
 
-  if (hrtf->ListenerView.values) {
+  if (hrtf->ListenerView.values)
+  {
     int m = 1;
     if (!verifyAttribute(hrtf->ListenerView.attributes, "DIMENSION_LIST",
-                         "I,C")) {
+                         "I,C"))
+    {
       if (!verifyAttribute(hrtf->ListenerView.attributes, "DIMENSION_LIST",
-                           "M,C")) {
+                           "M,C"))
+      {
         return MYSOFA_INVALID_DIMENSION_LIST; // LCOV_EXCL_LINE
       }
       m = hrtf->M;
     }
-    if (verifyAttribute(hrtf->ListenerView.attributes, "Type", "cartesian")) {
+    if (verifyAttribute(hrtf->ListenerView.attributes, "Type", "cartesian"))
+    {
       if (!compareValues(&hrtf->ListenerView, array100, 3, m))
         return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
-    } else if (verifyAttribute(hrtf->ListenerView.attributes, "Type",
-                               "spherical")) {
+    }
+    else if (verifyAttribute(hrtf->ListenerView.attributes, "Type",
+                             "spherical"))
+    {
       if (!compareValues(&hrtf->ListenerView, array001, 3, m))
         return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
-    } else
+    }
+    else
       return MYSOFA_INVALID_COORDINATE_TYPE; // LCOV_EXCL_LINE
   }
 
@@ -118,9 +127,11 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
 
   int m = 1;
   if (!verifyAttribute(hrtf->EmitterPosition.attributes, "DIMENSION_LIST",
-                       "E,C,I")) {
+                       "E,C,I"))
+  {
     if (!verifyAttribute(hrtf->EmitterPosition.attributes, "DIMENSION_LIST",
-                         "E,C,M")) {
+                         "E,C,M"))
+    {
       return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED; // LCOV_EXCL_LINE
     }
     m = hrtf->M;
@@ -129,24 +140,32 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
   if (!compareValues(&hrtf->EmitterPosition, array000, 3, m))
     return MYSOFA_ONLY_EMITTER_WITH_ECI_SUPPORTED; // LCOV_EXCL_LINE
 
-  if (hrtf->DataDelay.values) {
+  if (hrtf->DataDelay.values)
+  {
     if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "I,R") &&
         !verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "M,R"))
       return MYSOFA_ONLY_DELAYS_WITH_IR_OR_MR_SUPPORTED; // LCOV_EXCL_LINE
   }
   /* TODO: Support different sampling rate per measurement, support default
    sampling rate of 48000 However, so far, I have not seen any sofa files with
-   an format other and I */
+   a format other then I */
   if (!verifyAttribute(hrtf->DataSamplingRate.attributes, "DIMENSION_LIST",
                        "I"))
     return MYSOFA_ONLY_THE_SAME_SAMPLING_RATE_SUPPORTED; // LCOV_EXCL_LINE
 
   if (verifyAttribute(hrtf->ReceiverPosition.attributes, "DIMENSION_LIST",
-                      "R,C,I")) {
+                      "R,C,I"))
+  {
     // do nothing
-  } else if (verifyAttribute(hrtf->ReceiverPosition.attributes,
-                             "DIMENSION_LIST", "R,C,M")) {
-    for (int i = 0; i < 6; i++) {
+  }
+  else if (verifyAttribute(hrtf->ReceiverPosition.attributes,
+                           "DIMENSION_LIST", "R,C,M"))
+  {
+    if (hrtf->ReceiverPosition.elements != 6 * hrtf->M)
+      return MYSOFA_INVALID_RECEIVER_POSITIONS;
+
+    for (int i = 0; i < 6; i++)
+    {
       int offset = i * hrtf->M;
       double receiverPosition = hrtf->ReceiverPosition.values[offset];
       for (int j = 1; j < hrtf->M; j++)
@@ -154,7 +173,9 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
                      hrtf->ReceiverPosition.values[offset + j]))
           return MYSOFA_RECEIVERS_WITH_RCI_SUPPORTED; // LCOV_EXCL_LINE
     }
-  } else {
+  }
+  else
+  {
     return MYSOFA_RECEIVERS_WITH_RCI_SUPPORTED; // LCOV_EXCL_LINE
   }
 
@@ -165,13 +186,15 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
       !fequals(hrtf->ReceiverPosition.values[0], 0.f) ||
       !fequals(hrtf->ReceiverPosition.values[2], 0.f) ||
       !fequals(hrtf->ReceiverPosition.values[3], 0.f) ||
-      !fequals(hrtf->ReceiverPosition.values[5], 0.f)) {
+      !fequals(hrtf->ReceiverPosition.values[5], 0.f))
+  {
     return MYSOFA_INVALID_RECEIVER_POSITIONS; // LCOV_EXCL_LINE
   }
   if (!fequals(hrtf->ReceiverPosition.values[4],
                -hrtf->ReceiverPosition.values[1]))
     return MYSOFA_INVALID_RECEIVER_POSITIONS; // LCOV_EXCL_LINE
-  if (hrtf->ReceiverPosition.values[1] < 0) {
+  if (hrtf->ReceiverPosition.values[1] < 0)
+  {
     if (!verifyAttribute(hrtf->attributes, "APIName",
                          "ARI SOFA API for Matlab/Octave"))
       return MYSOFA_INVALID_RECEIVER_POSITIONS; // LCOV_EXCL_LINE
