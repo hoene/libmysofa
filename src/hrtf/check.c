@@ -161,10 +161,10 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf)
   else if (verifyAttribute(hrtf->ReceiverPosition.attributes,
                            "DIMENSION_LIST", "R,C,M"))
   {
-    if (hrtf->ReceiverPosition.elements != 6 * hrtf->M)
+    if (hrtf->ReceiverPosition.elements != hrtf->C * hrtf->R * hrtf->M)
       return MYSOFA_INVALID_RECEIVER_POSITIONS;
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < hrtf->C * hrtf->R; i++)
     {
       int offset = i * hrtf->M;
       double receiverPosition = hrtf->ReceiverPosition.values[offset];
@@ -182,7 +182,7 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf)
   if (!verifyAttribute(hrtf->ReceiverPosition.attributes, "Type", "cartesian"))
     return MYSOFA_RECEIVERS_WITH_CARTESIAN_SUPPORTED; // LCOV_EXCL_LINE
 
-  if (hrtf->ReceiverPosition.elements < 6 ||
+  if (hrtf->ReceiverPosition.elements < hrtf->C * hrtf->R ||
       !fequals(hrtf->ReceiverPosition.values[0], 0.f) ||
       !fequals(hrtf->ReceiverPosition.values[2], 0.f) ||
       !fequals(hrtf->ReceiverPosition.values[3], 0.f) ||
