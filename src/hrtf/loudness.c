@@ -27,7 +27,7 @@ MYSOFA_EXPORT float mysofa_loudness(struct MYSOFA_HRTF *hrtf) {
   /*
    * find frontal source position
    */
-  for (i = 0; i < hrtf->SourcePosition.elements; i += hrtf->C) {
+  for (i = 0; i + 2 < hrtf->SourcePosition.elements; i += hrtf->C) {
     c[0] = hrtf->SourcePosition.values[i];
     c[1] = hrtf->SourcePosition.values[i + 1];
     c[2] = hrtf->SourcePosition.values[i + 2];
