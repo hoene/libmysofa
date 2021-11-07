@@ -19,8 +19,8 @@ set(CPACK_PACKAGE_CONTACT "umlaeute@debian.org")
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "IOhannes m zmölnig")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION_MINOR "2")
+set(CPACK_PACKAGE_VERSION_PATCH "2")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "zlib1g")
 
 set(PKG_CONFIG_PRIVATELIBS "")
@@ -89,6 +89,7 @@ if(BUILD_TESTS)
     167b
     168
     171
+    173
 )
     # issues with osx    96)
     add_test(fail-issue-${ISSUE} ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh

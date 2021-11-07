@@ -15,8 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate)
-{
+MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate) {
   int i, err;
   float factor;
   unsigned newN;
@@ -24,7 +23,8 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate)
   SpeexResamplerState *resampler;
   float zero[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-  if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000. || hrtf->DataIR.elements != hrtf->R * hrtf->M * hrtf->N)
+  if (hrtf->DataSamplingRate.elements != 1 || samplerate < 8000. ||
+      hrtf->DataIR.elements != hrtf->R * hrtf->M * hrtf->N)
     return MYSOFA_INVALID_FORMAT;
 
   if (samplerate == hrtf->DataSamplingRate.values[0])
@@ -43,31 +43,30 @@ MYSOFA_EXPORT int mysofa_resample(struct MYSOFA_HRTF *hrtf, float samplerate)
 
   resampler = speex_resampler_init(1, hrtf->DataSamplingRate.values[0],
                                    samplerate, 10, &err);
-  if (resampler == NULL)
-  {
+  if (resampler == NULL) {
     free(values);
     return err;
   }
 
-  for (i = 0; i < hrtf->R * hrtf->M; i++)
-  {
-    unsigned inlen = hrtf->N;
-    unsigned outlen = newN;
-    speex_resampler_reset_mem(resampler);
-    speex_resampler_skip_zeros(resampler);
-    speex_resampler_process_float(resampler, 0,
-                                  hrtf->DataIR.values + i * hrtf->N, &inlen,
-                                  values + i * newN, &outlen);
-    assert(inlen == hrtf->N);
-    while (outlen < newN)
-    {
-      unsigned difflen = newN - outlen;
-      inlen = 10;
-      speex_resampler_process_float(resampler, 0, zero, &inlen,
-                                    values + i * newN + outlen, &difflen);
-      outlen += difflen;
+  if (hrtf->N) {
+    for (i = 0; i < hrtf->R * hrtf->M; i++) {
+      unsigned inlen = hrtf->N;
+      unsigned outlen = newN;
+      speex_resampler_reset_mem(resampler);
+      speex_resampler_skip_zeros(resampler);
+      speex_resampler_process_float(resampler, 0,
+                                    hrtf->DataIR.values + i * hrtf->N, &inlen,
+                                    values + i * newN, &outlen);
+      assert(inlen == hrtf->N);
+      while (outlen < newN) {
+        unsigned difflen = newN - outlen;
+        inlen = 10;
+        speex_resampler_process_float(resampler, 0, zero, &inlen,
+                                      values + i * newN + outlen, &difflen);
+        outlen += difflen;
+      }
+      assert(outlen == newN);
     }
-    assert(outlen == newN);
   }
   speex_resampler_destroy(resampler);
 
