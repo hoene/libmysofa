@@ -15,8 +15,8 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 ## Badges
 
 <div align="center">
-<a href="https://travis-ci.org/hoene/libmysofa">
-<img alt="Travis CI Status" src="https://travis-ci.org/hoene/libmysofa.svg?branch=master"/>
+<a href="https://travis-ci.com/hoene/libmysofa">
+<img alt="Travis CI Status" src="https://travis-ci.com/hoene/libmysofa.svg?branch=master"/>
 </a>
 <a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
 <img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
