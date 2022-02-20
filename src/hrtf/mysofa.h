@@ -179,6 +179,10 @@ struct MYSOFA_EASY *mysofa_open_advanced(const char *filename, float samplerate,
                                          int *filterlength, int *err, bool norm,
                                          float neighbor_angle_step,
                                          float neighbor_radius_step);
+struct MYSOFA_EASY *mysofa_open_data_advanced(const char *hrtf_data, int hrtf_data_size,
+											  float samplerate, int *filterlength,
+											  int *err, bool norm, float neighbor_angle_step,
+											  float neighbor_radius_step);
 struct MYSOFA_EASY *mysofa_open_cached(const char *filename, float samplerate,
                                        int *filterlength, int *err);
 void mysofa_getfilter_short(struct MYSOFA_EASY *easy, float x, float y, float z,

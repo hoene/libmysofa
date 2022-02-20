@@ -98,6 +98,16 @@ MYSOFA_EXPORT struct MYSOFA_EASY *mysofa_open_no_norm(const char *filename,
 }
 
 MYSOFA_EXPORT struct MYSOFA_EASY *
+mysofa_open_data_advanced(const char *hrtf_data, int hrtf_data_size,
+						  float samplerate, int *filterlength,
+						  int *err, bool norm, float neighbor_angle_step,
+						  float neighbor_radius_step) {
+		// TODO
+		assert(0);
+}
+
+
+MYSOFA_EXPORT struct MYSOFA_EASY *
 mysofa_open_advanced(const char *filename, float samplerate, int *filterlength,
                      int *err, bool norm, float neighbor_angle_step,
                      float neighbor_radius_step) {
