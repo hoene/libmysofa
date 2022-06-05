@@ -21,8 +21,6 @@ static void check_data(char *filename) {
   long size = ftell( fd );
   fseek( fd, 0 , SEEK_SET );
 
-  //fprintf( stderr, "cullen1 size of %s is %d \n ", filename, (int)size );
-
   char *data = malloc( size );
   int n = fread( data, 1, size, fd );
   if ( n != size ) {
