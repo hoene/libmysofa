@@ -81,7 +81,7 @@ target_link_libraries(mysofa-static LINK_PRIVATE ${MATH} ${ZLIB_LIBRARIES})
 set_target_properties(
   mysofa-static
   PROPERTIES OUTPUT_NAME mysofa CLEAN_DIRECT_OUTPUT 1 POSITION_INDEPENDENT_CODE
-                                                      ON)
+                                                      ${BUILD_SHARED_LIBS})
 install(TARGETS mysofa-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
   if(UNIX
@@ -129,6 +129,7 @@ if(BUILD_SHARED_LIBS)
   install(
     TARGETS mysofa-shared
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 else()
   generate_export_header(mysofa-static BASE_NAME mysofa EXPORT_FILE_NAME

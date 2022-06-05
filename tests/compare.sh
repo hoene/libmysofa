@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SCRIPTDIR=${0%/*}
-NODEJS=$(which node nodejs false | head -1)
+NODEJS=$(command -v node nodejs false | head -1)
 
 ${MYSOFA2JSON:-${SCRIPTDIR}/../build/src/mysofa2json} -c -s "$1".sofa >tmp1.json 2>tmp1.txt
 

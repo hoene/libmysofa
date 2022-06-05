@@ -500,14 +500,17 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       store = ftell(reader->fhd);
       if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
-      if (!data->data) {
-        if (data_size > 0x10000000)
-          return MYSOFA_INVALID_FORMAT;
-        data->data_len = data_size;
-        data->data = calloc(1, data_size);
-        if (!data->data)
-          return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
+      if (data->data) {
+        free(data->data);
+        data->data = NULL;
       }
+      if (data_size > 0x10000000)
+        return MYSOFA_INVALID_FORMAT;
+      data->data_len = data_size;
+      data->data = calloc(1, data_size);
+      if (!data->data)
+        return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
+
       err = fread(data->data, 1, data_size, reader->fhd);
       if (err != data_size)
         return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
@@ -881,7 +884,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
 
   offset = readValue(reader, reader->superblock.size_of_offsets);
   length = readValue(reader, reader->superblock.size_of_lengths);
-  if (offset > 0x1000000 || length > 0x10000000)
+  if (offset > 0x2000000 || length > 0x10000000)
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
 
   mylog(" continue %08" PRIX64 " %08" PRIX64 "\n", offset, length);
