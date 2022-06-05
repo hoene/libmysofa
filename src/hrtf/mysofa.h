@@ -127,6 +127,7 @@ enum {
 };
 
 struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err);
+struct MYSOFA_HRTF *mysofa_load_data(const char *data, const int size, int *err);
 
 int mysofa_check(struct MYSOFA_HRTF *hrtf);
 char *mysofa_getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name);
