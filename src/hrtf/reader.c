@@ -18,8 +18,8 @@
 
 struct DATAFILE {
   const char* buf;
-  int pos;
-  int len;
+  long pos;
+  long len;
 };
 
 /* checks file address.
@@ -318,7 +318,8 @@ static fpos_t seekfn(void *cookie, fpos_t offset, int wense)
      errno = EINVAL;
      return -1;
    }
-
+   //fprintf( stderr, "cullen3 seek to position %d \n ", (int)(obj->pos) );
+  
   return 0;
 }
 
@@ -328,14 +329,19 @@ MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load_data(const char *data, const int s
   struct DATAFILE obj;
 
   obj.buf = data;
-  obj.pos = 0;
-  obj.len = size;
+  obj.pos = 0L;
+  obj.len = (long)size;
 
   reader.fhd = funopen( (void*)(&obj), readfn, NULL, seekfn, NULL  );
   reader.gcol = NULL;
   reader.all = NULL;
   reader.recursive_counter = 0;
 
+  //fseek( reader.fhd , 0L , SEEK_END );
+  //long csize = ftell( reader.fhd  );
+  //fprintf( stderr, "cullen2 size is %d from %d \n ", (int)csize, (int)size );
+  //fseek( reader.fhd , 0L , SEEK_SET );
+  
   *err = superblockRead(&reader, &reader.superblock);
 
   if (!*err) {
