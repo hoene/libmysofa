@@ -16,6 +16,12 @@
 #include "mysofa.h"
 #include "mysofa_export.h"
 
+struct DATAFILE {
+  const char* buf;
+  int pos;
+  int len;
+};
+
 /* checks file address.
  * NULL is an invalid address indicating a invalid field
  */
@@ -279,6 +285,69 @@ error:
   if (!*err)
     *err = MYSOFA_INVALID_FORMAT;
   return NULL;
+}
+
+static int readfn(void *cookie, char *buf, int n)
+{
+  struct DATAFILE* obj = (struct DATAFILE*)cookie;
+
+  if ( obj->pos + n > obj->len ) {
+    n = obj->len - obj->pos;
+  }
+
+  memcpy( buf, obj->buf + obj->pos, n );
+  obj->pos += n;
+
+  return n;
+}
+
+static fpos_t seekfn(void *cookie, fpos_t offset, int wense)
+{
+   struct DATAFILE* obj = (struct DATAFILE*)cookie;
+   switch ( wense ) {
+   case SEEK_SET:
+     obj->pos = offset;
+     break;
+   case SEEK_CUR:
+     obj->pos += offset;
+     break;
+   case SEEK_END:
+     obj->pos = obj->len + offset;
+     break;
+   default:
+     errno = EINVAL;
+     return -1;
+   }
+
+  return 0;
+}
+
+MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load_data(const char *data, const int size, int *err) {
+  struct READER reader;
+  struct MYSOFA_HRTF *hrtf = NULL;
+  struct DATAFILE obj;
+
+  obj.buf = data;
+  obj.pos = 0;
+  obj.len = size;
+
+  reader.fhd = funopen( (void*)(&obj), readfn, NULL, seekfn, NULL  );
+  reader.gcol = NULL;
+  reader.all = NULL;
+  reader.recursive_counter = 0;
+
+  *err = superblockRead(&reader, &reader.superblock);
+
+  if (!*err) {
+    hrtf = getHrtf(&reader, err);
+  }
+
+  superblockFree(&reader, &reader.superblock);
+  gcolFree(reader.gcol);
+
+  fclose(reader.fhd);
+
+  return hrtf;
 }
 
 MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
