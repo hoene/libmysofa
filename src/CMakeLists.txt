@@ -149,7 +149,8 @@ if(BUILD_TESTS)
   add_executable(
     external
     tests/external.c
-    tests/check.c
+    tests/check.c 
+    tests/check_data.c 
     tests/lookup.c
     tests/neighbors.c
     tests/interpolate.c

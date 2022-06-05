@@ -17,6 +17,8 @@ void test_nsearch();
 
 void test_check();
 
+void test_check_data();
+
 void test_lookup();
 
 void test_neighbors();
