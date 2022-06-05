@@ -144,3 +144,4 @@ build/
 src/hrtf/mysofa_export.h
 src/config.h
 
+.vscode/settings.json
