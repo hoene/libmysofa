@@ -23,21 +23,21 @@ static int readGCOL(struct READER *reader) {
   UNUSED(reference_count);
 
   /* read signature */
-  if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "GCOL", 4)) {
+  if (readfn(reader->fhd, buf, 4) != 4 || strncmp(buf, "GCOL", 4)) {
     mylog("cannot read signature of global heap collection\n");
     return MYSOFA_INVALID_FORMAT;
   }
   buf[4] = 0;
 
-  if (fgetc(reader->fhd) != 1) {
+  if (getcfn(reader->fhd) != 1) {
     mylog("object GCOL must have version 1\n");
     return MYSOFA_INVALID_FORMAT;
   }
-  if (fgetc(reader->fhd) < 0 || fgetc(reader->fhd) < 0 ||
-      fgetc(reader->fhd) < 0)
+  if (getcfn(reader->fhd) < 0 || getcfn(reader->fhd) < 0 ||
+      getcfn(reader->fhd) < 0)
     return MYSOFA_READ_ERROR;
 
-  address = ftell(reader->fhd);
+  address = tellfn(reader->fhd);
   end = address;
   collection_size = readValue(reader, reader->superblock.size_of_lengths);
   if (collection_size > 0x400000000) {
@@ -46,7 +46,7 @@ static int readGCOL(struct READER *reader) {
   }
   end += collection_size - 8;
 
-  while (ftell(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
+  while (tellfn(reader->fhd) <= end - 8 - reader->superblock.size_of_lengths) {
 
     gcol = malloc(sizeof(*gcol));
     if (!gcol)
@@ -57,7 +57,7 @@ static int readGCOL(struct READER *reader) {
       break;
     }
     reference_count = readValue(reader, 2);
-    if (fseek(reader->fhd, 4, SEEK_CUR) < 0) {
+    if (seekfn(reader->fhd, 4, SEEK_CUR) < 0) {
       free(gcol);
       return errno;
     }
@@ -75,9 +75,9 @@ static int readGCOL(struct READER *reader) {
     reader->gcol = gcol;
   }
 
-  mylog(" END %08lX vs. %08" PRIX64 "\n", ftell(reader->fhd),
+  mylog(" END %08lX vs. %08" PRIX64 "\n", tellfn(reader->fhd),
         end); /* bug in the normal hdf5 specification */
-  /*	fseek(reader->fhd, end, SEEK_SET); */
+  /*	seekfn(reader->fhd, end, SEEK_SET); */
   return MYSOFA_OK;
 }
 
@@ -90,13 +90,13 @@ int gcolRead(struct READER *reader, uint64_t gcol, int reference,
     p = p->next;
   }
   if (!p) {
-    pos = ftell(reader->fhd);
-    if (fseek(reader->fhd, gcol, SEEK_SET) < 0)
+    pos = tellfn(reader->fhd);
+    if (seekfn(reader->fhd, gcol, SEEK_SET) < 0)
       return MYSOFA_READ_ERROR;
     readGCOL(reader);
     if (pos < 0)
       return MYSOFA_READ_ERROR;
-    if (fseek(reader->fhd, pos, SEEK_SET) < 0)
+    if (seekfn(reader->fhd, pos, SEEK_SET) < 0)
       return MYSOFA_READ_ERROR;
 
     p = reader->gcol;

@@ -45,7 +45,7 @@ static struct DATAOBJECT *findDataobject(struct READER *reader,
 
 static int readOHDRHeaderMessageNIL(struct READER *reader, int length) {
 
-  if (fseek(reader->fhd, length, SEEK_CUR) < 0)
+  if (seekfn(reader->fhd, length, SEEK_CUR) < 0)
     return errno; // LCOV_EXCL_LINE
 
   return MYSOFA_OK;
@@ -99,7 +99,7 @@ static int readOHDRHeaderMessageDataspace2(struct READER *reader,
 
   int i;
 
-  ds->type = (uint8_t)fgetc(reader->fhd);
+  ds->type = (uint8_t)getcfn(reader->fhd);
 
   for (i = 0; i < ds->dimensionality; i++) {
     if (i < 4) {
@@ -126,15 +126,15 @@ static int readOHDRHeaderMessageDataspace2(struct READER *reader,
 static int readOHDRHeaderMessageDataspace(struct READER *reader,
                                           struct DATASPACE *ds) {
 
-  int version = fgetc(reader->fhd);
+  int version = getcfn(reader->fhd);
 
-  ds->dimensionality = (uint8_t)fgetc(reader->fhd);
+  ds->dimensionality = (uint8_t)getcfn(reader->fhd);
   if (ds->dimensionality > 4) {
     mylog("dimensionality must be lower than 5\n"); // LCOV_EXCL_LINE
     return MYSOFA_INVALID_FORMAT;                   // LCOV_EXCL_LINE
   }
 
-  ds->flags = (uint8_t)fgetc(reader->fhd);
+  ds->flags = (uint8_t)getcfn(reader->fhd);
 
   switch (version) {
   case 1:
@@ -145,7 +145,7 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
     // LCOV_EXCL_START
     mylog("object OHDR dataspace message must have version 1 or 2 but is %X at "
           "%lX\n",
-          version, ftell(reader->fhd) - 1);
+          version, tellfn(reader->fhd) - 1);
     return MYSOFA_INVALID_FORMAT;
     // LCOV_EXCL_STOP
   }
@@ -162,13 +162,13 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
 static int readOHDRHeaderMessageLinkInfo(struct READER *reader,
                                          struct LINKINFO *li) {
 
-  if (fgetc(reader->fhd) != 0) {
+  if (getcfn(reader->fhd) != 0) {
     mylog(
         "object OHDR link info message must have version 0\n"); // LCOV_EXCL_LINE
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
   }
 
-  li->flags = (uint8_t)fgetc(reader->fhd);
+  li->flags = (uint8_t)getcfn(reader->fhd);
 
   if (li->flags & 1)
     li->maximum_creation_index = readValue(reader, 8);
@@ -202,12 +202,12 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
   char *buffer;
   struct DATATYPE dt2;
 
-  dt->class_and_version = (uint8_t)fgetc(reader->fhd);
+  dt->class_and_version = (uint8_t)getcfn(reader->fhd);
   if ((dt->class_and_version & 0xf0) != 0x10 &&
       (dt->class_and_version & 0xf0) != 0x30) {
     // LCOV_EXCL_START
     mylog("object OHDR datatype message must have version 1 not %d at %lX\n",
-          dt->class_and_version >> 4, ftell(reader->fhd) - 1);
+          dt->class_and_version >> 4, tellfn(reader->fhd) - 1);
     return MYSOFA_UNSUPPORTED_FORMAT;
     // LCOV_EXCL_STOP
   }
@@ -228,10 +228,10 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
   case 1: /* float */
     dt->u.f.bit_offset = (uint16_t)readValue(reader, 2);
     dt->u.f.bit_precision = (uint16_t)readValue(reader, 2);
-    dt->u.f.exponent_location = (uint8_t)fgetc(reader->fhd);
-    dt->u.f.exponent_size = (uint8_t)fgetc(reader->fhd);
-    dt->u.f.mantissa_location = (uint8_t)fgetc(reader->fhd);
-    dt->u.f.mantissa_size = (uint8_t)fgetc(reader->fhd);
+    dt->u.f.exponent_location = (uint8_t)getcfn(reader->fhd);
+    dt->u.f.exponent_size = (uint8_t)getcfn(reader->fhd);
+    dt->u.f.mantissa_location = (uint8_t)getcfn(reader->fhd);
+    dt->u.f.mantissa_size = (uint8_t)getcfn(reader->fhd);
     dt->u.f.exponent_bias = (uint32_t)readValue(reader, 4);
 
     mylog("    FLOAT bit %d %d exponent %d %d MANTISSA %d %d OFFSET %d\n",
@@ -267,7 +267,7 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
         if (!buffer)
           return MYSOFA_NO_MEMORY;
         for (j = 0; j < maxsize - 1; j++) {
-          c = fgetc(reader->fhd);
+          c = getcfn(reader->fhd);
           if (c < 0) {
             free(buffer);
             return MYSOFA_READ_ERROR;
@@ -279,7 +279,7 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
         buffer[j] = 0;
 
         for (j = 0, c = 0; (dt->size >> (8 * j)) > 0; j++) {
-          c |= fgetc(reader->fhd) << (8 * j);
+          c |= getcfn(reader->fhd) << (8 * j);
         }
 
         mylog("   COMPOUND %s offset %d\n", buffer, c);
@@ -307,29 +307,29 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
         for (j = 0;; j++) {
           if (j == sizeof(name))
             return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
-          res = fgetc(reader->fhd);
+          res = getcfn(reader->fhd);
           if (res < 0)
             return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
           name[j] = res;
           if (name[j] == 0)
             break;
         }
-        if (fseek(reader->fhd, (7 - j) & 7, SEEK_CUR))
+        if (seekfn(reader->fhd, (7 - j) & 7, SEEK_CUR))
           return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
 
         c = readValue(reader, 4);
-        int dimension = fgetc(reader->fhd);
+        int dimension = getcfn(reader->fhd);
         if (dimension != 0) {
           mylog("COMPOUND v1 with dimension not supported");
           return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
         }
 
         // ignore the following fields
-        if (fseek(reader->fhd, 3 + 4 + 4 + 4 * 4, SEEK_CUR))
+        if (seekfn(reader->fhd, 3 + 4 + 4 + 4 * 4, SEEK_CUR))
           return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
 
         mylog("  COMPOUND %s %d %d %lX\n", name, c, dimension,
-              ftell(reader->fhd));
+              tellfn(reader->fhd));
         err = readOHDRHeaderMessageDatatype(reader, &dt2);
         if (err)
           return err; // LCOV_EXCL_LINE
@@ -374,9 +374,9 @@ static int readOHDRHeaderMessageDatatype(struct READER *reader,
 
 static int readOHDRHeaderMessageDataFill1or2(struct READER *reader) {
 
-  int spaceAllocationTime = fgetc(reader->fhd);
-  int fillValueWriteTime = fgetc(reader->fhd);
-  int fillValueDefined = fgetc(reader->fhd);
+  int spaceAllocationTime = getcfn(reader->fhd);
+  int fillValueWriteTime = getcfn(reader->fhd);
+  int fillValueDefined = getcfn(reader->fhd);
   if (spaceAllocationTime < 0 || fillValueWriteTime < 0 || fillValueDefined < 0)
     return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
 
@@ -388,7 +388,7 @@ static int readOHDRHeaderMessageDataFill1or2(struct READER *reader) {
   }
   if (fillValueDefined > 0) {
     uint32_t size = (uint32_t)readValue(reader, 4);
-    if (fseek(reader->fhd, size, SEEK_CUR) < 0)
+    if (seekfn(reader->fhd, size, SEEK_CUR) < 0)
       return errno; // LCOV_EXCL_LINE
   }
 
@@ -399,11 +399,11 @@ static int readOHDRHeaderMessageDataFill3(struct READER *reader) {
   uint8_t flags;
   uint32_t size;
 
-  flags = (uint8_t)fgetc(reader->fhd);
+  flags = (uint8_t)getcfn(reader->fhd);
 
   if (flags & (1 << 5)) {
     size = (uint32_t)readValue(reader, 4);
-    if (fseek(reader->fhd, size, SEEK_CUR) < 0)
+    if (seekfn(reader->fhd, size, SEEK_CUR) < 0)
       return errno; // LCOV_EXCL_LINE
   }
 
@@ -412,7 +412,7 @@ static int readOHDRHeaderMessageDataFill3(struct READER *reader) {
 
 static int readOHDRHeaderMessageDataFill(struct READER *reader) {
 
-  int version = fgetc(reader->fhd);
+  int version = getcfn(reader->fhd);
   switch (version) {
   case 1:
   case 2:
@@ -435,7 +435,7 @@ static int readOHDRHeaderMessageDataFillOld(struct READER *reader) {
   uint32_t size;
 
   size = (uint32_t)readValue(reader, 4);
-  if (fseek(reader->fhd, size, SEEK_CUR) < 0)
+  if (seekfn(reader->fhd, size, SEEK_CUR) < 0)
     return errno; // LCOV_EXCL_LINE
 
   return MYSOFA_OK;
@@ -473,14 +473,14 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
   UNUSED(dataset_element_size);
   UNUSED(data_size);
 
-  if (fgetc(reader->fhd) != 3) {
+  if (getcfn(reader->fhd) != 3) {
     // LCOV_EXCL_START
     mylog("object OHDR message data layout message must have version 3\n");
     return MYSOFA_INVALID_FORMAT;
     // LCOV_EXCL_STOP
   }
 
-  layout_class = (uint8_t)fgetc(reader->fhd);
+  layout_class = (uint8_t)getcfn(reader->fhd);
   mylog("data layout %d\n", layout_class);
 
   switch (layout_class) {
@@ -497,8 +497,8 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     mylog("CHUNK Contiguous SIZE %" PRIu64 "\n", data_size);
 
     if (validAddress(reader, data_address)) {
-      store = ftell(reader->fhd);
-      if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
+      store = tellfn(reader->fhd);
+      if (seekfn(reader->fhd, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
       if (data->data) {
         free(data->data);
@@ -511,16 +511,16 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       if (!data->data)
         return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
 
-      err = fread(data->data, 1, data_size, reader->fhd);
+      err = readfn(reader->fhd, data->data, data_size);
       if (err != data_size)
         return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
-      if (fseek(reader->fhd, store, SEEK_SET) < 0)
+      if (seekfn(reader->fhd, store, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
     }
     break;
 
   case 2:
-    dimensionality = (uint8_t)fgetc(reader->fhd);
+    dimensionality = (uint8_t)getcfn(reader->fhd);
     mylog("dimensionality %d\n", dimensionality);
 
     if (dimensionality < 1 || dimensionality > DATAOBJECT_MAX_DIMENSIONALITY) {
@@ -542,8 +542,8 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       size *= data->ds.dimension_size[i];
 
     if (validAddress(reader, data_address) && dimensionality <= 4) {
-      store = ftell(reader->fhd);
-      if (fseek(reader->fhd, data_address, SEEK_SET) < 0)
+      store = tellfn(reader->fhd);
+      if (seekfn(reader->fhd, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
       if (!data->data) {
         if (size > 0x10000000)
@@ -556,7 +556,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       err = treeRead(reader, data);
       if (err)
         return err; // LCOV_EXCL_LINE
-      if (fseek(reader->fhd, store, SEEK_SET) < 0)
+      if (seekfn(reader->fhd, store, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
     }
     break;
@@ -583,14 +583,14 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
 static int readOHDRHeaderMessageGroupInfo(struct READER *reader,
                                           struct GROUPINFO *gi) {
 
-  if (fgetc(reader->fhd) != 0) {
+  if (getcfn(reader->fhd) != 0) {
     // LCOV_EXCL_START
     mylog("object OHDR group info message must have version 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
     // LCOV_EXCL_STOP
   }
 
-  gi->flags = (uint8_t)fgetc(reader->fhd);
+  gi->flags = (uint8_t)getcfn(reader->fhd);
 
   if (gi->flags & 1) {
     gi->maximum_compact_value = (uint16_t)readValue(reader, 2);
@@ -640,7 +640,7 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
       // LCOV_EXCL_START
       mylog("object OHDR filter pipeline message contains unsupported filter: "
             "%d %lX\n",
-            filter_identification_value, ftell(reader->fhd) - 2);
+            filter_identification_value, tellfn(reader->fhd) - 2);
       return MYSOFA_INVALID_FORMAT;
       // LCOV_EXCL_STOP
     }
@@ -649,7 +649,7 @@ static int readOHDRHeaderMessageFilterPipelineV1(struct READER *reader,
     number_client_data_values = (uint16_t)readValue(reader, 2);
 
     if (namelength > 0)
-      if (fseek(reader->fhd, ((namelength - 1) & ~7) + 8, SEEK_CUR) ==
+      if (seekfn(reader->fhd, ((namelength - 1) & ~7) + 8, SEEK_CUR) ==
           -1)                     // skip name
         return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
 
@@ -716,8 +716,8 @@ static int readOHDRHeaderMessageFilterPipelineV2(struct READER *reader,
 static int readOHDRHeaderMessageFilterPipeline(struct READER *reader) {
   int filterversion, filters;
 
-  filterversion = fgetc(reader->fhd);
-  filters = fgetc(reader->fhd);
+  filterversion = getcfn(reader->fhd);
+  filters = getcfn(reader->fhd);
 
   if (filterversion < 0 || filters < 0)
     return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
@@ -761,15 +761,15 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
       gcol = readValue(reader, dt->list - dt->size);
     }
     mylog("    GCOL %d %8" PRIX64 " %8lX\n", dt->list - dt->size, gcol,
-          ftell(reader->fhd));
+          tellfn(reader->fhd));
     /*		fseek(reader->fhd, dt->list - dt->size, SEEK_CUR); TODO:
      * TODO: missing part in specification */
   }
 
   switch (dt->class_and_version & 0xf) {
   case 0:
-    mylog("FIXED POINT todo %lX %d\n", ftell(reader->fhd), dt->size);
-    if (fseek(reader->fhd, dt->size, SEEK_CUR))
+    mylog("FIXED POINT todo %lX %d\n", tellfn(reader->fhd), dt->size);
+    if (seekfn(reader->fhd, dt->size, SEEK_CUR))
       return errno; // LCOV_EXCL_LINE
     break;
 
@@ -778,7 +778,7 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
     if (buffer == NULL) {
       return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
     }
-    if (fread(buffer, 1, dt->size, reader->fhd) != dt->size) {
+    if (readfn(reader->fhd, buffer, dt->size) != dt->size) {
       free(buffer);             // LCOV_EXCL_LINE
       return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
     }
@@ -793,8 +793,8 @@ int readDataVar(struct READER *reader, struct DATAOBJECT *data,
      */
   case 6:
     /* TODO unclear spec */
-    mylog("COMPONENT todo %lX %d\n", ftell(reader->fhd), dt->size);
-    if (fseek(reader->fhd, dt->size, SEEK_CUR))
+    mylog("COMPONENT todo %lX %d\n", tellfn(reader->fhd), dt->size);
+    if (seekfn(reader->fhd, dt->size, SEEK_CUR))
       return errno; // LCOV_EXCL_LINE
     break;
 
@@ -894,9 +894,9 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
   } else
     reader->recursive_counter++;
 
-  store = ftell(reader->fhd);
+  store = tellfn(reader->fhd);
 
-  if (fseek(reader->fhd, offset, SEEK_SET) < 0)
+  if (seekfn(reader->fhd, offset, SEEK_SET) < 0)
     return errno; // LCOV_EXCL_LINE
 
   err = readOCHK(reader, dataobject, offset + length);
@@ -905,7 +905,7 @@ static int readOHDRHeaderMessageContinue(struct READER *reader,
 
   if (store < 0)
     return MYSOFA_READ_ERROR; // LCOV_EXCL_LINE
-  if (fseek(reader->fhd, store, SEEK_SET) < 0)
+  if (seekfn(reader->fhd, store, SEEK_SET) < 0)
     return errno; // LCOV_EXCL_LINE
 
   mylog(" continue back\n");
@@ -933,7 +933,7 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 
   memset(&d, 0, sizeof(d));
 
-  int version = fgetc(reader->fhd);
+  int version = getcfn(reader->fhd);
 
   if (version != 1 && version != 3) {
     // LCOV_EXCL_START
@@ -942,31 +942,31 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     // LCOV_EXCL_STOP
   }
 
-  flags = (uint8_t)fgetc(reader->fhd);
+  flags = (uint8_t)getcfn(reader->fhd);
 
   name_size = (uint16_t)readValue(reader, 2);
   datatype_size = (uint16_t)readValue(reader, 2);
   dataspace_size = (uint16_t)readValue(reader, 2);
   if (version == 3)
-    encoding = (uint8_t)fgetc(reader->fhd);
+    encoding = (uint8_t)getcfn(reader->fhd);
 
   if (name_size > 0x1000)
     return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
   name = malloc(name_size + 1);
   if (!name)
     return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
-  if (fread(name, 1, name_size, reader->fhd) != name_size) {
+  if (readfn(reader->fhd, name, name_size) != name_size) {
     free(name);   // LCOV_EXCL_LINE
     return errno; // LCOV_EXCL_LINE
   }
-  if (version == 1 && fseek(reader->fhd, (8 - name_size) & 7, SEEK_CUR) != 0) {
+  if (version == 1 && seekfn(reader->fhd, (8 - name_size) & 7, SEEK_CUR) != 0) {
     free(name);   // LCOV_EXCL_LINE
     return errno; // LCOV_EXCL_LINE
   }
 
   name[name_size] = 0;
   mylog("  attribute name %s %d %d %lX\n", name, datatype_size, dataspace_size,
-        ftell(reader->fhd));
+        tellfn(reader->fhd));
 
   if (version == 3 && (flags & 3)) {
     // LCOV_EXCL_START
@@ -984,7 +984,7 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     // LCOV_EXCL_STOP
   }
   if (version == 1) {
-    if (fseek(reader->fhd, (8 - datatype_size) & 7, SEEK_CUR) < 0) {
+    if (seekfn(reader->fhd, (8 - datatype_size) & 7, SEEK_CUR) < 0) {
       // LCOV_EXCL_START
       free(name);
       return errno;
@@ -1001,7 +1001,7 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
     // LCOV_EXCL_STOP
   }
   if (version == 1) {
-    if (fseek(reader->fhd, (8 - dataspace_size) & 7, SEEK_CUR) < 0) {
+    if (seekfn(reader->fhd, (8 - dataspace_size) & 7, SEEK_CUR) < 0) {
       // LCOV_EXCL_START
       free(name);
       return errno;
@@ -1044,12 +1044,12 @@ static int readOHDRHeaderMessageAttribute(struct READER *reader,
 static int readOHDRHeaderMessageAttributeInfo(struct READER *reader,
                                               struct ATTRIBUTEINFO *ai) {
 
-  if (fgetc(reader->fhd) != 0) {
+  if (getcfn(reader->fhd) != 0) {
     mylog("object OHDR attribute info message must have version 0\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
-  ai->flags = (uint8_t)fgetc(reader->fhd);
+  ai->flags = (uint8_t)getcfn(reader->fhd);
 
   if (ai->flags & 1)
     ai->maximum_creation_index = readValue(reader, 2);
@@ -1073,15 +1073,15 @@ static int readOHDRmessages(struct READER *reader,
                             struct DATAOBJECT *dataobject,
                             uint64_t end_of_messages) {
 
-  FILE *fhd = reader->fhd;
+  struct DATAFILE *fhd = reader->fhd;
   int err;
   long end;
 
-  while (ftell(fhd) <
+  while (tellfn(fhd) <
          end_of_messages - 4) { /* final gap may has a size of up to 3 */
-    uint8_t header_message_type = (uint8_t)fgetc(fhd);
+    uint8_t header_message_type = (uint8_t)getcfn(fhd);
     uint16_t header_message_size = (uint16_t)readValue(reader, 2);
-    uint8_t header_message_flags = (uint8_t)fgetc(fhd);
+    uint8_t header_message_flags = (uint8_t)getcfn(fhd);
     if ((header_message_flags & ~5) != 0) {
       mylog("OHDR unsupported OHDR message flag %02X\n", header_message_flags);
       return MYSOFA_UNSUPPORTED_FORMAT;
@@ -1089,13 +1089,13 @@ static int readOHDRmessages(struct READER *reader,
 
     if ((dataobject->flags & (1 << 2)) != 0)
       /* ignore header_creation_order */
-      if (fseek(reader->fhd, 2, SEEK_CUR) < 0)
+      if (seekfn(reader->fhd, 2, SEEK_CUR) < 0)
         return errno;
 
     mylog(" OHDR message type %2d offset %6lX len %4X\n", header_message_type,
-          ftell(fhd), header_message_size);
+          tellfn(fhd), header_message_size);
 
-    end = ftell(fhd) + header_message_size;
+    end = tellfn(fhd) + header_message_size;
 
     switch (header_message_type) {
     case 0: /* NIL Message */
@@ -1152,13 +1152,13 @@ static int readOHDRmessages(struct READER *reader,
       return MYSOFA_UNSUPPORTED_FORMAT;
     }
 
-    if (ftell(fhd) != end) {
-      mylog("OHDR message length mismatch by %ld\n", ftell(fhd) - end);
+    if (tellfn(fhd) != end) {
+      mylog("OHDR message length mismatch by %ld\n", tellfn(fhd) - end);
       return MYSOFA_INTERNAL_ERROR;
     }
   }
 
-  if (fseek(fhd, end_of_messages + 4, SEEK_SET) < 0) /* skip checksum */
+  if (seekfn(fhd, end_of_messages + 4, SEEK_SET) < 0) /* skip checksum */
     return errno;
 
   return MYSOFA_OK;
@@ -1170,12 +1170,12 @@ static int readOCHK(struct READER *reader, struct DATAOBJECT *dataobject,
   char buf[5];
 
   /* read signature */
-  if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OCHK", 4)) {
+  if (readfn(reader->fhd, buf, 4) != 4 || strncmp(buf, "OCHK", 4)) {
     mylog("cannot read signature of OCHK\n");
     return MYSOFA_INVALID_FORMAT;
   }
   buf[4] = 0;
-  mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
+  mylog("%08" PRIX64 " %.4s\n", (uint64_t)tellfn(reader->fhd) - 4, buf);
 
   err = readOHDRmessages(reader, dataobject, end - 4); /* subtract checksum */
   if (err) {
@@ -1192,26 +1192,26 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
   char buf[5];
 
   memset(dataobject, 0, sizeof(*dataobject));
-  dataobject->address = ftell(reader->fhd);
+  dataobject->address = tellfn(reader->fhd);
   dataobject->name = name;
 
   /* read signature */
-  if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "OHDR", 4)) {
+  if (readfn(reader->fhd, buf, 4) != 4 || strncmp(buf, "OHDR", 4)) {
     mylog("cannot read signature of data object\n");
     return MYSOFA_INVALID_FORMAT;
   }
   buf[4] = 0;
   mylog("%08" PRIX64 " %.4s\n", dataobject->address, buf);
 
-  if (fgetc(reader->fhd) != 2) {
+  if (getcfn(reader->fhd) != 2) {
     mylog("object OHDR must have version 2\n");
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
-  dataobject->flags = (uint8_t)fgetc(reader->fhd);
+  dataobject->flags = (uint8_t)getcfn(reader->fhd);
 
   if (dataobject->flags & (1 << 5)) {         /* bit 5 indicated time stamps */
-    if (fseek(reader->fhd, 16, SEEK_CUR) < 0) /* skip them */
+    if (seekfn(reader->fhd, 16, SEEK_CUR) < 0) /* skip them */
       return errno;
   }
 
@@ -1224,7 +1224,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
   if (size_of_chunk > 0x1000000)
     return MYSOFA_UNSUPPORTED_FORMAT;
 
-  end_of_messages = ftell(reader->fhd) + size_of_chunk;
+  end_of_messages = tellfn(reader->fhd) + size_of_chunk;
 
   err = readOHDRmessages(reader, dataobject, end_of_messages);
 
@@ -1241,7 +1241,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
   /* parse message attribute info */
   if (validAddress(reader, dataobject->ai.fractal_heap_address)) {
-    if (fseek(reader->fhd, dataobject->ai.fractal_heap_address, SEEK_SET) < 0)
+    if (seekfn(reader->fhd, dataobject->ai.fractal_heap_address, SEEK_SET) < 0)
       return errno;
     err = fractalheapRead(reader, dataobject, &dataobject->attributes_heap);
     if (err)
@@ -1250,7 +1250,7 @@ int dataobjectRead(struct READER *reader, struct DATAOBJECT *dataobject,
 
   /* parse message link info */
   if (validAddress(reader, dataobject->li.fractal_heap_address)) {
-    fseek(reader->fhd, dataobject->li.fractal_heap_address, SEEK_SET);
+    seekfn(reader->fhd, dataobject->li.fractal_heap_address, SEEK_SET);
     err = fractalheapRead(reader, dataobject, &dataobject->objects_heap);
     if (err)
       return err;

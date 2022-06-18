@@ -16,6 +16,11 @@
 struct READER;
 struct DIR;
 struct DATAOBJECT;
+struct DATAFILE {
+  const char* buf;
+  long pos;
+  long len;
+};
 
 union RECORD {
   struct TYPE5 {
@@ -170,7 +175,7 @@ void gcolFree(struct GCOL *gcol);
 int treeRead(struct READER *reader, struct DATAOBJECT *data);
 
 struct READER {
-  FILE *fhd;
+  struct DATAFILE *fhd;
 
   struct DATAOBJECT *all;
 
@@ -187,5 +192,10 @@ uint64_t readValue(struct READER *reader, int size);
 int gunzip(int inlen, char *in, int *outlen, char *out);
 
 char *mysofa_strdup(const char *s);
+
+int readfn(struct DATAFILE *obj, char *buf, int n);
+fpos_t seekfn(struct DATAFILE *obj, fpos_t offset, int wense);
+fpos_t tellfn(struct DATAFILE *obj);
+int getcfn(struct DATAFILE *obj);
 
 #endif /* READER_H_ */

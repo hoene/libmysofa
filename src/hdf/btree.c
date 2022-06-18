@@ -81,19 +81,19 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
   UNUSED(message_flags);
 
   /* read signature */
-  if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTLF", 4)) {
+  if (readfn(reader->fhd, buf, 4) != 4 || strncmp(buf, "BTLF", 4)) {
     mylog("cannot read signature of BTLF\n"); // LCOV_EXCL_LINE
     return MYSOFA_INVALID_FORMAT;             // LCOV_EXCL_LINE
   }
   buf[4] = 0;
-  mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
+  mylog("%08" PRIX64 " %.4s\n", (uint64_t)tellfn(reader->fhd) - 4, buf);
 
-  if (fgetc(reader->fhd) != 0) {
+  if (getcfn(reader->fhd) != 0) {
     mylog("object BTLF must have version 0\n"); // LCOV_EXCL_LINE
     return MYSOFA_INVALID_FORMAT;               // LCOV_EXCL_LINE
   }
 
-  type = (uint8_t)fgetc(reader->fhd);
+  type = (uint8_t)getcfn(reader->fhd);
 
   for (i = 0; i < number_of_records; i++) {
 
@@ -117,7 +117,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
       /*heap_id = */
       readValue(reader, 8);
       /*message_flags = */
-      fgetc(reader->fhd);
+      getcfn(reader->fhd);
       /*creation_order = */
       readValue(reader, 4);
       /*hash_of_name = */
@@ -128,7 +128,7 @@ static int readBTLF(struct READER *reader, struct BTREE *btree,
       /*heap_id = */
       readValue(reader, 8);
       /*message_flags = */
-      fgetc(reader->fhd);
+      getcfn(reader->fhd);
       /*creation_order = */
       readValue(reader, 4);
       break;
@@ -159,25 +159,25 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
   char buf[5];
 
   /* read signature */
-  if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "BTHD", 4)) {
+  if (readfn(reader->fhd, buf, 4) != 4 || strncmp(buf, "BTHD", 4)) {
     mylog("cannot read signature of BTHD\n");
     return MYSOFA_INVALID_FORMAT;
   }
   buf[4] = 0;
-  mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
+  mylog("%08" PRIX64 " %.4s\n", (uint64_t)tellfn(reader->fhd) - 4, buf);
 
-  if (fgetc(reader->fhd) != 0) {
+  if (getcfn(reader->fhd) != 0) {
     mylog("object BTHD must have version 0\n");
     return MYSOFA_INVALID_FORMAT;
   }
 
-  btree->type = (uint8_t)fgetc(reader->fhd);
+  btree->type = (uint8_t)getcfn(reader->fhd);
   btree->node_size = (uint32_t)readValue(reader, 4);
   btree->record_size = (uint16_t)readValue(reader, 2);
   btree->depth = (uint16_t)readValue(reader, 2);
 
-  btree->split_percent = (uint8_t)fgetc(reader->fhd);
-  btree->merge_percent = (uint8_t)fgetc(reader->fhd);
+  btree->split_percent = (uint8_t)getcfn(reader->fhd);
+  btree->merge_percent = (uint8_t)getcfn(reader->fhd);
   btree->root_node_address =
       (uint64_t)readValue(reader, reader->superblock.size_of_offsets);
   btree->number_of_records = (uint16_t)readValue(reader, 2);
@@ -196,7 +196,7 @@ int btreeRead(struct READER *reader, struct BTREE *btree) {
   memset(btree->records, 0, sizeof(btree->records[0]) * btree->total_number);
 
   /* read records */
-  if (fseek(reader->fhd, btree->root_node_address, SEEK_SET) < 0)
+  if (seekfn(reader->fhd, btree->root_node_address, SEEK_SET) < 0)
     return errno;
   return readBTLF(reader, btree, btree->number_of_records, btree->records);
 }
@@ -235,15 +235,15 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   }
 
   /* read signature */
-  if (fread(buf, 1, 4, reader->fhd) != 4 || strncmp(buf, "TREE", 4)) {
+  if (readfn(reader->fhd, buf, 4) != 4 || strncmp(buf, "TREE", 4)) {
     mylog("cannot read signature of TREE\n"); // LCOV_EXCL_LINE
     return MYSOFA_INVALID_FORMAT;             // LCOV_EXCL_LINE
   }
   buf[4] = 0;
-  mylog("%08" PRIX64 " %.4s\n", (uint64_t)ftell(reader->fhd) - 4, buf);
+  mylog("%08" PRIX64 " %.4s\n", (uint64_t)tellfn(reader->fhd) - 4, buf);
 
-  node_type = (uint8_t)fgetc(reader->fhd);
-  node_level = (uint8_t)fgetc(reader->fhd);
+  node_type = (uint8_t)getcfn(reader->fhd);
+  node_level = (uint8_t)getcfn(reader->fhd);
   entries_used = (uint16_t)readValue(reader, 2);
   if (entries_used > 0x1000)
     return MYSOFA_UNSUPPORTED_FORMAT; // LCOV_EXCL_LINE
@@ -297,8 +297,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
       mylog(" data at %" PRIX64 " len %u\n", child_pointer, size_of_chunk);
 
       /* read data */
-      store = ftell(reader->fhd);
-      if (fseek(reader->fhd, child_pointer, SEEK_SET) < 0) {
+      store = tellfn(reader->fhd);
+      if (seekfn(reader->fhd, child_pointer, SEEK_SET) < 0) {
         free(output); // LCOV_EXCL_LINE
         return errno; // LCOV_EXCL_LINE
       }
@@ -307,7 +307,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
         free(output);            // LCOV_EXCL_LINE
         return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
       }
-      if (fread(input, 1, size_of_chunk, reader->fhd) != size_of_chunk) {
+      if (readfn(reader->fhd, input, size_of_chunk) != size_of_chunk) {
         free(output);                 // LCOV_EXCL_LINE
         free(input);                  // LCOV_EXCL_LINE
         return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
@@ -371,7 +371,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
         return MYSOFA_INTERNAL_ERROR; // LCOV_EXCL_LINE
       }
 
-      if (fseek(reader->fhd, store, SEEK_SET) < 0) {
+      if (seekfn(reader->fhd, store, SEEK_SET) < 0) {
         free(output); // LCOV_EXCL_LINE
         return errno; // LCOV_EXCL_LINE
       }
@@ -379,7 +379,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   }
 
   free(output);
-  if (fseek(reader->fhd, 4, SEEK_CUR) < 0) /* skip checksum */
+  if (seekfn(reader->fhd, 4, SEEK_CUR) < 0) /* skip checksum */
     return errno;                          // LCOV_EXCL_LINE
 
   return MYSOFA_OK;

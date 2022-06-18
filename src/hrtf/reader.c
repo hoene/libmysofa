@@ -23,16 +23,61 @@ int validAddress(struct READER *reader, uint64_t address) {
   return address > 0 && address < reader->superblock.end_of_file_address;
 }
 
+int readfn(struct DATAFILE *obj, char *buf, int n) {
+  if (obj->pos + n > obj->len) {
+    n = obj->len - obj->pos;
+  }
+
+  memcpy(buf, obj->buf + obj->pos, n);
+  obj->pos += n;
+
+  return n;
+}
+
+fpos_t seekfn(struct DATAFILE *obj, fpos_t offset, int wense) {
+  switch ( wense ) {
+  case SEEK_SET:
+    obj->pos = offset;
+    break;
+  case SEEK_CUR:
+    obj->pos += offset;
+    break;
+  case SEEK_END:
+    obj->pos = obj->len + offset;
+    break;
+  default:
+    errno = EINVAL;
+    return -1;
+  }
+
+  return 0;
+}
+
+fpos_t tellfn(struct DATAFILE *obj) {
+  return obj->pos;
+}
+
+int getcfn(struct DATAFILE *obj) {
+  if (obj->pos == obj->len) {
+    return -1;
+  } else {
+    unsigned char ch;
+    memcpy(&ch, obj->buf + obj->pos, 1);
+    obj->pos++;
+    return (int)ch;
+  }
+}
+
 /* little endian */
 uint64_t readValue(struct READER *reader, int size) {
   int i, c;
   uint64_t value;
-  c = fgetc(reader->fhd);
+  c = getcfn(reader->fhd);
   if (c < 0)
     return 0xffffffffffffffffLL;
   value = (uint8_t)c;
   for (i = 1; i < size; i++) {
-    c = fgetc(reader->fhd);
+    c = getcfn(reader->fhd);
     if (c < 0)
       return 0xffffffffffffffffLL;
     value |= ((uint64_t)c) << (i * 8);
@@ -282,22 +327,48 @@ error:
 }
 
 MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
-  struct READER reader;
-  struct MYSOFA_HRTF *hrtf = NULL;
+  FILE* f;
 
   if (filename == NULL)
     filename = CMAKE_INSTALL_PREFIX "/share/libmysofa/default.sofa";
 
   if (strcmp(filename, "-"))
-    reader.fhd = fopen(filename, "rb");
+    f = fopen(filename, "rb");
   else
-    reader.fhd = stdin;
+    f = stdin;
 
-  if (!reader.fhd) {
+  if (!f) {
     mylog("cannot open file %s\n", filename);
     *err = errno;
     return NULL;
   }
+
+  fseek(f, 0, SEEK_END);
+  long size = ftell(f);
+  fseek(f, 0, SEEK_SET);
+  char *data = (char*)malloc(size);
+  int n = fread(data, sizeof(char), size, f);
+  if ( n != size ) {
+      mylog("cannot load file %s\n", filename);
+      *err = errno;
+      return NULL;
+  }
+  fclose(f);
+
+  struct MYSOFA_HRTF *hrtf = mysofa_load_data(data, size, err);
+  return hrtf;
+}
+
+MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load_data(const char *data, const long size, int *err) {
+  struct READER reader;
+  struct MYSOFA_HRTF *hrtf = NULL;
+  struct DATAFILE obj;
+
+  obj.buf = data;
+  obj.pos = 0L;
+  obj.len = size;
+
+  reader.fhd = &obj;
   reader.gcol = NULL;
   reader.all = NULL;
   reader.recursive_counter = 0;
@@ -310,8 +381,6 @@ MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
 
   superblockFree(&reader, &reader.superblock);
   gcolFree(reader.gcol);
-  if (strcmp(filename, "-"))
-    fclose(reader.fhd);
 
   return hrtf;
 }

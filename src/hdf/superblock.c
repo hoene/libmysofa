@@ -18,9 +18,9 @@
  */
 
 int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
-  superblock->size_of_offsets = (uint8_t)fgetc(reader->fhd);
-  superblock->size_of_lengths = (uint8_t)fgetc(reader->fhd);
-  if (fgetc(reader->fhd) < 0) /* File Consistency Flags */
+  superblock->size_of_offsets = (uint8_t)getcfn(reader->fhd);
+  superblock->size_of_lengths = (uint8_t)getcfn(reader->fhd);
+  if (getcfn(reader->fhd) < 0) /* File Consistency Flags */
     return MYSOFA_READ_ERROR;
 
   if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8 ||
@@ -43,10 +43,10 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
-  if (fseek(reader->fhd, 0L, SEEK_END))
+  if (seekfn(reader->fhd, 0L, SEEK_END))
     return errno;
 
-  if (superblock->end_of_file_address != ftell(reader->fhd)) {
+  if (superblock->end_of_file_address != tellfn(reader->fhd)) {
     mylog("file size mismatch\n");
     return MYSOFA_INVALID_FORMAT;
   }
@@ -54,7 +54,7 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
   /* end of superblock */
 
   /* seek to first object */
-  if (fseek(reader->fhd, superblock->root_group_object_header_address,
+  if (seekfn(reader->fhd, superblock->root_group_object_header_address,
             SEEK_SET)) {
     mylog("cannot seek to first object at %" PRId64 "\n",
           superblock->root_group_object_header_address);
@@ -66,25 +66,25 @@ int superblockRead2or3(struct READER *reader, struct SUPERBLOCK *superblock) {
 
 int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
                        int version) {
-  if (fgetc(reader->fhd) !=
+  if (getcfn(reader->fhd) !=
       0) /* Version Number of the File’s Free Space Information */
     return MYSOFA_INVALID_FORMAT;
 
-  if (fgetc(reader->fhd) !=
+  if (getcfn(reader->fhd) !=
       0) /* Version Number of the Root Group Symbol Table Entry */
     return MYSOFA_INVALID_FORMAT;
 
-  if (fgetc(reader->fhd) != 0)
+  if (getcfn(reader->fhd) != 0)
     return MYSOFA_INVALID_FORMAT;
 
-  if (fgetc(reader->fhd) !=
+  if (getcfn(reader->fhd) !=
       0) /* Version Number of the Shared Header Message Format */
     return MYSOFA_INVALID_FORMAT;
 
-  superblock->size_of_offsets = (uint8_t)fgetc(reader->fhd);
-  superblock->size_of_lengths = (uint8_t)fgetc(reader->fhd);
+  superblock->size_of_offsets = (uint8_t)getcfn(reader->fhd);
+  superblock->size_of_lengths = (uint8_t)getcfn(reader->fhd);
 
-  if (fgetc(reader->fhd) != 0)
+  if (getcfn(reader->fhd) != 0)
     return MYSOFA_INVALID_FORMAT;
 
   if (superblock->size_of_offsets < 2 || superblock->size_of_offsets > 8 ||
@@ -162,16 +162,16 @@ int superblockRead0or1(struct READER *reader, struct SUPERBLOCK *superblock,
     return MYSOFA_UNSUPPORTED_FORMAT;
   }
 
-  if (fseek(reader->fhd, 0L, SEEK_END))
+  if (seekfn(reader->fhd, 0L, SEEK_END))
     return errno;
 
-  if (superblock->end_of_file_address != ftell(reader->fhd)) {
+  if (superblock->end_of_file_address != tellfn(reader->fhd)) {
     mylog("file size mismatch\n");
   }
   /* end of superblock */
 
   /* seek to first object */
-  if (fseek(reader->fhd, superblock->root_group_object_header_address,
+  if (seekfn(reader->fhd, superblock->root_group_object_header_address,
             SEEK_SET)) {
     mylog("cannot seek to first object at %" PRId64 "\n",
           superblock->root_group_object_header_address);
@@ -186,14 +186,14 @@ int superblockRead(struct READER *reader, struct SUPERBLOCK *superblock) {
   memset(superblock, 0, sizeof(*superblock));
 
   /* signature */
-  if (fread(buf, 1, 8, reader->fhd) != 8 ||
+  if (readfn(reader->fhd, buf, 8) != 8 ||
       strncmp("\211HDF\r\n\032\n", buf, 8)) {
     mylog("file does not have correct signature");
     return MYSOFA_INVALID_FORMAT;
   }
 
   /* read version of superblock, must be 0,1,2, or 3 */
-  int version = fgetc(reader->fhd);
+  int version = getcfn(reader->fhd);
 
   switch (version) {
   case 0:
