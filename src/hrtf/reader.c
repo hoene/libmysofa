@@ -34,7 +34,7 @@ int readfn(struct DATAFILE *obj, char *buf, int n) {
   return n;
 }
 
-fpos_t seekfn(struct DATAFILE *obj, fpos_t offset, int wense) {
+int seekfn(struct DATAFILE *obj, long offset, int wense) {
   switch ( wense ) {
   case SEEK_SET:
     obj->pos = offset;
@@ -53,7 +53,7 @@ fpos_t seekfn(struct DATAFILE *obj, fpos_t offset, int wense) {
   return 0;
 }
 
-fpos_t tellfn(struct DATAFILE *obj) {
+long tellfn(struct DATAFILE *obj) {
   return obj->pos;
 }
 
