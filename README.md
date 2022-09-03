@@ -96,6 +96,15 @@ hrtf = mysofa_open_advanced("file.sofa", 48000, &filter_length, &err, norm, neig
 
 (The greater the neighbor_*_step, the faster the neighbors search. The algorithm will end up skipping true nearest neighbors if these values are set too high. To be define based on the will-be-imported sofa files grid step. Default mysofa_open method is usually fast enough for classical hrtf grids not to bother with the advanced one.)
 
+Or, if you have loaded your HRTF file into memory already, call, for example
+```
+char buffer[9] = "TESTDATA";
+int filter_length;
+int err;
+struct MYSOFA_EASY *hrtf = NULL;
+hrtf = mysofa_open(buffer, 9, 48000, &filter_length, &err);
+```
+
 To free the HRTF structure, call:
 ```
 mysofa_close(hrtf);
