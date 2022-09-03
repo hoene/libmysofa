@@ -24,7 +24,8 @@ int main() {
   /* add the tests to the suite */
   /* NOTE - ORDER IS IMPORTANT - MUST TEST fread() AFTER fprintf() */
   if ((NULL == CU_add_test(pSuite, "test of mysofa_check", test_check)) ||
-      (NULL == CU_add_test(pSuite, "test of mysofa_check_data", test_check_data)) ||
+      (NULL ==
+       CU_add_test(pSuite, "test of mysofa_check_data", test_check_data)) ||
       (NULL == CU_add_test(pSuite, "test of mysofa_lookup", test_lookup)) ||
       (NULL ==
        CU_add_test(pSuite, "test of mysofa_neighbors", test_neighbors)) ||
@@ -36,7 +37,8 @@ int main() {
       (NULL == CU_add_test(pSuite, "test of mysofa_cache", test_cache)) ||
       (NULL ==
        CU_add_test(pSuite, "test of mysofa_easy open", test_easy_open)) ||
-      (NULL == CU_add_test(pSuite, "test of mysofa_easy nonorm", test_easy_nonorm)) ||
+      (NULL ==
+       CU_add_test(pSuite, "test of mysofa_easy nonorm", test_easy_nonorm)) ||
       (NULL == CU_add_test(pSuite, "test of mysofa_easy", test_easy)) ||
       (NULL == CU_add_test(pSuite, "test of user defined variables",
                            test_user_defined_variable))) {

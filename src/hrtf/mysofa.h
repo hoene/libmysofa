@@ -54,15 +54,15 @@ struct MYSOFA_VARIABLE {
 struct MYSOFA_HRTF {
 
   /* Dimensions defined in AES69
-   M Number of measurements; must be integer greater than zero.
-   R Number of receivers; must be integer greater than zero.
-   E Number of emitters; must be integer greater than zero.
-   N Number of data samples describing one measurement; must be integer greater
-   than zero. S Number of characters in a string; must be integer greater than
-   zero. I 1 Singleton dimension, defines a scalar value. C 3 Coordinate
-   triplet, always three; the coordinate type defines the meaning of this
-   dimension.
-   */
+ M Number of measurements; must be integer greater than zero.
+ R Number of receivers; must be integer greater than zero.
+ E Number of emitters; must be integer greater than zero.
+ N Number of data samples describing one measurement; must be integer greater
+ than zero. S Number of characters in a string; must be integer greater than
+ zero. I 1 Singleton dimension, defines a scalar value. C 3 Coordinate
+ triplet, always three; the coordinate type defines the meaning of this
+ dimension.
+ */
   unsigned I, C, R, E, N, M;
 
   struct MYSOFA_ARRAY ListenerPosition;
@@ -127,7 +127,7 @@ enum {
 };
 
 struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err);
-struct MYSOFA_HRTF *mysofa_load_data(const char *data, long size, int *err);
+struct MYSOFA_HRTF *mysofa_load_data(const char *data, size_t size, int *err);
 
 int mysofa_check(struct MYSOFA_HRTF *hrtf);
 char *mysofa_getAttribute(struct MYSOFA_ATTRIBUTE *attr, char *name);
@@ -180,14 +180,15 @@ struct MYSOFA_EASY *mysofa_open_advanced(const char *filename, float samplerate,
                                          int *filterlength, int *err, bool norm,
                                          float neighbor_angle_step,
                                          float neighbor_radius_step);
-struct MYSOFA_EASY *mysofa_open_data(const char *data, long size, float samplerate,
-                                     int *filterlength, int *err);
-struct MYSOFA_EASY *mysofa_open_data_no_norm(const char *data, long size, float samplerate,
+struct MYSOFA_EASY *mysofa_open_data(const char *data, long size,
+                                     float samplerate, int *filterlength,
+                                     int *err);
+struct MYSOFA_EASY *mysofa_open_data_no_norm(const char *data, long size,
+                                             float samplerate,
                                              int *filterlength, int *err);
-struct MYSOFA_EASY *mysofa_open_data_advanced(const char *data, long size, float samplerate,
-                                              int *filterlength, int *err, bool norm,
-                                              float neighbor_angle_step,
-                                              float neighbor_radius_step);
+struct MYSOFA_EASY *mysofa_open_data_advanced(
+    const char *data, long size, float samplerate, int *filterlength, int *err,
+    bool norm, float neighbor_angle_step, float neighbor_radius_step);
 struct MYSOFA_EASY *mysofa_open_cached(const char *filename, float samplerate,
                                        int *filterlength, int *err);
 void mysofa_getfilter_short(struct MYSOFA_EASY *easy, float x, float y, float z,
