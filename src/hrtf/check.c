@@ -183,15 +183,15 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf)
     return MYSOFA_RECEIVERS_WITH_CARTESIAN_SUPPORTED; // LCOV_EXCL_LINE
 
   if (hrtf->ReceiverPosition.elements < hrtf->C * hrtf->R ||
-      !fequals(hrtf->ReceiverPosition.values[0], 0.f) ||
-      !fequals(hrtf->ReceiverPosition.values[2], 0.f) ||
-      !fequals(hrtf->ReceiverPosition.values[3], 0.f) ||
-      !fequals(hrtf->ReceiverPosition.values[5], 0.f))
+      fabs(hrtf->ReceiverPosition.values[0]) >= 0.02f || // we assumes a somehow symetrical face
+      fabs(hrtf->ReceiverPosition.values[2]) >= 0.02f ||
+      fabs(hrtf->ReceiverPosition.values[3]) >= 0.02f ||
+      fabs(hrtf->ReceiverPosition.values[5]) >= 0.02f)
   {
     return MYSOFA_INVALID_RECEIVER_POSITIONS; // LCOV_EXCL_LINE
   }
-  if (!fequals(hrtf->ReceiverPosition.values[4],
-               -hrtf->ReceiverPosition.values[1]))
+  if (fabs(hrtf->ReceiverPosition.values[4] +
+           hrtf->ReceiverPosition.values[1]) >= 0.02f)
     return MYSOFA_INVALID_RECEIVER_POSITIONS; // LCOV_EXCL_LINE
   if (hrtf->ReceiverPosition.values[1] < 0)
   {
