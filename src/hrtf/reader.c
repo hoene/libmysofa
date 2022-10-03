@@ -23,16 +23,75 @@ int validAddress(struct READER *reader, uint64_t address) {
   return address > 0 && address < reader->superblock.end_of_file_address;
 }
 
+int mysofa_read(struct READER *reader, void *buf, size_t n) {
+  if (reader->fhd)
+    return fread(buf, 1, n, reader->fhd);
+  else {
+    if (reader->memory_pos + n > reader->memory_len) {
+      n = reader->memory_len - reader->memory_pos;
+    }
+
+    memcpy(buf, reader->memory + reader->memory_pos, n);
+    reader->memory_pos += n;
+
+    return n;
+  }
+}
+
+int mysofa_seek(struct READER *reader, long offset, int whence) {
+  if (reader->fhd)
+    return fseek(reader->fhd, offset, whence);
+  else {
+    switch (whence) {
+    case SEEK_SET:
+      reader->memory_pos = offset;
+      break;
+    case SEEK_CUR:
+      reader->memory_pos += offset;
+      break;
+    case SEEK_END:
+      reader->memory_pos = reader->memory_len + offset;
+      break;
+    default:
+      errno = EINVAL;
+      return -1;
+    }
+
+    return 0;
+  }
+}
+
+long mysofa_tell(struct READER *reader) {
+  if (reader->fhd)
+    return ftell(reader->fhd);
+  else
+    return reader->memory_pos;
+}
+
+int mysofa_getc(struct READER *reader) {
+  if (reader->fhd)
+    return fgetc(reader->fhd);
+  else {
+    if (reader->memory_pos == reader->memory_len) {
+      return -1;
+    } else {
+      unsigned char ch = reader->memory[reader->memory_pos];
+      reader->memory_pos++;
+      return (int)ch;
+    }
+  }
+}
+
 /* little endian */
 uint64_t readValue(struct READER *reader, int size) {
   int i, c;
   uint64_t value;
-  c = fgetc(reader->fhd);
+  c = mysofa_getc(reader);
   if (c < 0)
     return 0xffffffffffffffffLL;
   value = (uint8_t)c;
   for (i = 1; i < size; i++) {
-    c = fgetc(reader->fhd);
+    c = mysofa_getc(reader);
     if (c < 0)
       return 0xffffffffffffffffLL;
     value |= ((uint64_t)c) << (i * 8);
@@ -40,7 +99,7 @@ uint64_t readValue(struct READER *reader, int size) {
   return value;
 }
 
-static int mystrcmp(char *s1, char *s2) {
+static int mysofa_strcmp(char *s1, char *s2) {
   if (s1 == NULL && s2 == NULL)
     return 0;
   if (s1 == NULL)
@@ -53,7 +112,8 @@ static int mystrcmp(char *s1, char *s2) {
 static int checkAttribute(struct MYSOFA_ATTRIBUTE *attribute, char *name,
                           char *value) {
   while (attribute) {
-    if (!mystrcmp(attribute->name, name) && !mystrcmp(attribute->value, value))
+    if (!mysofa_strcmp(attribute->name, name) &&
+        !mysofa_strcmp(attribute->value, value))
       return MYSOFA_OK;
     attribute = attribute->next;
   }
@@ -281,9 +341,25 @@ error:
   return NULL;
 }
 
-MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
-  struct READER reader;
+struct MYSOFA_HRTF *load(struct READER *reader, int *err) {
   struct MYSOFA_HRTF *hrtf = NULL;
+  reader->gcol = NULL;
+  reader->all = NULL;
+  reader->recursive_counter = 0;
+
+  *err = superblockRead(reader, &reader->superblock);
+  if (!*err) {
+    hrtf = getHrtf(reader, err);
+  }
+
+  superblockFree(reader, &reader->superblock);
+  gcolFree(reader->gcol);
+  return hrtf;
+}
+
+MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
+
+  struct READER reader;
 
   if (filename == NULL)
     filename = CMAKE_INSTALL_PREFIX "/share/libmysofa/default.sofa";
@@ -298,21 +374,21 @@ MYSOFA_EXPORT struct MYSOFA_HRTF *mysofa_load(const char *filename, int *err) {
     *err = errno;
     return NULL;
   }
-  reader.gcol = NULL;
-  reader.all = NULL;
-  reader.recursive_counter = 0;
+  struct MYSOFA_HRTF *hrtf = load(&reader, err);
+  fclose(reader.fhd);
+  return hrtf;
+}
 
-  *err = superblockRead(&reader, &reader.superblock);
+MYSOFA_EXPORT struct MYSOFA_HRTF *
+mysofa_load_data(const char *data, const size_t size, int *err) {
+  struct READER reader;
 
-  if (!*err) {
-    hrtf = getHrtf(&reader, err);
-  }
+  reader.memory = data;
+  reader.memory_pos = 0L;
+  reader.memory_len = size;
+  reader.fhd = NULL;
 
-  superblockFree(&reader, &reader.superblock);
-  gcolFree(reader.gcol);
-  if (strcmp(filename, "-"))
-    fclose(reader.fhd);
-
+  struct MYSOFA_HRTF *hrtf = load(&reader, err);
   return hrtf;
 }
 
