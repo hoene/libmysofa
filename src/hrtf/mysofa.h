@@ -12,6 +12,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5f
 #define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01f
@@ -162,8 +163,8 @@ struct MYSOFA_EASY *mysofa_cache_store(struct MYSOFA_EASY *,
 void mysofa_cache_release(struct MYSOFA_EASY *);
 void mysofa_cache_release_all(void);
 
-void mysofa_c2s(float *values);
-void mysofa_s2c(float *values);
+void mysofa_c2s(float values[3]);
+void mysofa_s2c(float values[3]);
 
 struct MYSOFA_EASY {
   struct MYSOFA_HRTF *hrtf;
