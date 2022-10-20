@@ -16,10 +16,10 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 
 <div align="center">
 <a href="https://travis-ci.com/hoene/libmysofa">
-<img alt="Travis CI Status" src="https://travis-ci.com/hoene/libmysofa.svg?branch=master"/>
+<img alt="Travis CI Status" src="https://travis-ci.com/hoene/libmysofa.svg?branch=main"/>
 </a>
 <a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
-<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/master?svg=true"/>
+<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/main?svg=true"/>
 </a>
 <a href="https://scan.coverity.com/projects/hoene-libmysofa">
 <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/13030/badge.svg"/>
