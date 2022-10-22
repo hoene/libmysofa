@@ -102,7 +102,7 @@ char buffer[9] = "TESTDATA";
 int filter_length;
 int err;
 struct MYSOFA_EASY *hrtf = NULL;
-hrtf = mysofa_open(buffer, 9, 48000, &filter_length, &err);
+hrtf = mysofa_open_data(buffer, 9, 48000, &filter_length, &err);
 ```
 
 To free the HRTF structure, call:
