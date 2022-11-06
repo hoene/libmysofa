@@ -113,7 +113,7 @@
     </BuildLog>
     <PreBuildEvent>
       <Command>copy "..\src\hrtf\mysofa_export.h.in" "..\src\hrtf\mysofa_export.h"
-copy "config.h.sln" "..\src\config.h"</Command>
+copy "config.h.sln" "..\src\hrtf\config.h"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,7 +156,7 @@ copy "config.h.sln" "..\src\config.h"</Command>
     </BuildLog>
     <PreBuildEvent>
       <Command>copy "..\src\hrtf\mysofa_export.h.in" "..\src\hrtf\mysofa_export.h"
-copy "config.h.sln" "..\src\config.h"</Command>
+copy "config.h.sln" "..\src\hrtf\config.h"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

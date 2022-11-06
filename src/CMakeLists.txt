@@ -10,7 +10,8 @@ endmacro(use_c99)
 
 use_c99()
 
-configure_file(config.h.in ${PROJECT_SOURCE_DIR}/src/config.h)
+configure_file(config.h.in config.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if(NOT MSVC)
   if(NOT WIN32)
@@ -112,7 +113,7 @@ if(BUILD_SHARED_LIBS)
                                              ${CPACK_PACKAGE_VERSION_MAJOR})
   set_property(TARGET mysofa-shared PROPERTY C_VISIBILITY_PRESET hidden)
   generate_export_header(mysofa-shared BASE_NAME mysofa EXPORT_FILE_NAME
-                         ${PROJECT_SOURCE_DIR}/src/hrtf/mysofa_export.h)
+                         mysofa_export.h)
 
   if(UNIX
      AND CODE_COVERAGE
@@ -133,7 +134,7 @@ if(BUILD_SHARED_LIBS)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 else()
   generate_export_header(mysofa-static BASE_NAME mysofa EXPORT_FILE_NAME
-                         ${PROJECT_SOURCE_DIR}/src/hrtf/mysofa_export.h)
+                         mysofa_export.h)
 endif()
 
 install(FILES hrtf/mysofa.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

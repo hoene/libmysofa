@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../config.h"
+#include "config.h"
 #include "../hdf/reader.h"
 #include "mysofa.h"
 #include "mysofa_export.h"

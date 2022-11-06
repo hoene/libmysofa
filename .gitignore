@@ -142,6 +142,6 @@ Session.vim
 build/
 
 src/hrtf/mysofa_export.h
-src/config.h
+src/hrtf/config.h
 
 .vscode/settings.json
