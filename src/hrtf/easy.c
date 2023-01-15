@@ -139,6 +139,7 @@ MYSOFA_EXPORT struct MYSOFA_EASY *mysofa_open_cached(const char *filename,
   struct MYSOFA_EASY *res = mysofa_cache_lookup(filename, samplerate);
   if (res) {
     *filterlength = res->hrtf->N;
+    *err = MYSOFA_OK;
     return res;
   }
   res = mysofa_open(filename, samplerate, filterlength, err);
