@@ -19,7 +19,7 @@ static struct MYSOFA_CACHE_ENTRY {
   char *filename;
   float samplerate;
   int count;
-} * cache;
+} *cache = NULL;
 
 static int compare_filenames(const char *a, const char *b) {
   if (a == NULL && b == NULL)
