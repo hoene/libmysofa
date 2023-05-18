@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
 #include "../hdf/reader.h"
+#include "config.h"
 #include "mysofa.h"
 #include "mysofa_export.h"
 
@@ -151,7 +151,7 @@ static int getDimension(unsigned *dim, struct DATAOBJECT *dataobject) {
 
 static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
   float *p1;
-  double *p2;
+  uint64_t *p2;
   unsigned int i;
 
   struct MYSOFA_ATTRIBUTE *attr = dataobject->attributes;
@@ -170,8 +170,14 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 
   p1 = dataobject->data;
   p2 = dataobject->data;
-  for (i = 0; i < array->elements; i++)
-    *p1++ = (float)*p2++;
+  for (i = 0; i < array->elements; i++) {
+    union {
+      uint64_t i;
+      double d;
+    } u;
+    u.i = le64toh(*p2++);
+    *p1++ = (float)u.d;
+  }
   array->values = realloc(dataobject->data, array->elements * sizeof(float));
 
   dataobject->data = NULL;
