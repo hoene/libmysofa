@@ -15,6 +15,7 @@
 #include "config.h"
 #include "mysofa.h"
 #include "mysofa_export.h"
+#include "portable_endian.h"
 
 /* checks file address.
  * NULL is an invalid address indicating a invalid field
