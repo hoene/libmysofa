@@ -36,7 +36,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 
 On Ubuntu, to install the required components, enter
 
-> sudo apt install zlib1g-dev libcunit1-dev libcunit1-dev
+> sudo apt install zlib1g-dev libcunit1-dev libcunit1-dev git cmake build-essential
 
 Then, to compile enter following commands
 
