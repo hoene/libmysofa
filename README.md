@@ -36,7 +36,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 
 On Ubuntu, to install the required components, enter
 
-> sudo apt install zlib1g-dev libcunit1-dev libcunit1-dev git cmake build-essential
+> sudo apt install zlib1g-dev libcunit1-dev libcunit1-dev git build-essential cmake nodejs
 
 Then, to compile enter following commands
 
@@ -160,7 +160,11 @@ Then, all HRTFs having the same filename and sampling rate are stored only once 
 ## OS support
 
 Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system.
+To build it under in an big endian architecture, I use the following Docker environment on a x64 system:
 
+> docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+> docker run --rm -it s390x/ubuntu bash
 
 ## References
 
