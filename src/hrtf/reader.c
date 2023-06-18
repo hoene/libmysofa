@@ -45,19 +45,23 @@ int mysofa_seek(struct READER *reader, long offset, int whence) {
   else {
     switch (whence) {
     case SEEK_SET:
-      reader->memory_pos = offset;
       break;
     case SEEK_CUR:
-      reader->memory_pos += offset;
+      offset += reader->memory_pos;
       break;
     case SEEK_END:
-      reader->memory_pos = reader->memory_len + offset;
+      offset = reader->memory_len + offset;
       break;
     default:
       errno = EINVAL;
       return -1;
     }
 
+      if(offset < 0 || offset >= reader->memory_len) {
+        errno = EINVAL;
+        return -1;
+      }
+      reader->memory_pos = offset;
     return 0;
   }
 }
