@@ -61,6 +61,22 @@ To check for memory leaks and crazy pointers
 
 > make all test
 
+### Installing
+
+Installing the library is an optional step that puts the libraries and header files into a platform-specific directory structure. This allows mysofa to be used by other projects, either using the standard directory layout of the platform or by using CMake's support for install trees.
+
+To install into the system location (e.g., `/usr/` on Linux), call
+
+> cmake install .
+
+This usually requires system administrator permissions (e.g., using `sudo`).
+
+To install to a non-system location, provide a prefix path when performing the cmake configure step:
+
+> cd build
+> cmake -DCMAKE_BUILD_TYPE=Debug .. -DCMAKE_INSTALL_PREFIX=<CMAKE_INSTALL_PREFIX>
+> make all test
+> cmake install .
 
 ## Usage
 
@@ -157,6 +173,35 @@ mysofa_close_cached(hrtf4);
 mysofa_cache_release_all();
 ```
 Then, all HRTFs having the same filename and sampling rate are stored only once in memory. If your program is using several threads, you must use appropriate synchronisation mechanisms so only a single thread can access the mysofa_open_cached and mysofa_close_cached functions at a given time.
+
+### Use libmysofa in CMake-based projects
+
+libmysofa can be imported and used as a Cmake target into other projects.
+For this, the CMake configuration of the consuming projects has to contain a statement
+
+```
+find_package( mysofa CONFIG [mysofa_version] [REQUIRED] )
+```
+
+After that, a statement
+
+```
+target_link_libraries( <target> [PRIVATE|PUBLIC] mysofa::mysofa-shared )
+```
+
+or
+
+```
+target_link_libraries( <target> [PRIVATE|PUBLIC] mysofa::mysofa-static )
+```
+
+ensures that the target `<target>` uses the respective variant of the mysofa library.
+
+In order for the `find_package` above command to work, three cases are possible:
+
+1. If mysofa has been installed to a system location, either using a package or using the `cmake install .` command introduced above, mysofa is automatically found by CMake.
+2. If mysofa has been installed to a non-system location using a `<CMAKE_INSTALL_PREFIX>` path, add the variable definition `-DCMAKE_PREFIX_PATH=<CMAKE_INSTALL_PREFIX>` to the CMake configure command of the consuming project.
+3. To use the mysofa libraries and header files of a mysofa build tree, add the variable definition `-Dmysofa_DIR=<MYSOFA_BUILD_DIRECTORY>`. When using the build instructions above, the build directory is the subdirectory `build` within the mysofa source directory.
 
 ## OS support
 
