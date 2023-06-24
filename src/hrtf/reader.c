@@ -57,7 +57,7 @@ int mysofa_seek(struct READER *reader, long offset, int whence) {
       return -1;
     }
 
-      if(offset < 0 || offset >= reader->memory_len) {
+      if(offset < 0 || offset > reader->memory_len) {
         errno = EINVAL;
         return -1;
       }
