@@ -58,11 +58,6 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
       !verifyAttribute(hrtf->attributes, "DataType", "FIR"))
     return MYSOFA_INVALID_ATTRIBUTES; // LCOV_EXCL_LINE
 
-  if (!verifyAttribute(hrtf->attributes, "RoomType", "free field") &&
-      !verifyAttribute(hrtf->attributes, "RoomType", "reverberant") &&
-      !verifyAttribute(hrtf->attributes, "RoomType", "shoebox"))
-    return MYSOFA_INVALID_ATTRIBUTES; // LCOV_EXCL_LINE
-
   /*==============================================================================
    dimensions
    ==============================================================================
