@@ -55,6 +55,8 @@ if(BUILD_TESTS)
 
   add_test(Mesh2HRTF src/mysofa2json -c
            ${PROJECT_SOURCE_DIR}/tests/Mesh2HRTF.sofa)
+  add_test(latTestAziBeRTA_Resamp1_Fran src/mysofa2json -c
+           ${PROJECT_SOURCE_DIR}/tests/latTestAziBeRTA_Resamp1_Fran.sofa)
   add_test(D1_48K_24bit_0.3s_FIR_SOFA src/mysofa2json
            ${PROJECT_SOURCE_DIR}/tests/D1_48K_24bit_0.3s_FIR_SOFA.sofa)
   add_test(H20_44K_16bit_256tap_FIR_SOFA ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
