@@ -127,6 +127,8 @@ if(BUILD_SHARED_LIBS)
   # with the mysofa-static library.
   set_target_properties(mysofa-shared
                         PROPERTIES ARCHIVE_OUTPUT_NAME mysofa_shared)
+  set_target_properties(mysofa-shared
+                        PROPERTIES PUBLIC_HEADER "${public-headers}")
 
   set_property(
     TARGET mysofa-shared
