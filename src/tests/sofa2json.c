@@ -54,7 +54,8 @@ static const char *error2string(int error) {
 
 static void usage(const char *exe) {
   fprintf(stderr,
-          "Usage: %s [-s] [-c] <FILE.SOFA>\n converts a sofa file to json "
+          "Usage: %s [-s] [-c] [-o <outputfilename>] <FILE.SOFA>\n converts a "
+          "sofa file to json "
           "output.\nAdd -s to sanitize the json output from netcdf fields.\n"
           "Add -c to check for a correct AES69-2015 format using libmysofa.\n",
           exe);
@@ -66,16 +67,20 @@ int main(int argc, char **argv) {
   int err = 0;
   int sanitize = 0;
   int check = 0;
-  char *filename;
+  char *filename, *output = NULL;
   int opt;
+  FILE *out = stdout;
 
-  while ((opt = getopt(argc, argv, "cs")) != -1) {
+  while ((opt = getopt(argc, argv, "cso:")) != -1) {
     switch (opt) {
     case 's':
       sanitize = 1;
       break;
     case 'c':
       check = 1;
+      break;
+    case 'o':
+      output = optarg;
       break;
     default: /* '?' */
       usage(argv[0]);
@@ -87,14 +92,27 @@ int main(int argc, char **argv) {
 
   filename = argv[optind];
 
+  if (output) {
+    out = fopen(output, "w");
+    if (out == NULL) {
+      fprintf(stderr, "Cannot open output file %s.\n", output);
+      return 1;
+    }
+  }
+
   hrtf = mysofa_load(filename, &err);
   if (!hrtf) {
     fprintf(stderr, "Error reading file %s. Error code: %d:%s\n", filename, err,
             error2string(err));
+    if (output)
+      fclose(out);
     return err;
   }
 
-  printJson(stdout, hrtf, sanitize);
+  printJson(out, hrtf, sanitize);
+
+  if (output)
+    fclose(out);
 
   mysofa_free(hrtf);
 
