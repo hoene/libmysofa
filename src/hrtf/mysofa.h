@@ -14,15 +14,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 
-#ifdef _WIN32
-#ifndef MYSOFA_EXPORT
-    #define MYSOFA_EXPORT __declspec(dllexport)
-#else
-    #define MYSOFA_EXPORT __declspec(dllimport)
-#endif
-#else
-  #define MYSOFA_EXPORT
-#endif
+#include "mysofa_export.h"
 
 #define MYSOFA_DEFAULT_NEIGH_STEP_ANGLE 0.5f
 #define MYSOFA_DEFAULT_NEIGH_STEP_RADIUS 0.01f
