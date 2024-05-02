@@ -173,7 +173,7 @@ endif()
 
 # Must install export header so downstream packages can properly understand 
 # which functions are accessible
-install(FILES ${PROJECT_BINARY_DIR}/mysofa_export.h
+install(FILES ${PROJECT_BINARY_DIR}/src/mysofa_export.h
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
