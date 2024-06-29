@@ -53,6 +53,8 @@ if(BUILD_TESTS)
 
   enable_testing()
 
+  add_test(test_h5py src/mysofa2json -c -o tmp.json
+           ${PROJECT_SOURCE_DIR}/tests/test_h5py.sofa)
   add_test(Mesh2HRTF src/mysofa2json -c -o tmp.json
            ${PROJECT_SOURCE_DIR}/tests/Mesh2HRTF.sofa)
   add_test(latTestAziBeRTA_Resamp1_Fran src/mysofa2json -c -o tmp.json
