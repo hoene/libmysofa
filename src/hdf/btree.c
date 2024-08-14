@@ -266,8 +266,8 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
   mylog("elements %d size %d\n", elements, size);
 
-if(elements <= 0 || size <= 0 || elements > INT_MAX/size)
-  return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+  if(elements <= 0 || size <= 0 || elements > INT_MAX/size)
+    return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
   if (!(output = malloc(elements * size))) {
     return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
   }
