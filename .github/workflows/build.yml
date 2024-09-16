@@ -1,0 +1,59 @@
+name: Build
+
+env:
+  Solution: .
+  Platform: #Any CPU|Win32|x64
+  Configuration: Release
+  Artifacts: libmysofa/windows/bin/x64/Release
+  Branch: ${{github.ref_name}}
+  
+on:
+  push:
+    Branches: $Branch
+  pull_request:
+    Branches: $Branch
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  Windows:
+    runs-on: windows-latest
+    steps:
+
+    - name: Clone repo and submodules
+      run: git clone --recurse-submodules https://github.com/${{github.repository}}.git .
+
+    - name: Get current date, commit hash and count
+      run: |
+        echo "CommitDate=$(git show -s --date=format:'%Y-%m-%d' --format=%cd)" >> $env:GITHUB_ENV
+        echo "CommitHashShort=$(git rev-parse --short=7 HEAD)" >> $env:GITHUB_ENV
+        echo "CommitCount=$(git rev-list --count ${{env.Branch}})" >> $env:GITHUB_ENV
+
+    - name: Build
+      run: |
+        cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.Configuration}} -D "MYSOFA_LIBRARY=${{github.workspace}}/libmysofa/windows/bin/x64/Release/mysofa.lib" -D "MYSOFA_INCLUDE_DIR=${{github.workspace}}/libmysofa/src/hrtf" -D "ZLIB_LIBRARY=${{github.workspace}}/libmysofa/windows/third-party/zlib-1.2.11/lib/zlib.lib" -D "ZLIB_INCLUDE_DIR=${{github.workspace}}/libmysofa/windows/third-party/zlib-1.2.11/include"
+        cmake --build ${{github.workspace}}/build --config ${{env.Configuration}}
+        ls -R
+
+    - name: Upload Installer Artifact to GitHub
+      uses: actions/upload-artifact@v2
+      with:
+        name: "${{github.event.repository.name}}_r${{env.CommitCount}}@${{env.CommitHashShort}}"
+        path: "${{github.workspace}}/${{env.Artifacts}}/"
+
+    - name: Compress artifacts
+      uses: vimtor/action-zip@v1.1
+      with:
+        files: '${{env.Artifacts}}/'
+        dest: "build/${{github.event.repository.name}}_r${{env.CommitCount}}@${{env.CommitHashShort}}.zip"
+
+    - name: GitHub pre-release
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{secrets.GITHUB_TOKEN}}"
+        automatic_release_tag: "latest"
+        prerelease: false
+        title: "[${{env.CommitDate}}] ${{github.event.repository.name}} r${{env.CommitCount}}@${{env.CommitHashShort}}"
+        files: "build/${{github.event.repository.name}}_r${{env.CommitCount}}@${{env.CommitHashShort}}.zip"
