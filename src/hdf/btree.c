@@ -9,6 +9,7 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 /*
  *
@@ -266,7 +267,7 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
   mylog("elements %d size %d\n", elements, size);
 
-  if (elements <= 0 || size <= 0 || elements >= 0x130000 || size > 0x10)
+  if (elements <= 0 || size <= 0 || elements > INT_MAX/size)
     return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
   if (!(output = malloc(elements * size))) {
     return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
