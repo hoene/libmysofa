@@ -464,7 +464,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
                                            struct DATAOBJECT *data) {
 
   int i, err;
-  unsigned size;
+  uint64_t size;
 
   uint8_t dimensionality, layout_class;
   uint32_t dataset_element_size;
@@ -546,7 +546,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       if (mysofa_seek(reader, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
       if (!data->data) {
-        if (size > 0x10000000)
+        if (size > 0x100000000)
           return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
         data->data_len = size;
         data->data = calloc(1, size);
