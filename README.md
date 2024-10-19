@@ -45,7 +45,9 @@ Then, to compile enter following commands
 
 > cmake -DCMAKE_BUILD_TYPE=Debug ..
 
-> make all test
+> make -j8 all
+
+> ctest -j8
 
 If you need an Debian package, call
 
