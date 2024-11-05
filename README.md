@@ -37,31 +37,33 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 
 On Ubuntu, to install the required components, enter
 
-> sudo apt install zlib1g-dev libcunit1-dev libcunit1-dev git build-essential cmake nodejs
+```shell
+sudo apt install zlib1g-dev libcunit1-dev libcunit1-dev git build-essential cmake nodejs
+```
 
 Then, to compile enter following commands
 
-> cd build
-
-> cmake -DCMAKE_BUILD_TYPE=Debug ..
-
-> make -j8 all
-
-> ctest -j8
+```shell
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j8 all
+ctest -j8
+```
 
 If you need an Debian package, call
 
-> cd build && cpack
+```shell
+cd build && cpack
+```
 
 To check for memory leaks and crazy pointers
 
-> export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
-
-> export ASAN_OPTIONS=symbolize=1
-
-> cmake -DCMAKE_BUILD_TYPE=Debug -DADDRESS_SANITIZE=ON -DVDEBUG=1 ..
-
-> make all test
+```shell
+export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
+export ASAN_OPTIONS=symbolize=1
+cmake -DCMAKE_BUILD_TYPE=Debug -DADDRESS_SANITIZE=ON -DVDEBUG=1 ..
+make all test
+```
 
 ### Installing
 
@@ -69,16 +71,20 @@ Installing the library is an optional step that puts the libraries and header fi
 
 To install into the system location (e.g., `/usr/` on Linux), call
 
-> cmake install .
+```shell
+cmake install .
+```
 
 This usually requires system administrator permissions (e.g., using `sudo`).
 
 To install to a non-system location, provide a prefix path when performing the cmake configure step:
 
-> cd build
-> cmake -DCMAKE_BUILD_TYPE=Debug .. -DCMAKE_INSTALL_PREFIX=<CMAKE_INSTALL_PREFIX>
-> make all test
-> cmake install .
+```shell
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug .. -DCMAKE_INSTALL_PREFIX=<CMAKE_INSTALL_PREFIX>
+make all test
+cmake install .
+```
 
 ## Usage
 
@@ -86,7 +92,7 @@ Libmysofa has a few main function calls.
 
 To read a SOFA file call
 
-```
+```c
 #include <mysofa.h>
 
 int filter_length;
@@ -100,13 +106,13 @@ if(hrtf==NULL)
 
 This call will normalize your hrtf data upon opening. For non-normalized data, replace the call to mysofa_open by:
 
-```
+```c
 hrtf = mysofa_open_no_norm("file.sofa", 48000, &filter_length, &err);
 ```
 
 Or for a complete control over neighbors search algorithm parameters:
 
-```
+```c
 bool norm = true; // bool, apply normalization upon import
 float neighbor_angle_step = 5; // in degree, neighbor search angle step (common to azimuth and elevation)
 float neighbor_radius_step = 0.01; // in meters, neighbor search radius step
@@ -116,7 +122,7 @@ hrtf = mysofa_open_advanced("file.sofa", 48000, &filter_length, &err, norm, neig
 (The greater the neighbor_*_step, the faster the neighbors search. The algorithm will end up skipping true nearest neighbors if these values are set too high. To be define based on the will-be-imported sofa files grid step. Default mysofa_open method is usually fast enough for classical hrtf grids not to bother with the advanced one.)
 
 Or, if you have loaded your HRTF file into memory already, call, for example
-```
+```c
 char buffer[9] = "TESTDATA";
 int filter_length;
 int err;
@@ -125,12 +131,12 @@ hrtf = mysofa_open_data(buffer, 9, 48000, &filter_length, &err);
 ```
 
 To free the HRTF structure, call:
-```
+```c
 mysofa_close(hrtf);
 ```
 
 If you need HRTF filter for a given coordinate, just call
-```
+```c
 short leftIR[filter_length];
 short rightIR[filter_length];
 int leftDelay;          // unit is samples
@@ -139,7 +145,7 @@ int rightDelay;         // unit is samples
 mysofa_getfilter_short(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 ```
 and then delay the audio signal by leftDelay and rightDelay samples and do a FIR filtering with leftIR and rightIR. Alternative, if you are using float values for the filtering, call
-```
+```c
 float leftIR[filter_length]; // [-1. till 1]
 float rightIR[filter_length];
 float leftDelay;          // unit is sec.
@@ -151,18 +157,18 @@ mysofa_getfilter_float(hrtf, x, y, z, leftIR, rightIR, &leftDelay, &rightDelay);
 using ``mysofa_getfilter_float_nointerp`` instead of ``mysofa_getfilter_float`` (same arguments), you can bypass the linear interpolation applied by ``mysofa_getfilter_float`` (weighted sum of nearest neighbors filters coefficients), and get the exact filter stored in the sofa file nearest to the [x,y,z] position requested.
 
 If you have spherical coordinates but you need Cartesian coordinates, call
-```
+```c
 void mysofa_s2c(float values[3])
 ```
 with phi (azimuth in degree, measured counterclockwise from the X axis), theta (elevation in degree,  measured up from the X-Y plane), and r (distance between listener and source) as parameters in the float array and x,y,z as response in the same array. Similar, call
-```
+```c
 void mysofa_c2s(float values[3])
 ```
 The coordinate system is defined in the SOFA specification and is the same as in the SOFA file. Typically, the X axis vector (1 0 0) is the listening direction. The Y axis (0 1 0) is the left side of the listener and Z (0 0 1) is upwards.
 
 
 Sometimes, you want to use multiple SOFA filters or if you have to open a SOFA file multiple times, you may use
-```
+```c
 hrtf1 = mysofa_open_cached("file.sofa", 48000, &filter_length, &err);
 hrtf2 = mysofa_open_cached("file.sofa", 48000, &filter_length, &err);
 hrtf3 = mysofa_open_cached("file.sofa", 8000, &filter_length, &err);
@@ -181,19 +187,19 @@ Then, all HRTFs having the same filename and sampling rate are stored only once 
 libmysofa can be imported and used as a Cmake target into other projects.
 For this, the CMake configuration of the consuming projects has to contain a statement
 
-```
+```cmake
 find_package( mysofa CONFIG [mysofa_version] [REQUIRED] )
 ```
 
 After that, a statement
 
-```
+```cmake
 target_link_libraries( <target> [PRIVATE|PUBLIC] mysofa::mysofa-shared )
 ```
 
 or
 
-```
+```cmake
 target_link_libraries( <target> [PRIVATE|PUBLIC] mysofa::mysofa-static )
 ```
 
@@ -210,9 +216,10 @@ In order for the `find_package` above command to work, three cases are possible:
 Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system.
 To build it under in an big endian architecture, I use the following Docker environment on a x64 system:
 
-> docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-> docker run --rm -it s390x/ubuntu bash
+```shell
+docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+docker run --rm -it s390x/ubuntu bash
+```
 
 ## References
 
