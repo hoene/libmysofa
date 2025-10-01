@@ -43,34 +43,30 @@ install(FILES share/default.sofa DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
 install(FILES share/MIT_KEMAR_normal_pinna.sofa
         DESTINATION ${CMAKE_INSTALL_DATADIR}/libmysofa)
 
+add_subdirectory(src)
+
 if(BUILD_TESTS)
-
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-  include(FindCUnit)
-  include_directories(${CUNIT_INCLUDE_DIRS})
-
-  find_package(CUnit REQUIRED cunit)
 
   enable_testing()
 
-  add_test(Mesh2HRTF src/mysofa2json -c -o tmp.json
+  add_test(NAME Mesh2HRTF COMMAND src/mysofa2json -c -o tmp.json
            ${PROJECT_SOURCE_DIR}/tests/Mesh2HRTF.sofa)
-  add_test(latTestAziBeRTA_Resamp1_Fran src/mysofa2json -c -o tmp.json
+  add_test(NAME latTestAziBeRTA_Resamp1_Fran COMMAND src/mysofa2json -c -o tmp.json
            ${PROJECT_SOURCE_DIR}/tests/latTestAziBeRTA_Resamp1_Fran.sofa)
-  add_test(D1_48K_24bit_0.3s_FIR_SOFA src/mysofa2json -o tmp.json
+  add_test(NAME D1_48K_24bit_0.3s_FIR_SOFA COMMAND src/mysofa2json -o tmp.json
            ${PROJECT_SOURCE_DIR}/tests/D1_48K_24bit_0.3s_FIR_SOFA.sofa)
-  add_test(H20_44K_16bit_256tap_FIR_SOFA ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
-           ${PROJECT_SOURCE_DIR}/tests/H20_44K_16bit_256tap_FIR_SOFA)
-  add_test(MIT_KEMAR_large_pinna ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/MIT_KEMAR_large_pinna)
-  add_test(MIT_KEMAR_normal_pinna ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
-           ${PROJECT_SOURCE_DIR}/tests/MIT_KEMAR_normal_pinna)
-  add_test(MIT_KEMAR_normal_pinna.old ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/MIT_KEMAR_normal_pinna.old)
-  add_test(dtf_nh2 ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
-           ${PROJECT_SOURCE_DIR}/tests/dtf_nh2)
-  add_test(hrtf_c_nh898 ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
-           ${PROJECT_SOURCE_DIR}/tests/hrtf_c_nh898)
+  add_test(NAME H20_44K_16bit_256tap_FIR_SOFA COMMAND ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
+           ${PROJECT_SOURCE_DIR}/tests/H20_44K_16bit_256tap_FIR_SOFA $<TARGET_FILE:mysofa2json>)
+  add_test(NAME MIT_KEMAR_large_pinna COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/MIT_KEMAR_large_pinna $<TARGET_FILE:mysofa2json>)
+  add_test(NAME MIT_KEMAR_normal_pinna COMMAND ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
+           ${PROJECT_SOURCE_DIR}/tests/MIT_KEMAR_normal_pinna $<TARGET_FILE:mysofa2json>)
+  add_test(NAME MIT_KEMAR_normal_pinna.old COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/MIT_KEMAR_normal_pinna.old $<TARGET_FILE:mysofa2json>)
+  add_test(NAME dtf_nh2 COMMAND ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
+           ${PROJECT_SOURCE_DIR}/tests/dtf_nh2 $<TARGET_FILE:mysofa2json>)
+  add_test(NAME hrtf_c_nh898 COMMAND ${PROJECT_SOURCE_DIR}/tests/compareIgnoreNew.sh
+           ${PROJECT_SOURCE_DIR}/tests/hrtf_c_nh898 $<TARGET_FILE:mysofa2json>)
   foreach(
     ISSUE
     72
@@ -96,29 +92,27 @@ if(BUILD_TESTS)
     173
 )
     # issues with osx    96)
-    add_test(fail-issue-${ISSUE} ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh
+    add_test(NAME fail-issue-${ISSUE} COMMAND ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh
              ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE})
   endforeach(ISSUE)
-  add_test(CIPIC_subject_003_hrir_final ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/CIPIC_subject_003_hrir_final)
-  add_test(FHK_HRIR_L2354 ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/FHK_HRIR_L2354)
-  add_test(LISTEN_1002_IRC_1002_C_HRIR ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/LISTEN_1002_IRC_1002_C_HRIR)
-  add_test(Pulse ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/Pulse)
-  add_test(Tester ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/tester)
-  add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m)
-  add_test(TU-Berlin_QU_KEMAR_anechoic_radius_0.5m ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m)
-  add_test(example_dummy_sofa48 ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/example_dummy_sofa48)
-  add_test(TestSOFA48_netcdf472 ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/TestSOFA48_netcdf472)
-  add_test(example_dummy_sofa48_with_user_defined_variable ${PROJECT_SOURCE_DIR}/tests/compare.sh
-           ${PROJECT_SOURCE_DIR}/tests/example_dummy_sofa48_with_user_defined_variable)
+  add_test(NAME CIPIC_subject_003_hrir_final COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/CIPIC_subject_003_hrir_final $<TARGET_FILE:mysofa2json>)
+  add_test(NAME FHK_HRIR_L2354 COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/FHK_HRIR_L2354 $<TARGET_FILE:mysofa2json>)
+  add_test(NAME LISTEN_1002_IRC_1002_C_HRIR COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/LISTEN_1002_IRC_1002_C_HRIR $<TARGET_FILE:mysofa2json>)
+  add_test(NAME Pulse COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/Pulse $<TARGET_FILE:mysofa2json>)
+  add_test(NAME Tester COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/tester $<TARGET_FILE:mysofa2json>)
+  add_test(NAME TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5_1_2_3_m $<TARGET_FILE:mysofa2json>)
+  add_test(NAME TU-Berlin_QU_KEMAR_anechoic_radius_0.5m COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/TU-Berlin_QU_KEMAR_anechoic_radius_0.5m $<TARGET_FILE:mysofa2json>)
+  add_test(NAME example_dummy_sofa48 COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/example_dummy_sofa48 $<TARGET_FILE:mysofa2json>)
+  add_test(NAME TestSOFA48_netcdf472 COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/TestSOFA48_netcdf472 $<TARGET_FILE:mysofa2json>)
+  add_test(NAME example_dummy_sofa48_with_user_defined_variable COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
+           ${PROJECT_SOURCE_DIR}/tests/example_dummy_sofa48_with_user_defined_variable $<TARGET_FILE:mysofa2json>)
 endif(BUILD_TESTS)
-
-add_subdirectory(src)
 
 include(CPack)
 

@@ -1,4 +1,5 @@
 #!/bin/sh
+mysofa2json=$2
 
 SCRIPTDIR=${0%/*}
 NODEJS=$(command -v node nodejs false | head -1)
@@ -6,7 +7,7 @@ TMP1=`mktemp -p . tmp1-XXXXXXXX.json`
 TMP2=`mktemp -p . tmp2-XXXXXXXX.txt`
 TMP3=`mktemp -p . tmp3-XXXXXXXX.json`
 
-"${MYSOFA2JSON:-${SCRIPTDIR}/../build/src/mysofa2json}" -c -s -o "$TMP1" "$1".sofa 2>"$TMP2"
+"$mysofa2json" -c -s -o "$TMP1" "$1".sofa 2>"$TMP2"
 
 ret=$?
 if [ "$ret" != 0 ]; then 
