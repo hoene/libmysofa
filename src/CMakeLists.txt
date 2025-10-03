@@ -168,6 +168,11 @@ install(FILES ${PROJECT_BINARY_DIR}/src/mysofa_export.h
   )
 
 if(BUILD_TESTS)
+  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/../cmake")
+  include(FindCUnit)
+  find_package(CUnit REQUIRED cunit)
+  include_directories(${CUNIT_INCLUDE_DIR})
+
   add_executable(mysofa2json tests/sofa2json.c tests/json.c)
   if(BUILD_STATIC_LIBS)
     target_link_libraries(mysofa2json mysofa-static)
@@ -190,6 +195,9 @@ if(BUILD_TESTS)
     tests/cache.c
     tests/json.c
     tests/user_defined_variable.c)
+
+  target_include_directories(external PUBLIC ${CUNIT_INCLUDE_DIR})
+
   if(BUILD_STATIC_LIBS)
     target_link_libraries(external mysofa-static ${CUNIT_LIBRARIES})
   else()
