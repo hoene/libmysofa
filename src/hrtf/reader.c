@@ -168,6 +168,8 @@ static int getArray(struct MYSOFA_ARRAY *array, struct DATAOBJECT *dataobject) {
 
   if (dataobject->dt.u.f.bit_precision != 64)
     return MYSOFA_UNSUPPORTED_FORMAT;
+  if ((dataobject->data_len / 8) > UINT32_MAX)
+    return MYSOFA_INVALID_FORMAT;
 
   array->attributes = dataobject->attributes;
   dataobject->attributes = NULL;

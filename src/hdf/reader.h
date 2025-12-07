@@ -132,7 +132,7 @@ struct DATAOBJECT {
   struct DIR *directory;
 
   void *data;
-  int data_len;
+  uint64_t data_len;
 
   char *string;
 
