@@ -214,7 +214,7 @@ In order for the `find_package` above command to work, three cases are possible:
 ## OS support
 
 Libmysofa compiles for Linux operating systems, OSX and Windows. By default, each commit is compiled with Travis CI under Ubuntu 14.04 and OSX 7.3 and with AppVeyor for Windows Visual Studio 2015 on a x64 system. In addition, FFmpeg is compiling libmysofa with MinGW under Windows using their own build system.
-To build it under in an big endian architecture, I use the following Docker environment on a x64 system:
+To build it under a big endian architecture, I use the following Docker environment on a x64 system:
 
 ```shell
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
