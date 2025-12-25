@@ -20,7 +20,7 @@ stored according to the AES69-2015 standard [http://www.aes.org/publications/sta
 <img alt="Packaging status" src="https://repology.org/badge/tiny-repos/libmysofa.svg"/>
 </a>
 <a href="https://ci.appveyor.com/project/hoene/libmysofa-s142k">
-<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo/branch/main?svg=true"/>
+<img alt="AppVeyor Status" src="https://ci.appveyor.com/api/projects/status/mk86lx4ux2jn9tpo?svg=true"/>
 </a>
 <a href="https://scan.coverity.com/projects/hoene-libmysofa">
 <img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/13030/badge.svg"/>
