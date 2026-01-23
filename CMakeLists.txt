@@ -49,6 +49,9 @@ if(BUILD_TESTS)
 
   enable_testing()
 
+
+  add_test(NAME GeneralFIR-E COMMAND src/mysofa2json -o tmp.json
+           ${PROJECT_SOURCE_DIR}/tests/testfile.sofa)
   add_test(NAME Mesh2HRTF COMMAND src/mysofa2json -c -o tmp.json
            ${PROJECT_SOURCE_DIR}/tests/Mesh2HRTF.sofa)
   add_test(NAME latTestAziBeRTA_Resamp1_Fran COMMAND src/mysofa2json -c -o tmp.json

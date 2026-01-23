@@ -13,6 +13,8 @@
 
 #define UNUSED(x) (void)(x)
 
+#define HDF_MAX_DIMENSIONALITY 4
+
 struct READER;
 struct DIR;
 struct DATAOBJECT;
@@ -84,7 +86,7 @@ struct ATTRIBUTEINFO {
 };
 
 struct DATASPACE {
-  uint64_t dimension_size[4], dimension_max_size[4];
+  uint64_t dimension_size[HDF_MAX_DIMENSIONALITY], dimension_max_size[HDF_MAX_DIMENSIONALITY];
   uint8_t dimensionality, flags, type;
 };
 
@@ -107,8 +109,6 @@ struct DATATYPE {
   uint32_t list; /* size of a list in bytes */
 };
 
-#define DATAOBJECT_MAX_DIMENSIONALITY 5
-
 struct DATAOBJECT {
   char *name;
 
@@ -126,7 +126,7 @@ struct DATAOBJECT {
   struct BTREE attributes_btree;
   struct FRACTALHEAP attributes_heap;
 
-  int datalayout_chunk[DATAOBJECT_MAX_DIMENSIONALITY];
+  int datalayout_chunk[HDF_MAX_DIMENSIONALITY + 1];
 
   struct MYSOFA_ATTRIBUTE *attributes;
   struct DIR *directory;
