@@ -7,9 +7,9 @@
 #include "reader.h"
 #include <errno.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 
 /*
  *
@@ -212,16 +212,16 @@ void btreeFree(struct BTREE *btree) { free(btree->records); }
 
 int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
-  int i, j, err, olen, elements, size, x, y, z, b, e, dy, dz, sx, sy, sz, dzy,
-      szy;
+  int d, p, b = 0, c[HDF_MAX_DIMENSIONALITY];
+  int i, j, err, olen, elements, size, e;
   char *input, *output;
 
   uint8_t node_type, node_level;
   uint16_t entries_used;
   uint32_t size_of_chunk;
   uint32_t filter_mask;
-  uint64_t address_of_left_sibling, address_of_right_sibling, start[4],
-      child_pointer, key, store;
+  uint64_t address_of_left_sibling, address_of_right_sibling,
+      start[HDF_MAX_DIMENSIONALITY], child_pointer, key, store;
 
   char buf[5];
 
@@ -230,9 +230,9 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   UNUSED(address_of_left_sibling);
   UNUSED(key);
 
-  if (data->ds.dimensionality > 3) {
-    mylog("TREE dimensions > 3"); // LCOV_EXCL_LINE
-    return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+  if (data->ds.dimensionality > HDF_MAX_DIMENSIONALITY) {
+    mylog("TREE dimensions > %d\n", HDF_MAX_DIMENSIONALITY); // LCOV_EXCL_LINE
+    return MYSOFA_INVALID_FORMAT;                            // LCOV_EXCL_LINE
   }
 
   /* read signature */
@@ -256,18 +256,11 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   elements = 1;
   for (j = 0; j < data->ds.dimensionality; j++)
     elements *= data->datalayout_chunk[j];
-  dy = data->datalayout_chunk[1];
-  dz = data->datalayout_chunk[2];
-  sx = data->ds.dimension_size[0];
-  sy = data->ds.dimension_size[1];
-  sz = data->ds.dimension_size[2];
-  dzy = dz * dy;
-  szy = sz * sy;
   size = data->datalayout_chunk[data->ds.dimensionality];
 
   mylog("elements %d size %d\n", elements, size);
 
-  if (elements <= 0 || size <= 0 || elements > INT_MAX/size)
+  if (elements <= 0 || size <= 0 || elements > INT_MAX / size)
     return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
   if (!(output = malloc(elements * size))) {
     return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
@@ -324,52 +317,42 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
         return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
       }
 
-      switch (data->ds.dimensionality) {
-      case 1:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          x = i % elements + start[0];
-          if (x < sx) {
+      for (d = 0; d < data->ds.dimensionality; d++) {
+        c[d] = 0;
+      }
 
-            j = x * size + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
+      for (i = 0; i < olen; i++) {
+
+        // calculate and check destination pointer
+        p = 0;
+        for (d = 0; d < data->ds.dimensionality; d++) {
+          if (c[d] + start[d] >= data->ds.dimension_size[d]) {
+            p = -1;
+            break;
+          }
+          p = p * data->ds.dimension_size[d] + c[d] + start[d];
+        }
+
+        // copy data if within bounds
+        if (p >= 0) {
+          p = p * size + b;
+          if (p < data->data_len) {
+            ((char *)data->data)[p] = output[i];
+          }
+        }
+
+        // increase source coordinates
+        for (d = data->ds.dimensionality - 1; d >= 0; d--) {
+          c[d]++;
+          if (c[d] < data->datalayout_chunk[d]) {
+            break;
+          } else {
+            c[d] = 0;
+            if (d == 0) { // at last, increase bytes
+              b++;
             }
           }
         }
-        break;
-      case 2:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          x = i % elements;
-          y = x % dy + start[1];
-          x = x / dy + start[0];
-          if (y < sy && x < sx) {
-            j = ((x * sy + y) * size) + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
-            }
-          }
-        }
-        break;
-      case 3:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          x = i % elements;
-          z = x % dz + start[2];
-          y = (x / dz) % dy + start[1];
-          x = (x / dzy) + start[0];
-          if (z < sz && y < sy && x < sx) {
-            j = (x * szy + y * sz + z) * size + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
-            }
-          }
-        }
-        break;
-      default:
-        mylog("invalid dim\n");       // LCOV_EXCL_LINE
-        return MYSOFA_INTERNAL_ERROR; // LCOV_EXCL_LINE
       }
 
       if (mysofa_seek(reader, store, SEEK_SET) < 0) {

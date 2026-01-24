@@ -129,9 +129,10 @@ static int readOHDRHeaderMessageDataspace(struct READER *reader,
   int version = mysofa_getc(reader);
 
   ds->dimensionality = (uint8_t)mysofa_getc(reader);
-  if (ds->dimensionality > 4) {
-    mylog("dimensionality must be lower than 5\n"); // LCOV_EXCL_LINE
-    return MYSOFA_INVALID_FORMAT;                   // LCOV_EXCL_LINE
+  if (ds->dimensionality > HDF_MAX_DIMENSIONALITY) {
+    mylog("dimensionality must not be larger than %d\n",
+          HDF_MAX_DIMENSIONALITY); // LCOV_EXCL_LINE
+    return MYSOFA_INVALID_FORMAT;  // LCOV_EXCL_LINE
   }
 
   ds->flags = (uint8_t)mysofa_getc(reader);
@@ -466,7 +467,7 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
   int i, err;
   uint64_t size;
 
-  uint8_t dimensionality, layout_class;
+  uint8_t layout_class;
   uint32_t dataset_element_size;
   uint64_t data_address, store, data_size;
 
@@ -520,28 +521,25 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     break;
 
   case 2:
-    dimensionality = (uint8_t)mysofa_getc(reader);
-    mylog("dimensionality %d\n", dimensionality);
-
-    if (dimensionality < 1 || dimensionality > DATAOBJECT_MAX_DIMENSIONALITY) {
-      mylog("data layout 2: invalid dimensionality %d %lu %lu\n",
-            dimensionality, sizeof(data->datalayout_chunk),
-            sizeof(data->datalayout_chunk[0]));
+    i = mysofa_getc(reader); // chunk dimensionality is one greater than dataset
+    if (i != data->ds.dimensionality + 1) {
+      mylog("data layout 2: invalid dimensionality %d %lu %lu vs. %d\n", i,
+            sizeof(data->datalayout_chunk), sizeof(data->datalayout_chunk[0]),
+            data->ds.dimensionality);
       return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
     }
     data_address = readValue(reader, reader->superblock.size_of_offsets);
     mylog(" CHUNK %" PRIX64 "\n", data_address);
-    for (i = 0; i < dimensionality; i++) {
+    for (i = 0; i <= data->ds.dimensionality; i++) {
       data->datalayout_chunk[i] = readValue(reader, 4);
-      mylog(" %d\n", data->datalayout_chunk[i]);
+      mylog(" %d:%d\n", i, data->datalayout_chunk[i]);
     }
     /* TODO last entry? error in spec: ?*/
-
-    size = data->datalayout_chunk[dimensionality - 1];
+    size = data->datalayout_chunk[data->ds.dimensionality];
     for (i = 0; i < data->ds.dimensionality; i++)
       size *= data->ds.dimension_size[i];
 
-    if (validAddress(reader, data_address) && dimensionality <= 4) {
+    if (validAddress(reader, data_address)) {
       store = mysofa_tell(reader);
       if (mysofa_seek(reader, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
