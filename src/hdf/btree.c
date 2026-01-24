@@ -212,8 +212,8 @@ void btreeFree(struct BTREE *btree) { free(btree->records); }
 
 int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
-  int i, j, err, olen, elements, size, x, y, z, w, b, e, dy, dz, sx, sy, sz, dw,
-      sw, k;
+  int d, p, b = 0, c[HDF_MAX_DIMENSIONALITY];
+  int i, j, err, olen, elements, size, e;
   char *input, *output;
 
   uint8_t node_type, node_level;
@@ -256,13 +256,6 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   elements = 1;
   for (j = 0; j < data->ds.dimensionality; j++)
     elements *= data->datalayout_chunk[j];
-  dy = data->datalayout_chunk[1];
-  dz = data->datalayout_chunk[2];
-  dw = data->datalayout_chunk[3];
-  sx = data->ds.dimension_size[0];
-  sy = data->ds.dimension_size[1];
-  sz = data->ds.dimension_size[2];
-  sw = data->ds.dimension_size[3];
   size = data->datalayout_chunk[data->ds.dimensionality];
 
   mylog("elements %d size %d\n", elements, size);
@@ -324,77 +317,42 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
         return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
       }
 
-      switch (data->ds.dimensionality) {
-      case 1:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          x = i % elements + start[0];
-          if (x < sx) {
+      for (d = 0; d < data->ds.dimensionality; d++) {
+        c[d] = 0;
+      }
 
-            j = x * size + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
+      for (i = 0; i < olen; i++) {
+
+        // calculate and check destination pointer
+        p = 0;
+        for (d = 0; d < data->ds.dimensionality; d++) {
+          if (c[d] + start[d] >= data->ds.dimension_size[d]) {
+            p = -1;
+            break;
+          }
+          p = p * data->ds.dimension_size[d] + c[d] + start[d];
+        }
+
+        // copy data if within bounds
+        if (p >= 0) {
+          p = p * size + b;
+          if (p < data->data_len) {
+            ((char *)data->data)[p] = output[i];
+          }
+        }
+
+        // increase source coordinates
+        for (d = data->ds.dimensionality - 1; d >= 0; d--) {
+          c[d]++;
+          if (c[d] < data->datalayout_chunk[d]) {
+            break;
+          } else {
+            c[d] = 0;
+            if (d == 0) { // at last, increase bytes
+              b++;
             }
           }
         }
-        break;
-
-      case 2:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          k = i % elements;
-          y = k % dy + start[1];
-          k = k / dy;
-          x = k + start[0];
-          if (y < sy && x < sx) {
-            j = ((x * sy + y) * size) + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
-            }
-          }
-        }
-        break;
-
-      case 3:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          k = i % elements;
-          z = k % dz + start[2];
-          k = k / dz;
-          y = k % dy + start[1];
-          k = k / dy;
-          x = k + start[0];
-          if (z < sz && y < sy && x < sx) {
-            j = ((x * sy + y) * sz + z) * size + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
-            }
-          }
-        }
-        break;
-
-      case 4:
-        for (i = 0; i < olen; i++) {
-          b = i / elements;
-          k = i % elements;
-          w = k % dw + start[3];
-          k = k / dw;
-          z = k % dz + start[2];
-          k = k / dz;
-          y = k % dy + start[1];
-          k = k / dy;
-          x = k + start[0];
-          if (z < sz && y < sy && x < sx && w < sw) {
-            j = (((x * sy + y) * sz + z) * sw + w) * size + b;
-            if (j >= 0 && j < data->data_len) {
-              ((char *)data->data)[j] = output[i];
-            }
-          }
-        }
-        break;
-      default:
-        mylog("invalid dim\n");       // LCOV_EXCL_LINE
-        return MYSOFA_INTERNAL_ERROR; // LCOV_EXCL_LINE
       }
 
       if (mysofa_seek(reader, store, SEEK_SET) < 0) {
