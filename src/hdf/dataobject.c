@@ -538,14 +538,15 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     size = data->datalayout_chunk[data->ds.dimensionality];
     for (i = 0; i < data->ds.dimensionality; i++)
       size *= data->ds.dimension_size[i];
-
     if (validAddress(reader, data_address)) {
       store = mysofa_tell(reader);
       if (mysofa_seek(reader, data_address, SEEK_SET) < 0)
         return errno; // LCOV_EXCL_LINE
       if (!data->data) {
-        if (size > 0x100000000)
+        if (size > 0x500000000) {
+          mylog("array size %lX larger than %lX\n",size, 0x500000000);  // LCOV_EXCL_LINEmake
           return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+        }
         data->data_len = size;
         data->data = calloc(1, size);
         if (!data->data)
