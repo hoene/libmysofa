@@ -96,7 +96,7 @@ if(BUILD_TESTS)
 )
     # issues with osx    96)
     add_test(NAME fail-issue-${ISSUE} COMMAND ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh
-             ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE})
+             ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE} $<TARGET_FILE:mysofa2json>)
   endforeach(ISSUE)
   add_test(NAME CIPIC_subject_003_hrir_final COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
            ${PROJECT_SOURCE_DIR}/tests/CIPIC_subject_003_hrir_final $<TARGET_FILE:mysofa2json>)
