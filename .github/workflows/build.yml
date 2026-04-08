@@ -57,6 +57,7 @@ jobs:
     runs-on: windows-latest
     needs:
       - CommitInfo
+      - Linux
     steps:
     - name: Clone repo and submodules
       uses: actions/checkout@v6
