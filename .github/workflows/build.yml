@@ -14,6 +14,25 @@ on:
   workflow_dispatch:
 
 jobs:
+  CommitInfo:
+    # proudust/gh-describe@v2 might be useful, but provides neither date nor absolute count
+    runs-on: ubuntu-latest
+    outputs:
+      date: ${{ steps.ghd.outputs.Date }}
+      hash: ${{ steps.ghd.outputs.Hash }}
+      count: ${{ steps.ghd.outputs.Count }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Get current date, commit hash and count
+        id: ghd
+        run: |
+          echo "Date=$(git show -s --date=format:'%Y-%m-%d' --format=%cd)" | tee -a $GITHUB_OUTPUT
+          echo "Hash=$(git rev-parse --short=7 HEAD)" | tee -a $GITHUB_OUTPUT
+          echo "Count=$(git rev-list --count HEAD)" | tee -a $GITHUB_OUTPUT
 
   Linux:
     runs-on: ubuntu-latest
@@ -36,16 +55,13 @@ jobs:
 
   Windows:
     runs-on: windows-latest
+    needs:
+      - CommitInfo
     steps:
-
     - name: Clone repo and submodules
-      run: git clone --recurse-submodules https://github.com/${{github.repository}}.git . --branch ${{env.Branch}}
-
-    - name: Get current date, commit hash and count
-      run: |
-        echo "CommitDate=$(git show -s --date=format:'%Y-%m-%d' --format=%cd)" >> $env:GITHUB_ENV
-        echo "CommitHashShort=$(git rev-parse --short=7 HEAD)" >> $env:GITHUB_ENV
-        echo "CommitCount=$(git rev-list --count HEAD)" >> $env:GITHUB_ENV
+      uses: actions/checkout@v6
+      with:
+        submodules: true
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
@@ -57,7 +73,7 @@ jobs:
     - name: Upload Installer Artifact to GitHub
       uses: actions/upload-artifact@v4
       with:
-        name: "${{github.event.repository.name}}_r${{env.CommitCount}}@${{env.CommitHashShort}}"
+        name: "${{github.event.repository.name}}_r${{needs.CommitInfo.outputs.count}}@${{needs.CommitInfo.outputs.hash}}"
         path: "${{github.workspace}}/${{env.Artifacts}}/"
 
     - name: GitHub pre-release
@@ -66,5 +82,5 @@ jobs:
         repo_token: "${{secrets.GITHUB_TOKEN}}"
         automatic_release_tag: "latest"
         prerelease: true
-        title: "[${{env.CommitDate}}] ${{github.event.repository.name}} r${{env.CommitCount}}@${{env.CommitHashShort}}"
+        title: "[${{needs.CommitInfo.outputs.date}}] ${{github.event.repository.name}} r${{needs.CommitInfo.outputs.count}}@${{needs.CommitInfo.outputs.hash}}"
         files: "${{env.Artifacts}}/*"
