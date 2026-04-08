@@ -5,7 +5,7 @@ env:
   Solution: windows/libmysofa.sln
   Configuration: Release
   Artifacts: windows/bin/x64/Release
-  
+
 on:
   push:
     Branches: $Branch
@@ -14,6 +14,26 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get install -y zlib1g-dev libcunit1-dev
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Build Project
+        id: build
+        uses: threeal/cmake-action@v2.1.0
+        with:
+          build-dir: _build
+      - name: Run tests
+        run: cmake --build ${{ steps.build.outputs.build-dir }} -t test
+
   Windows:
     runs-on: windows-latest
     steps:
