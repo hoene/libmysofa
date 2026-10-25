@@ -17,6 +17,8 @@ void test_nsearch();
 
 void test_check();
 
+void test_check_data_sizes();
+
 void test_check_data();
 
 void test_lookup();

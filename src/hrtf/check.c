@@ -64,8 +64,13 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
  */
 
   if (hrtf->C != 3 || hrtf->I != 1 || hrtf->E != 1 || hrtf->R != 2 ||
-      hrtf->M == 0)
+      hrtf->M == 0 || hrtf->N == 0)
     return MYSOFA_INVALID_DIMENSIONS; // LCOV_EXCL_LINE
+
+  if (hrtf->DataIR.elements % hrtf->N != 0 ||
+      (uint64_t)hrtf->DataIR.elements / hrtf->N !=
+          (uint64_t)hrtf->M * hrtf->R)
+    return MYSOFA_INVALID_FORMAT;
 
   /* verify format */
 
@@ -128,6 +133,13 @@ MYSOFA_EXPORT int mysofa_check(struct MYSOFA_HRTF *hrtf) {
     if (!verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "I,R") &&
         !verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "M,R"))
       return MYSOFA_ONLY_DELAYS_WITH_IR_OR_MR_SUPPORTED; // LCOV_EXCL_LINE
+    if (verifyAttribute(hrtf->DataDelay.attributes, "DIMENSION_LIST", "I,R")) {
+      if (hrtf->DataDelay.elements != hrtf->R)
+        return MYSOFA_INVALID_FORMAT;
+    } else if ((uint64_t)hrtf->DataDelay.elements !=
+               (uint64_t)hrtf->M * hrtf->R) {
+      return MYSOFA_INVALID_FORMAT;
+    }
   }
   /* TODO: Support different sampling rate per measurement, support default
    sampling rate of 48000 However, so far, I have not seen any sofa files with
