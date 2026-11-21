@@ -454,7 +454,7 @@ static int indirectblockRead(struct READER *reader,
    * iblock_size is given by the following expression: */
   if (iblock_size == 0) /* doubled past 64 bits by the recursion below */
     return MYSOFA_INVALID_FORMAT;
-  nrows =(log2i(iblock_size) - log2i(fractalheap->starting_block_size)) + 1;
+  nrows = (log2i(iblock_size) - log2i(fractalheap->starting_block_size)) + 1;
 
   /* The maximum number of rows of direct blocks, max_dblock_rows, in any
    * indirect block of a fractal heap is given by the following expression: */
