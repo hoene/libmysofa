@@ -253,9 +253,15 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
   address_of_right_sibling =
       readValue(reader, reader->superblock.size_of_offsets);
 
+  /* the chunk's dimensions come from the file: refuse a product that does
+   * not fit an int instead of letting it overflow */
   elements = 1;
-  for (j = 0; j < data->ds.dimensionality; j++)
+  for (j = 0; j < data->ds.dimensionality; j++) {
+    if (data->datalayout_chunk[j] <= 0 ||
+        elements > INT_MAX / data->datalayout_chunk[j])
+      return MYSOFA_INVALID_FORMAT;
     elements *= data->datalayout_chunk[j];
+  }
   dy = data->datalayout_chunk[1];
   dz = data->datalayout_chunk[2];
   dw = data->datalayout_chunk[3];
@@ -269,9 +275,12 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
   if (elements <= 0 || size <= 0 || elements > INT_MAX / size)
     return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
-  if (!(output = malloc(elements * size))) {
-    return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
-  }
+  /* one chunk, inflated, cannot be larger than the whole file inflated */
+  if (!validInflatedSize(reader, (uint64_t)elements * size))
+    return MYSOFA_INVALID_FORMAT;
+  /* the buffer for one inflated chunk is allocated once the first chunk's
+   * compressed size has been checked, below */
+  output = NULL;
 
   for (e = 0; e < entries_used * 2; e++) {
     if (node_type == 0) {
@@ -302,6 +311,28 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
       if (mysofa_seek(reader, child_pointer, SEEK_SET) < 0) {
         free(output); // LCOV_EXCL_LINE
         return errno; // LCOV_EXCL_LINE
+      }
+
+      /* the chunk's size comes from the file: refuse a chunk that runs past
+       * the file's end before a buffer of that size is allocated */
+      if (!validRange(reader, child_pointer, size_of_chunk)) {
+        mylog("TREE chunk at %" PRIX64 " len %u is past the end of file\n",
+              child_pointer, size_of_chunk);
+        free(output);
+        return MYSOFA_INVALID_FORMAT;
+      }
+
+      /* the chunk inflates to elements * size bytes: refuse a chunk whose
+       * compressed bytes cannot inflate to that much before a buffer of
+       * that size is allocated */
+      if (!validInflatedChunk(size_of_chunk, (uint64_t)elements * size)) {
+        mylog("TREE chunk at %" PRIX64 " len %u cannot inflate to %d\n",
+              child_pointer, size_of_chunk, elements * size);
+        free(output);
+        return MYSOFA_INVALID_FORMAT;
+      }
+      if (!output && !(output = malloc(elements * size))) {
+        return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
       }
 
       if (!(input = malloc(size_of_chunk))) {

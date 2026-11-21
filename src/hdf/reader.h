@@ -158,6 +158,11 @@ struct SUPERBLOCK {
   uint64_t base_address, superblock_extension_address, end_of_file_address,
       root_group_object_header_address;
 
+  /* the number of bytes actually in the file. A version 2 or 3 superblock
+   * must declare it as end_of_file_address; a version 0 or 1 superblock may
+   * declare more. */
+  uint64_t file_length;
+
   struct DATAOBJECT dataobject;
 };
 
@@ -187,6 +192,9 @@ struct READER {
 };
 
 int validAddress(struct READER *reader, uint64_t address);
+int validRange(struct READER *reader, uint64_t address, uint64_t length);
+int validInflatedSize(struct READER *reader, uint64_t length);
+int validInflatedChunk(uint64_t compressed, uint64_t inflated);
 uint64_t readValue(struct READER *reader, int size);
 
 int gunzip(int inlen, char *in, int *outlen, char *out);

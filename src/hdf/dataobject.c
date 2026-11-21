@@ -507,7 +507,8 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
         free(data->data);
         data->data = NULL;
       }
-      if (data_size > 0x10000000)
+      if (data_size > 0x10000000 ||
+          !validRange(reader, data_address, data_size))
         return MYSOFA_INVALID_FORMAT;
       data->data_len = data_size;
       data->data = calloc(1, data_size);
@@ -538,8 +539,16 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     }
     /* TODO last entry? error in spec: ?*/
     size = data->datalayout_chunk[data->ds.dimensionality];
-    for (i = 0; i < data->ds.dimensionality; i++)
+    /* the element size and the dimensions come from the file: refuse a
+     * product that does not fit 64 bits instead of checking a wrapped size */
+    for (i = 0; i < data->ds.dimensionality; i++) {
+      if (data->ds.dimension_size[i] &&
+          size > UINT64_MAX / data->ds.dimension_size[i]) {
+        mylog("data layout 2: the dataset's size overflows\n");
+        return MYSOFA_INVALID_FORMAT;
+      }
       size *= data->ds.dimension_size[i];
+    }
 
     if (validAddress(reader, data_address)) {
       store = mysofa_tell(reader);
@@ -548,6 +557,10 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
       if (!data->data) {
         if (size > 0x100000000)
           return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+        /* every chunk is inflated: the data cannot be larger than the whole
+         * file inflated */
+        if (!validInflatedSize(reader, size))
+          return MYSOFA_INVALID_FORMAT;
         data->data_len = size;
         data->data = calloc(1, size);
         if (!data->data)
