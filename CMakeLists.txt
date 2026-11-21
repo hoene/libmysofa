@@ -100,7 +100,8 @@ if(BUILD_TESTS)
              ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE} $<TARGET_FILE:mysofa2json>)
   endforeach(ISSUE)
   foreach(SAMPLE heap-name-past-end chunk-past-end chunk-inflates-past-file
-                 dataset-inflates-past-file)
+                 dataset-inflates-past-file eof-past-file
+                 chunk-inflates-past-chunk dataset-size-overflows)
     add_test(NAME fail-${SAMPLE} COMMAND mysofa2json -c
              ${PROJECT_SOURCE_DIR}/tests/fail-${SAMPLE}.sofa)
     set_tests_properties(fail-${SAMPLE} PROPERTIES WILL_FAIL TRUE)

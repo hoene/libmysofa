@@ -539,8 +539,16 @@ static int readOHDRHeaderMessageDataLayout(struct READER *reader,
     }
     /* TODO last entry? error in spec: ?*/
     size = data->datalayout_chunk[data->ds.dimensionality];
-    for (i = 0; i < data->ds.dimensionality; i++)
+    /* the element size and the dimensions come from the file: refuse a
+     * product that does not fit 64 bits instead of checking a wrapped size */
+    for (i = 0; i < data->ds.dimensionality; i++) {
+      if (data->ds.dimension_size[i] &&
+          size > UINT64_MAX / data->ds.dimension_size[i]) {
+        mylog("data layout 2: the dataset's size overflows\n");
+        return MYSOFA_INVALID_FORMAT;
+      }
       size *= data->ds.dimension_size[i];
+    }
 
     if (validAddress(reader, data_address)) {
       store = mysofa_tell(reader);

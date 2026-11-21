@@ -24,26 +24,41 @@ int validAddress(struct READER *reader, uint64_t address) {
   return address > 0 && address < reader->superblock.end_of_file_address;
 }
 
+/* the end of the bytes the reader can read: the end of file that the
+ * superblock declares, or the file's length if that is less. A version 0 or 1
+ * superblock may declare an end past the file's length (superblockRead0or1
+ * only logs the mismatch), so the declared end alone does not bound a size.
+ */
+static uint64_t readableEnd(struct READER *reader) {
+  uint64_t end = reader->superblock.end_of_file_address;
+  return reader->superblock.file_length < end ? reader->superblock.file_length
+                                              : end;
+}
+
 /* checks that length bytes from address on lie inside the file.
  * A size that the file declares is checked with this before a buffer of that
  * size is allocated: a short file must not make the reader allocate memory
- * that it can never fill. superblockRead has checked that
- * end_of_file_address is the file's size.
+ * that it can never fill.
  */
 int validRange(struct READER *reader, uint64_t address, uint64_t length) {
-  uint64_t end = reader->superblock.end_of_file_address;
+  uint64_t end = readableEnd(reader);
   return address <= end && length <= end - address;
 }
 
 /* deflate expands its input at most 1032 times (zlib's technical details,
  * https://zlib.net/zlib_tech.html, "Maximum Compression Factor"). Every chunk
  * of a chunked dataset is inflated (treeRead), so its data is never larger
- * than the whole file inflated by that factor.
+ * than the whole file inflated by that factor, and one chunk's data is never
+ * larger than that chunk's compressed bytes inflated by that factor.
  */
 #define MAX_DEFLATE_FACTOR 1032
 
 int validInflatedSize(struct READER *reader, uint64_t length) {
-  return length / MAX_DEFLATE_FACTOR <= reader->superblock.end_of_file_address;
+  return length / MAX_DEFLATE_FACTOR <= readableEnd(reader);
+}
+
+int validInflatedChunk(uint64_t compressed, uint64_t inflated) {
+  return inflated / MAX_DEFLATE_FACTOR <= compressed;
 }
 
 int mysofa_read(struct READER *reader, void *buf, size_t n) {
