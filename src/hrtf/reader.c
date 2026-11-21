@@ -372,7 +372,8 @@ static struct MYSOFA_HRTF *getHrtf(struct READER *reader, int *err) {
   return hrtf;
 
 error:
-  free(hrtf);
+  /* hrtf owns the file's attributes by now: free them with it */
+  mysofa_free(hrtf);
   if (!*err)
     *err = MYSOFA_INVALID_FORMAT;
   return NULL;
