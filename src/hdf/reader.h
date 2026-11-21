@@ -187,6 +187,8 @@ struct READER {
 };
 
 int validAddress(struct READER *reader, uint64_t address);
+int validRange(struct READER *reader, uint64_t address, uint64_t length);
+int validInflatedSize(struct READER *reader, uint64_t length);
 uint64_t readValue(struct READER *reader, int size);
 
 int gunzip(int inlen, char *in, int *outlen, char *out);

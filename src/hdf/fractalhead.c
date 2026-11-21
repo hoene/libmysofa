@@ -127,6 +127,8 @@ static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
         return MYSOFA_UNSUPPORTED_FORMAT;        // LCOV_EXCL_LINE
       }
 
+      if (!validRange(reader, mysofa_tell(reader), length))
+        return MYSOFA_INVALID_FORMAT;
       if (!(name = malloc(length + 1)))
         return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
       if (mysofa_read(reader, name, length) != length) {

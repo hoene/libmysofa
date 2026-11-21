@@ -269,6 +269,9 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
 
   if (elements <= 0 || size <= 0 || elements > INT_MAX / size)
     return MYSOFA_INVALID_FORMAT; // LCOV_EXCL_LINE
+  /* one chunk, inflated, cannot be larger than the whole file inflated */
+  if (!validInflatedSize(reader, (uint64_t)elements * size))
+    return MYSOFA_INVALID_FORMAT;
   if (!(output = malloc(elements * size))) {
     return MYSOFA_NO_MEMORY; // LCOV_EXCL_LINE
   }
@@ -302,6 +305,15 @@ int treeRead(struct READER *reader, struct DATAOBJECT *data) {
       if (mysofa_seek(reader, child_pointer, SEEK_SET) < 0) {
         free(output); // LCOV_EXCL_LINE
         return errno; // LCOV_EXCL_LINE
+      }
+
+      /* the chunk's size comes from the file: refuse a chunk that runs past
+       * the file's end before a buffer of that size is allocated */
+      if (!validRange(reader, child_pointer, size_of_chunk)) {
+        mylog("TREE chunk at %" PRIX64 " len %u is past the end of file\n",
+              child_pointer, size_of_chunk);
+        free(output);
+        return MYSOFA_INVALID_FORMAT;
       }
 
       if (!(input = malloc(size_of_chunk))) {

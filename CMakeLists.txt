@@ -99,6 +99,12 @@ if(BUILD_TESTS)
     add_test(NAME fail-issue-${ISSUE} COMMAND ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh
              ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE} $<TARGET_FILE:mysofa2json>)
   endforeach(ISSUE)
+  foreach(SAMPLE heap-name-past-end chunk-past-end chunk-inflates-past-file
+                 dataset-inflates-past-file)
+    add_test(NAME fail-${SAMPLE} COMMAND mysofa2json -c
+             ${PROJECT_SOURCE_DIR}/tests/fail-${SAMPLE}.sofa)
+    set_tests_properties(fail-${SAMPLE} PROPERTIES WILL_FAIL TRUE)
+  endforeach(SAMPLE)
   add_test(NAME CIPIC_subject_003_hrir_final COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
            ${PROJECT_SOURCE_DIR}/tests/CIPIC_subject_003_hrir_final $<TARGET_FILE:mysofa2json>)
   add_test(NAME FHK_HRIR_L2354 COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/FHK_HRIR_L2354 $<TARGET_FILE:mysofa2json>)

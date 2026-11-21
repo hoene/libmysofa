@@ -24,6 +24,28 @@ int validAddress(struct READER *reader, uint64_t address) {
   return address > 0 && address < reader->superblock.end_of_file_address;
 }
 
+/* checks that length bytes from address on lie inside the file.
+ * A size that the file declares is checked with this before a buffer of that
+ * size is allocated: a short file must not make the reader allocate memory
+ * that it can never fill. superblockRead has checked that
+ * end_of_file_address is the file's size.
+ */
+int validRange(struct READER *reader, uint64_t address, uint64_t length) {
+  uint64_t end = reader->superblock.end_of_file_address;
+  return address <= end && length <= end - address;
+}
+
+/* deflate expands its input at most 1032 times (zlib's technical details,
+ * https://zlib.net/zlib_tech.html, "Maximum Compression Factor"). Every chunk
+ * of a chunked dataset is inflated (treeRead), so its data is never larger
+ * than the whole file inflated by that factor.
+ */
+#define MAX_DEFLATE_FACTOR 1032
+
+int validInflatedSize(struct READER *reader, uint64_t length) {
+  return length / MAX_DEFLATE_FACTOR <= reader->superblock.end_of_file_address;
+}
+
 int mysofa_read(struct READER *reader, void *buf, size_t n) {
   if (!reader || !buf)
     return 0;
