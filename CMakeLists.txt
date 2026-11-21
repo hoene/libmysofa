@@ -99,6 +99,12 @@ if(BUILD_TESTS)
     add_test(NAME fail-issue-${ISSUE} COMMAND ${PROJECT_SOURCE_DIR}/tests/notcrashed.sh
              ${PROJECT_SOURCE_DIR}/tests/fail-issue-${ISSUE} $<TARGET_FILE:mysofa2json>)
   endforeach(ISSUE)
+  foreach(SIZE starting-block-size maximum-direct-block-size maximum-heap-size
+               maximum-size)
+    add_test(NAME fail-heap-zero-${SIZE} COMMAND mysofa2json -c
+             ${PROJECT_SOURCE_DIR}/tests/fail-heap-zero-${SIZE}.sofa)
+    set_tests_properties(fail-heap-zero-${SIZE} PROPERTIES WILL_FAIL TRUE)
+  endforeach(SIZE)
   add_test(NAME CIPIC_subject_003_hrir_final COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh
            ${PROJECT_SOURCE_DIR}/tests/CIPIC_subject_003_hrir_final $<TARGET_FILE:mysofa2json>)
   add_test(NAME FHK_HRIR_L2354 COMMAND ${PROJECT_SOURCE_DIR}/tests/compare.sh ${PROJECT_SOURCE_DIR}/tests/FHK_HRIR_L2354 $<TARGET_FILE:mysofa2json>)

@@ -15,7 +15,9 @@
 
 #define MAX_NAME_LENGTH (0x100)
 
-static int log2i(int a) { return round(log2(a)); }
+/* a must not be 0: log2(0) is -inf, and its conversion to int is undefined.
+ * a is uint64_t, as the block sizes are: an int would truncate 2^32 to 0. */
+static int log2i(uint64_t a) { return (int)round(log2((double)a)); }
 
 static int directblockRead(struct READER *reader, struct DATAOBJECT *dataobject,
                            struct FRACTALHEAP *fractalheap) {
@@ -450,7 +452,9 @@ static int indirectblockRead(struct READER *reader,
 
   /*	 The number of rows of blocks, nrows, in an indirect block of size
    * iblock_size is given by the following expression: */
-  nrows = (log2i(iblock_size) - log2i(fractalheap->starting_block_size)) + 1;
+  if (iblock_size == 0) /* doubled past 64 bits by the recursion below */
+    return MYSOFA_INVALID_FORMAT;
+  nrows =(log2i(iblock_size) - log2i(fractalheap->starting_block_size)) + 1;
 
   /* The maximum number of rows of direct blocks, max_dblock_rows, in any
    * indirect block of a fractal heap is given by the following expression: */
@@ -596,6 +600,18 @@ int fractalheapRead(struct READER *reader, struct DATAOBJECT *dataobject,
       readValue(reader, reader->superblock.size_of_offsets);
 
   fractalheap->current_row = (uint16_t)readValue(reader, 2);
+
+  /* Each of these sizes goes into a logarithm, where 0 gives -inf, and its
+   * conversion to int is undefined: starting_block_size and
+   * maximum_direct_block_size in indirectblockRead (log2i),
+   * maximum_heap_size and maximum_direct_block_size or maximum_size in
+   * directblockRead (log2f). None of them is 0 in a valid heap. */
+  if (fractalheap->starting_block_size == 0 ||
+      fractalheap->maximum_direct_block_size == 0 ||
+      fractalheap->maximum_heap_size == 0 || fractalheap->maximum_size == 0) {
+    mylog("fractal heap with a size of zero\n");
+    return MYSOFA_INVALID_FORMAT;
+  }
 
   if (fractalheap->encoded_length > 0) {
 
